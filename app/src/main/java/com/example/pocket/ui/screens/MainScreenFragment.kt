@@ -3,9 +3,11 @@ package com.example.pocket.ui.screens
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +21,7 @@ class MainScreenFragment : Fragment() {
     private var _mBinding: MainFragmentBinding? = null
     private lateinit var mViewModel: MainScreenViewModel
     private lateinit var mAdapter: PocketAdapter
+    private val TAG = "MainScreenFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +47,12 @@ class MainScreenFragment : Fragment() {
 
         //observing the main list of urls stored in the database
         mViewModel.savedUrls.observe(viewLifecycleOwner) { mAdapter.submitList(it) }
+
+        mBinding.searchEditText.apply {
+            doOnTextChanged { charSequence, _, _, _ ->
+                Log.d(TAG, "onCreateView: $charSequence")
+            }
+        }
 
         return mBinding.root
     }

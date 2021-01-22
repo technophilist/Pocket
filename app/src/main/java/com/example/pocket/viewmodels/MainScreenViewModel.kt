@@ -10,5 +10,5 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     val savedUrls = Transformations.map(mRepository.getUrls) { it }
     fun deleteUrl(id: Int) = mRepository.deleteUrl(id)
     fun getUrlAtPos(pos: Int) = savedUrls.value!![pos].host
-
+    
 }
