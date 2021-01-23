@@ -7,7 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.doOnTextChanged
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -48,12 +48,14 @@ class MainScreenFragment : Fragment() {
         //observing the main list of urls stored in the database
         mViewModel.savedUrls.observe(viewLifecycleOwner) { mAdapter.submitList(it) }
 
-        mBinding.searchEditText.apply {
-            doOnTextChanged { charSequence, _, _, _ ->
-                Log.d(TAG, "onCreateView: $charSequence")
+        //Setting up the search view
+        mBinding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?) = true
+            override fun onQueryTextChange(newText: String): Boolean {
+                mAdapter.filter.filter(newText)
+                return true
             }
-        }
-
+        })
         return mBinding.root
     }
 

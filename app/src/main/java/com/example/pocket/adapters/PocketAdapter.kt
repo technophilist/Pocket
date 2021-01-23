@@ -2,6 +2,8 @@ package com.example.pocket.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +14,24 @@ import java.io.File
 
 
 class PocketAdapter(private val onClick: (position: Int) -> Unit) :
-    ListAdapter<UrlEntity, PocketAdapter.PocketViewHolder>(DiffUtilCallback) {
+    ListAdapter<UrlEntity, PocketAdapter.PocketViewHolder>(DiffUtilCallback),
+    Filterable {
+
+    private val mFilter = object : Filter() {
+        override fun performFiltering(constraint: CharSequence) =
+            FilterResults().apply {
+                values = if (constraint.isEmpty()) currentList
+                else currentList.filter { it.contentTitle.contains(constraint) }
+            }
+
+        @Suppress("UNCHECKED_CAST")
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+            results?.values?.let {
+                submitList(it as List<UrlEntity>)
+            }
+        }
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -71,7 +90,7 @@ class PocketAdapter(private val onClick: (position: Int) -> Unit) :
         }
     }
 
-
+    override fun getFilter(): Filter = mFilter
 }
 
 
