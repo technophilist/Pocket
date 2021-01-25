@@ -3,10 +3,10 @@ package com.example.pocket.ui.screens
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -28,7 +28,6 @@ class MainScreenFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         //initializing binding and viewModel
         _mBinding = MainFragmentBinding.inflate(inflater)
         mViewModel = ViewModelProvider(
@@ -56,6 +55,27 @@ class MainScreenFragment : Fragment() {
                 return true
             }
         })
+
+        /*
+        * Intercept the back button for closing the search view when the back button is
+        * pressed twice.
+        * First press  : closes keyboard
+        * Second press : Makes the search view iconified
+        * */
+        activity?.let {
+            it.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                if (!mBinding.searchView.isIconified) {
+                    mBinding.searchView.isIconified = true
+                } else {
+                    isEnabled = false //disable the callback
+                    it.onBackPressed()
+                }
+            }
+        }
+
+        //enabling the search view on tap
+        mBinding.searchView.setOnClickListener { mBinding.searchView.isIconified = false}
+
         return mBinding.root
     }
 
@@ -65,8 +85,11 @@ class MainScreenFragment : Fragment() {
         startActivity(openLinkIntent)
     }
 
+
     override fun onDestroyView() {
         _mBinding = null
         super.onDestroyView()
     }
+
+
 }

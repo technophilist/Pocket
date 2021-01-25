@@ -15,13 +15,18 @@ import java.io.File
 
 class PocketAdapter(private val onClick: (position: Int) -> Unit) :
     ListAdapter<UrlEntity, PocketAdapter.PocketViewHolder>(DiffUtilCallback),
+//    RecyclerView.Adapter<PocketAdapter.PocketViewHolder>(),
     Filterable {
+
+//    private var currentList: List<UrlEntity> = emptyList()
+
+    private val TAG = "PocketAdapter"
 
     private val mFilter = object : Filter() {
         override fun performFiltering(constraint: CharSequence) =
             FilterResults().apply {
                 values = if (constraint.isEmpty()) currentList
-                else currentList.filter { it.contentTitle.contains(constraint) }
+                else currentList.filter { it.contentTitle.contains(constraint, true) }
             }
 
         @Suppress("UNCHECKED_CAST")
@@ -60,6 +65,7 @@ class PocketAdapter(private val onClick: (position: Int) -> Unit) :
             not null,we load the image else the image
             space is left empty
              */
+
             item.imageAbsolutePath?.let {
                 Glide.with(thumbnailImageView)
                     .load(File(item.imageAbsolutePath))
@@ -91,6 +97,14 @@ class PocketAdapter(private val onClick: (position: Int) -> Unit) :
     }
 
     override fun getFilter(): Filter = mFilter
+//    override fun getItemCount() = currentList.size
+
+//    fun submitList(list:List<UrlEntity>){
+//        val insertedPosition = currentList.size+1
+//        currentList = list
+//        notifyItemInserted(insertedPosition)
+//    }
+
 }
 
 
