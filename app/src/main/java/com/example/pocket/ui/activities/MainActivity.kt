@@ -2,6 +2,7 @@ package com.example.pocket.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
 import com.example.pocket.R
 import com.example.pocket.databinding.ActivityMainBinding
 
@@ -12,4 +13,6 @@ class MainActivity : AppCompatActivity() {
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
     }
+
+
 }
