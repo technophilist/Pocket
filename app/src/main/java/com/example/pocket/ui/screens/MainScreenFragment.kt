@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -63,16 +64,14 @@ class MainScreenFragment : Fragment() {
         * First press  : closes keyboard
         * Second press : Makes the search view iconified
         * */
-        activity?.let {
-            it.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                if (!mBinding.searchView.isIconified) {
-                    mBinding.searchView.isIconified = true
-                } else {
-                    isEnabled = false //disable the callback
-                    it.onBackPressed()
-                }
+        onBackPressed {
+            if (!mBinding.searchView.isIconified) mBinding.searchView.isIconified = true
+            else {
+                isEnabled = false //disable the callback
+                activity?.onBackPressed()
             }
         }
+
 
         //enabling the search view on tap
         mBinding.searchView.setOnClickListener { mBinding.searchView.isIconified = false }
@@ -86,8 +85,18 @@ class MainScreenFragment : Fragment() {
         startActivity(openLinkIntent)
     }
 
+    private inline fun onBackPressed(crossinline block: OnBackPressedCallback.() -> Unit) {
+        activity?.let {
+            it.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                block()
+            }
+        }
+    }
+
     override fun onDestroyView() {
         _mBinding = null
         super.onDestroyView()
     }
+
+
 }
