@@ -1,4 +1,4 @@
-package com.example.pocket.data
+package com.example.pocket.data.database
 
 import android.content.Context
 import androidx.room.Database
@@ -13,7 +13,7 @@ abstract class UrlDatabase : RoomDatabase() {
         fun getInstance(context: Context): UrlDatabase {
             if (mInstance == null)
                 mInstance = Room.databaseBuilder(
-                    context,
+                    context.applicationContext,
                     UrlDatabase::class.java,
                     "Pocket_Database"
                 ).build()

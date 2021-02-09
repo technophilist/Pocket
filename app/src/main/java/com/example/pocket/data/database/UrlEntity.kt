@@ -1,4 +1,4 @@
-package com.example.pocket.data
+package com.example.pocket.data.database
 
 import android.net.Uri
 import androidx.room.ColumnInfo
