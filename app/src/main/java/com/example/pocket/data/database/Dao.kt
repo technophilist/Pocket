@@ -1,4 +1,4 @@
-package com.example.pocket.data
+package com.example.pocket.data.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

@@ -3,7 +3,7 @@ package com.example.pocket.viewmodels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Transformations
-import com.example.pocket.data.Repository
+import com.example.pocket.data.database.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

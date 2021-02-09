@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocket.adapters.PocketAdapter
 import com.example.pocket.databinding.MainFragmentBinding
 import com.example.pocket.utils.MainScreenViewModelFactory
+import com.example.pocket.utils.doOnItemSwiped
 import com.example.pocket.utils.doOnTextChanged
 import com.example.pocket.viewmodels.MainScreenViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class MainScreenFragment : Fragment() {
@@ -41,21 +43,27 @@ class MainScreenFragment : Fragment() {
         //initializing recycler view adapter with onClick action
         mAdapter = PocketAdapter { openUrl(it) }
 
-        //init recycler view
-        mBinding.recyclerView.apply {
-            adapter = mAdapter
-            layoutManager = LinearLayoutManager(context)
-        }
+        mBinding.apply {
 
-        //observing the main list of urls stored in the database
-        mViewModel.savedUrls.observe(viewLifecycleOwner) { mAdapter.submitList(it) }
-
-        //Setting up the search view for filtering
-        mBinding.searchView.doOnTextChanged {
-            lifecycleScope.launch {
-                val filteredList = mViewModel.filter(it)
-                mAdapter.submitList(filteredList)
+            //init recycler view
+            recyclerView.apply {
+                adapter = mAdapter
+                layoutManager = LinearLayoutManager(context)
+                doOnItemSwiped { viewHolder, _ ->
+                    mViewModel.savedUrls.value?.let { mViewModel.deleteUrl(it[viewHolder.adapterPosition].id) }
+                    Snackbar.make(mBinding.root, "Reminder Deleted", Snackbar.LENGTH_LONG).show()
+                }
             }
+
+            //observing the main list of urls stored in the database
+            mViewModel.savedUrls.observe(viewLifecycleOwner) { mAdapter.submitList(it) }
+
+            //Setting up the search view for filtering
+            searchView.apply {
+                setOnClickListener { mBinding.searchView.isIconified = false }
+                doOnTextChanged { lifecycleScope.launch { mAdapter.submitList(mViewModel.filter(it)) } }
+            }
+
         }
 
         /*
@@ -72,9 +80,6 @@ class MainScreenFragment : Fragment() {
             }
         }
 
-
-        //enabling the search view on tap
-        mBinding.searchView.setOnClickListener { mBinding.searchView.isIconified = false }
 
         return mBinding.root
     }

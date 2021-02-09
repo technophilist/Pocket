@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.pocket.data.UrlEntity
+import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.databinding.UrlItemBinding
 import java.io.File
 

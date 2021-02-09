@@ -1,11 +1,10 @@
-package com.example.pocket.data
+package com.example.pocket.data.database
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
-import androidx.lifecycle.LiveData
-import com.example.pocket.utils.downloadImage
+import android.graphics.drawable.Drawable
+import com.example.pocket.data.network.PocketNetwork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,53 +12,28 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-class Repository private constructor(private val mContext: Context) {
-    private val mDatabase = UrlDatabase.getInstance(mContext)
+class Repository private constructor(context: Context) {
+    private val mDatabase = UrlDatabase.getInstance(context)
     private val mDao = mDatabase.getDao()
-    val getUrls: LiveData<List<UrlEntity>> = mDao.getAllUrls()
+    private val mNetwork = PocketNetwork.getInstance()
+    private val mFilesDirectory = context.filesDir
+    val getUrls = mDao.getAllUrls()
 
-    companion object {
-        private const val TAG = "Repository"
-        private var mInstance: Repository? = null
-
-        @Synchronized
-        fun getInstance(context: Context): Repository {
-            if (mInstance == null) mInstance = Repository(context)
-            return mInstance!!
-        }
-    }
-
-    fun saveUrl(url: String, urlContentTitle: String, imageUrlString: String?) {
+    suspend fun saveUrl(url: String, thumbnail: Drawable?) {
         CoroutineScope(Dispatchers.IO).launch {
-
+            val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
+            val imageUrlString = mNetwork.fetchImageUrl(url)
             val imageAbsolutePath = imageUrlString?.let {
-
-                //Downloading the image as a drawable
-                val imageDrawable = downloadImage(mContext, imageUrlString)
-
-                //Selecting the last 5 characters as the fileName
                 val imageFileName = imageUrlString.substring(imageUrlString.length - 5)
-
-                //Getting the absolute path of the image
-                imageDrawable?.let {
-                    saveImageToInternalStorage(
-                        mContext,
-                        imageDrawable,
-                        imageFileName
-                    )
-                }
-
+                thumbnail?.let { saveImageToInternalStorage(thumbnail, imageFileName) }
             }
-
-            //Inserting the url entity into the database
-            mDao.insertUrl(UrlEntity(url,urlContentTitle,imageAbsolutePath))
+            mDao.insertUrl(UrlEntity(url, urlContentTitle, imageAbsolutePath))
         }
     }
 
     fun deleteUrl(id: Int) {
         CoroutineScope(Dispatchers.IO).launch { mDao.deleteUrl(id) }
     }
-
 
     /**
      * Saves the [resource] as a jpg file to internal storage
@@ -69,11 +43,10 @@ class Repository private constructor(private val mContext: Context) {
      *         null.
      */
     private suspend fun <T> saveImageToInternalStorage(
-        context: Context,
         resource: T,
         fileName: String
     ): String? {
-        val thumbnailsDirectory = File("${context.filesDir}/thumbnails")
+        val thumbnailsDirectory = File("$mFilesDirectory/thumbnails")
         if (!thumbnailsDirectory.exists()) thumbnailsDirectory.mkdir()
 
         val bitmapImage = (resource as BitmapDrawable).bitmap
@@ -96,4 +69,18 @@ class Repository private constructor(private val mContext: Context) {
             savedImagePath
         }
     }
+
+    companion object {
+        private const val TAG = "Repository"
+        /* TODO("Download image uses glide,which requires context.Move the downloadImage() to the coroutine worker") */
+        private var mInstance: Repository? = null
+
+        @Synchronized
+        fun getInstance(context: Context): Repository {
+            if (mInstance == null) mInstance = Repository(context)
+            return mInstance!!
+        }
+    }
 }
+
+
