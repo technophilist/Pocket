@@ -72,7 +72,6 @@ class Repository private constructor(context: Context) {
 
     companion object {
         private const val TAG = "Repository"
-        /* TODO("Download image uses glide,which requires context.Move the downloadImage() to the coroutine worker") */
         private var mInstance: Repository? = null
 
         @Synchronized

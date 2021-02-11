@@ -15,14 +15,22 @@ inline fun SearchView.doOnTextChanged(crossinline block: (newText: String) -> Un
     })
 }
 
+enum class RecyclerViewSwipeDirections(val value: Int) {
+    LEFT(ItemTouchHelper.LEFT),
+    RIGHT(ItemTouchHelper.RIGHT),
+    START(ItemTouchHelper.START),
+    END (ItemTouchHelper.END)
+}
+
 inline fun RecyclerView.doOnItemSwiped(
+    swipeDirection:RecyclerViewSwipeDirections,
     crossinline block: (viewHolder: RecyclerView.ViewHolder, direction: Int) -> Unit
 ) {
     ItemTouchHelper(object : ItemTouchHelper.Callback() {
         override fun getMovementFlags(
             recyclerView: RecyclerView,
             viewHolder: RecyclerView.ViewHolder
-        ) = makeMovementFlags(0, ItemTouchHelper.LEFT)
+        ) = makeMovementFlags(0, swipeDirection.value)
 
         override fun onMove(
             recyclerView: RecyclerView,
