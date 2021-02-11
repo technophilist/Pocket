@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocket.adapters.PocketAdapter
 import com.example.pocket.databinding.MainFragmentBinding
 import com.example.pocket.utils.MainScreenViewModelFactory
+import com.example.pocket.utils.RecyclerViewSwipeDirections
 import com.example.pocket.utils.doOnItemSwiped
 import com.example.pocket.utils.doOnTextChanged
 import com.example.pocket.viewmodels.MainScreenViewModel
@@ -49,9 +50,10 @@ class MainScreenFragment : Fragment() {
             recyclerView.apply {
                 adapter = mAdapter
                 layoutManager = LinearLayoutManager(context)
-                doOnItemSwiped { viewHolder, _ ->
-                    mViewModel.savedUrls.value?.let { mViewModel.deleteUrl(it[viewHolder.adapterPosition].id) }
-                    Snackbar.make(mBinding.root, "Reminder Deleted", Snackbar.LENGTH_LONG).show()
+                doOnItemSwiped(RecyclerViewSwipeDirections.START) { viewHolder, _ ->
+                    val item = mAdapter.currentList[viewHolder.adapterPosition]
+                    mViewModel.deleteUrl(item.id)
+                    Snackbar.make(mBinding.root, "Item Deleted", Snackbar.LENGTH_LONG).show()
                 }
             }
 
@@ -80,7 +82,6 @@ class MainScreenFragment : Fragment() {
             }
         }
 
-
         return mBinding.root
     }
 
@@ -102,6 +103,5 @@ class MainScreenFragment : Fragment() {
         _mBinding = null
         super.onDestroyView()
     }
-
 
 }
