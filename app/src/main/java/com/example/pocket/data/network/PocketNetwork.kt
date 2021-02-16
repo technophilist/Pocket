@@ -10,7 +10,8 @@ class PocketNetwork private constructor() {
      * @param url The string representation of the url
      * @return The content of the title tag of the website.
      */
-    suspend fun fetchWebsiteContentTitle(url: String): String = withContext(Dispatchers.IO) { Jsoup.connect(url).get().title() }
+    suspend fun fetchWebsiteContentTitle(url: String): String =
+        withContext(Dispatchers.IO) { Jsoup.connect(url).get().title() }
 
     /**
      * Gets the value of "src" attr from the first instance of <img> tag in the website
@@ -35,10 +36,9 @@ class PocketNetwork private constructor() {
 
     companion object {
         private var mInstance: PocketNetwork? = null
-        @Synchronized
-        fun getInstance(): PocketNetwork {
-            if (mInstance == null) mInstance = PocketNetwork()
-            return mInstance!!
+        fun getInstance() = mInstance ?: synchronized(this) {
+            mInstance = PocketNetwork()
+            mInstance!!
         }
     }
 }

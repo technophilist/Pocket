@@ -9,16 +9,15 @@ import androidx.room.RoomDatabase
 abstract class UrlDatabase : RoomDatabase() {
     companion object {
         private var mInstance: UrlDatabase? = null
-        @Synchronized
-        fun getInstance(context: Context): UrlDatabase {
-            if (mInstance == null)
-                mInstance = Room.databaseBuilder(
-                    context.applicationContext,
-                    UrlDatabase::class.java,
-                    "Pocket_Database"
-                ).build()
-            return mInstance!!
+        fun getInstance(context: Context) = mInstance ?: synchronized(this) {
+            mInstance = Room.databaseBuilder(
+                context.applicationContext,
+                UrlDatabase::class.java,
+                "Pocket_Database"
+            ).build()
+            mInstance!!
         }
+
     }
 
     abstract fun getDao(): Dao
