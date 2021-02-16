@@ -73,11 +73,9 @@ class Repository private constructor(context: Context) {
     companion object {
         private const val TAG = "Repository"
         private var mInstance: Repository? = null
-
-        @Synchronized
-        fun getInstance(context: Context): Repository {
-            if (mInstance == null) mInstance = Repository(context)
-            return mInstance!!
+        fun getInstance(context: Context) = mInstance ?: synchronized(this) {
+            mInstance = Repository(context)
+            mInstance!!
         }
     }
 }

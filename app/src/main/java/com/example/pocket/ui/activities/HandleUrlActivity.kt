@@ -13,10 +13,6 @@ import com.example.pocket.workers.SaveUrlWorker
 
 class HandleUrlActivity : AppCompatActivity() {
 
-    companion object {
-        const val EXTRA_URL = "Url of the html resource"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_handle_url)
@@ -42,5 +38,9 @@ class HandleUrlActivity : AppCompatActivity() {
             //Closing the activity
             finish()
         }
+    }
+
+    companion object {
+        const val EXTRA_URL = "Url of the html resource"
     }
 }
