@@ -13,6 +13,28 @@ import java.io.File
 
 class PocketAdapter(private val onClick: (position: Int) -> Unit) :
     ListAdapter<UrlEntity, PocketAdapter.PocketViewHolder>(DiffUtilCallback) {
+
+    class PocketViewHolder(
+        val binding: UrlItemBinding,
+        private val onClick: (position: Int) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener { onClick(adapterPosition) }
+        }
+    }
+
+    private object DiffUtilCallback : DiffUtil.ItemCallback<UrlEntity>() {
+        override fun areItemsTheSame(
+            oldItem: UrlEntity,
+            newItem: UrlEntity
+        ) = oldItem.id == newItem.id
+
+        override fun areContentsTheSame(
+            oldItem: UrlEntity,
+            newItem: UrlEntity
+        ) = oldItem == newItem
+    }
+
     private val TAG = "PocketAdapter"
 
     override fun onCreateViewHolder(
@@ -49,27 +71,6 @@ class PocketAdapter(private val onClick: (position: Int) -> Unit) :
                     .into(thumbnailImageView)
             }
 
-        }
-    }
-
-    private object DiffUtilCallback : DiffUtil.ItemCallback<UrlEntity>() {
-        override fun areItemsTheSame(
-            oldItem: UrlEntity,
-            newItem: UrlEntity
-        ) = oldItem.id == newItem.id
-
-        override fun areContentsTheSame(
-            oldItem: UrlEntity,
-            newItem: UrlEntity
-        ) = oldItem == newItem
-    }
-
-    class PocketViewHolder(
-        val binding: UrlItemBinding,
-        private val onClick: (position: Int) -> Unit
-    ) : RecyclerView.ViewHolder(binding.root) {
-        init {
-            binding.root.setOnClickListener { onClick(adapterPosition) }
         }
     }
 
