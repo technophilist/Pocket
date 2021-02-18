@@ -6,18 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocket.adapters.PocketAdapter
 import com.example.pocket.databinding.MainFragmentBinding
-import com.example.pocket.utils.MainScreenViewModelFactory
-import com.example.pocket.utils.RecyclerViewSwipeDirections
-import com.example.pocket.utils.doOnItemSwiped
-import com.example.pocket.utils.doOnTextChanged
+import com.example.pocket.utils.*
 import com.example.pocket.viewmodels.MainScreenViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -89,14 +84,6 @@ class MainScreenFragment : Fragment() {
         val uri = Uri.parse("https://" + mViewModel.getUrlAtPos(pos))
         val openLinkIntent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(openLinkIntent)
-    }
-
-    private inline fun onBackPressed(crossinline block: OnBackPressedCallback.() -> Unit) {
-        activity?.let {
-            it.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-                block()
-            }
-        }
     }
 
     override fun onDestroyView() {

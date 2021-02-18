@@ -1,6 +1,9 @@
 package com.example.pocket.utils
 
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
@@ -19,11 +22,11 @@ enum class RecyclerViewSwipeDirections(val value: Int) {
     LEFT(ItemTouchHelper.LEFT),
     RIGHT(ItemTouchHelper.RIGHT),
     START(ItemTouchHelper.START),
-    END (ItemTouchHelper.END)
+    END(ItemTouchHelper.END)
 }
 
 inline fun RecyclerView.doOnItemSwiped(
-    swipeDirection:RecyclerViewSwipeDirections,
+    swipeDirection: RecyclerViewSwipeDirections,
     crossinline block: (viewHolder: RecyclerView.ViewHolder, direction: Int) -> Unit
 ) {
     ItemTouchHelper(object : ItemTouchHelper.Callback() {
@@ -45,3 +48,6 @@ inline fun RecyclerView.doOnItemSwiped(
     }).attachToRecyclerView(this)
 
 }
+
+
+
