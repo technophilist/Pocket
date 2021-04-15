@@ -26,10 +26,11 @@ class ExampleInstrumentedTest {
 
     @Test
     fun imageDownloadTest(){
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val result = runBlocking {
-//            Repository.getInstance(appContext).downloadImage(appContext,  ),"verge")
-        }
-        println(result)
+
+
+
+
+
+
     }
 }

@@ -19,7 +19,15 @@ class Repository private constructor(context: Context) {
     private val mFilesDirectory = context.filesDir
     val getUrls = mDao.getAllUrls()
 
-    suspend fun saveUrl(url: String, thumbnail: Drawable?) {
+    init {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            repeat(6) {
+//                mDao.insertUrl(UrlEntity("www.google.com", "test$it", null))
+//            }
+//        }
+    }
+
+    fun saveUrl(url: String, thumbnail: Drawable?) {
         CoroutineScope(Dispatchers.IO).launch {
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
             val imageUrlString = mNetwork.fetchImageUrl(url)
@@ -78,6 +86,8 @@ class Repository private constructor(context: Context) {
             mInstance!!
         }
     }
+
+
 }
 
 

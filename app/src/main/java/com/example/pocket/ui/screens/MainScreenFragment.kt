@@ -40,16 +40,18 @@ class MainScreenFragment : Fragment() {
         mAdapter = PocketAdapter { openUrl(it) }
 
         mBinding.apply {
-
             //init recycler view
             recyclerView.apply {
                 adapter = mAdapter
                 layoutManager = LinearLayoutManager(context)
                 doOnItemSwiped(RecyclerViewSwipeDirections.START) { viewHolder, _ ->
-                    val item = mAdapter.currentList[viewHolder.adapterPosition]
-                    mViewModel.deleteUrl(item.id)
-                    Snackbar.make(mBinding.root, "Item Deleted", Snackbar.LENGTH_LONG).show()
+//                    val position = viewHolder.adapterPosition
+//                    val deletedItem = mAdapter.removeItemAtPosition(position)
+//                    Snackbar.make(mBinding.root, "Item Deleted", Snackbar.LENGTH_LONG)
+//                        .setAction("Undo") { mAdapter.addItemAtPos(deletedItem, position) }
+//                        .show()
                 }
+
             }
 
             //observing the main list of urls stored in the database
@@ -58,7 +60,7 @@ class MainScreenFragment : Fragment() {
             //Setting up the search view for filtering
             searchView.apply {
                 setOnClickListener { mBinding.searchView.isIconified = false }
-                doOnTextChanged { lifecycleScope.launch { mAdapter.submitList(mViewModel.filter(it)) } }
+                doOnTextChanged { lifecycleScope.launch { mAdapter.submitList(mViewModel.filter(it)!!) } }
             }
 
         }

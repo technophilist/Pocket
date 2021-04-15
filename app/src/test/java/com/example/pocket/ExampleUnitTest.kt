@@ -1,6 +1,6 @@
 package com.example.pocket
 
-import org.jsoup.Jsoup
+import kotlinx.coroutines.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -13,6 +13,25 @@ class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
+    }
+
+    @Test
+    fun couroutineTest() {
+        runBlocking {
+            val scope = CoroutineScope(Dispatchers.IO)
+            val job1 = scope.launch {
+                delay(1000 * 2)
+                println("first Coroutine")
+            }
+            job1.join()
+
+            scope.launch {
+                println("Second Coroutine")
+            }
+
+
+
+        }
     }
 
 }
