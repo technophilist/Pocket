@@ -1,11 +1,10 @@
 package com.example.pocket.utils
 
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 
 
 inline fun SearchView.doOnTextChanged(crossinline block: (newText: String) -> Unit) {
@@ -47,6 +46,20 @@ inline fun RecyclerView.doOnItemSwiped(
         ) = block(viewHolder, direction)
     }).attachToRecyclerView(this)
 
+}
+
+inline fun Snackbar.doOnDismissed(
+    crossinline block: (transientBottomBar: Snackbar?, event: Int) -> Unit
+): Snackbar {
+    addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+        override fun onDismissed(
+            transientBottomBar: Snackbar?,
+            event: Int
+        ) = block(transientBottomBar, event)
+
+        override fun onShown(transientBottomBar: Snackbar?) = super.onShown(transientBottomBar)
+    })
+    return this
 }
 
 

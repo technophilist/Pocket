@@ -5,9 +5,5 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 
 inline fun Fragment.onBackPressed(crossinline block: OnBackPressedCallback.() -> Unit) {
-    activity?.let {
-        it.onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            block()
-        }
-    }
+    activity?.let { it.onBackPressedDispatcher.addCallback(viewLifecycleOwner) { block() } }
 }

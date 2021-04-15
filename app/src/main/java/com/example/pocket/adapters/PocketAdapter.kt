@@ -2,8 +2,6 @@ package com.example.pocket.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.pocket.data.database.UrlEntity
@@ -12,30 +10,9 @@ import java.io.File
 
 
 class PocketAdapter(private val onClick: (position: Int) -> Unit) :
-    ListAdapter<UrlEntity, PocketAdapter.PocketViewHolder>(DiffUtilCallback) {
+    RecyclerView.Adapter<PocketAdapter.PocketViewHolder>() {
 
-    class PocketViewHolder(
-        val binding: UrlItemBinding,
-        private val onClick: (position: Int) -> Unit
-    ) : RecyclerView.ViewHolder(binding.root) {
-        init {
-            binding.root.setOnClickListener { onClick(adapterPosition) }
-        }
-    }
-
-    private object DiffUtilCallback : DiffUtil.ItemCallback<UrlEntity>() {
-        override fun areItemsTheSame(
-            oldItem: UrlEntity,
-            newItem: UrlEntity
-        ) = oldItem.id == newItem.id
-
-        override fun areContentsTheSame(
-            oldItem: UrlEntity,
-            newItem: UrlEntity
-        ) = oldItem == newItem
-    }
-
-    private val TAG = "PocketAdapter"
+    private var mCurrentList = arrayListOf<UrlEntity>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -51,7 +28,7 @@ class PocketAdapter(private val onClick: (position: Int) -> Unit) :
     )
 
     override fun onBindViewHolder(holder: PocketViewHolder, position: Int) {
-        val item = currentList[position]
+        val item = mCurrentList[position]
         holder.binding.apply {
 
             //setting the title text of the url item
@@ -74,7 +51,33 @@ class PocketAdapter(private val onClick: (position: Int) -> Unit) :
         }
     }
 
+    /**
+     * We are checking only insertion case because delete
+     * case is handled by [removeItemAtPosition]
+     * to prevent the recycler view getting informed
+     * twice
+     */
+    fun submitList(newList: List<UrlEntity>) {
+        if (newList.size>=mCurrentList.size){
+            mCurrentList = newList as ArrayList<UrlEntity>
+            notifyItemInserted(mCurrentList.size - 1)
+        }
+    }
+
+    fun addItemAtPos(item: UrlEntity, position: Int) {
+        mCurrentList.add(position, item)
+        notifyItemInserted(position)
+    }
+
+    override fun getItemCount() = mCurrentList.size
+
+    class PocketViewHolder(
+        val binding: UrlItemBinding,
+        private val onClick: (position: Int) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener { onClick(adapterPosition) }
+        }
+    }
 
 }
-
-
