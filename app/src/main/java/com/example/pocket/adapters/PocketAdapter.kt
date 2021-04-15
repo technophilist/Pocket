@@ -12,7 +12,7 @@ import java.io.File
 class PocketAdapter(private val onClick: (position: Int) -> Unit) :
     RecyclerView.Adapter<PocketAdapter.PocketViewHolder>() {
 
-    private var mCurrentList = arrayListOf<UrlEntity>()
+    private var mCurrentList = listOf<UrlEntity>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -51,22 +51,9 @@ class PocketAdapter(private val onClick: (position: Int) -> Unit) :
         }
     }
 
-    /**
-     * We are checking only insertion case because delete
-     * case is handled by [removeItemAtPosition]
-     * to prevent the recycler view getting informed
-     * twice
-     */
     fun submitList(newList: List<UrlEntity>) {
-        if (newList.size>=mCurrentList.size){
-            mCurrentList = newList as ArrayList<UrlEntity>
-            notifyItemInserted(mCurrentList.size - 1)
-        }
-    }
-
-    fun addItemAtPos(item: UrlEntity, position: Int) {
-        mCurrentList.add(position, item)
-        notifyItemInserted(position)
+       mCurrentList = newList
+        notifyDataSetChanged()
     }
 
     override fun getItemCount() = mCurrentList.size

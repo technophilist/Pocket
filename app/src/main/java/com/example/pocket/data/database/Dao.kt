@@ -8,7 +8,6 @@ import androidx.room.Query
 
 @Dao
 interface Dao {
-
     @Query("Select * from SavedUrlItems")
     fun getAllUrls(): LiveData<List<UrlEntity>>
 
@@ -17,7 +16,5 @@ interface Dao {
 
     @Insert
     suspend fun insertUrl(item: UrlEntity)
-
-
 
 }

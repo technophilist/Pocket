@@ -20,11 +20,11 @@ class Repository private constructor(context: Context) {
     val getUrls = mDao.getAllUrls()
 
     init {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            repeat(6) {
-//                mDao.insertUrl(UrlEntity("www.google.com", "test$it", null))
-//            }
-//        }
+        CoroutineScope(Dispatchers.IO).launch {
+            repeat(6) {
+                mDao.insertUrl(UrlEntity("www.google.com", "test$it", null))
+            }
+        }
     }
 
     fun saveUrl(url: String, thumbnail: Drawable?) {
@@ -75,6 +75,12 @@ class Repository private constructor(context: Context) {
                 exception.printStackTrace()
             }
             savedImagePath
+        }
+    }
+
+    fun insertUrl(urlItem: UrlEntity) {
+        CoroutineScope(Dispatchers.IO).launch {
+            mDao.insertUrl(urlItem)
         }
     }
 
