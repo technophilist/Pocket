@@ -23,46 +23,36 @@ class MainScreenFragment : Fragment() {
     private lateinit var mViewModel: MainScreenViewModel
     private lateinit var mAdapter: PocketAdapter
     private val TAG = "MainScreenFragment"
-
+    
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        //initializing binding and viewModel
         _mBinding = MainFragmentBinding.inflate(inflater)
         mViewModel = ViewModelProvider(
             this,
             MainScreenViewModelFactory(requireActivity().application)
         ).get(MainScreenViewModel::class.java)
 
-        //initializing recycler view adapter with onClick action
         mAdapter = PocketAdapter { openUrl(it) }
-
         mBinding.apply {
-            //init recycler view
             recyclerView.apply {
                 adapter = mAdapter
                 layoutManager = LinearLayoutManager(context)
                 doOnItemSwiped(RecyclerViewSwipeDirections.START) { viewHolder, _ ->
-//                    val position = viewHolder.adapterPosition
-//                    val deletedItem = mAdapter.removeItemAtPosition(position)
-//                    Snackbar.make(mBinding.root, "Item Deleted", Snackbar.LENGTH_LONG)
-//                        .setAction("Undo") { mAdapter.addItemAtPos(deletedItem, position) }
-//                        .show()
+                    mViewModel.deleteUrlItem(viewHolder.adapterPosition)
+                    Snackbar
+                        .make(requireView(), "Url Deleted", Snackbar.LENGTH_LONG)
+                        .setAction("UNDO") { mViewModel.undoDelete() }
+                        .show()
                 }
-
             }
-
-            //observing the main list of urls stored in the database
             mViewModel.savedUrls.observe(viewLifecycleOwner) { mAdapter.submitList(it) }
-
-            //Setting up the search view for filtering
             searchView.apply {
                 setOnClickListener { mBinding.searchView.isIconified = false }
                 doOnTextChanged { lifecycleScope.launch { mAdapter.submitList(mViewModel.filter(it)!!) } }
             }
-
         }
 
         /*
