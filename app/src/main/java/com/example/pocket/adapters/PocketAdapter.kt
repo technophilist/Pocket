@@ -52,7 +52,7 @@ class PocketAdapter(private val onClick: (position: Int) -> Unit) :
     }
 
     fun submitList(newList: List<UrlEntity>) {
-       mCurrentList = newList
+        mCurrentList = newList
         notifyDataSetChanged()
     }
 

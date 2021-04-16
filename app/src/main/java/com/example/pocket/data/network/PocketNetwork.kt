@@ -1,9 +1,11 @@
 package com.example.pocket.data.network
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 
+private const val TAG = "PocketNetwork"
 class PocketNetwork private constructor() {
     /**
      * Gets the content of the title tag of the [url]

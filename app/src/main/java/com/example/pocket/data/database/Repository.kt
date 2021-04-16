@@ -17,18 +17,10 @@ class Repository private constructor(context: Context) {
     private val mDao = mDatabase.getDao()
     private val mNetwork = PocketNetwork.getInstance()
     private val mFilesDirectory = context.filesDir
+    private val mCoroutineScope = CoroutineScope(Dispatchers.IO)
     val getUrls = mDao.getAllUrls()
 
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            repeat(6) {
-                mDao.insertUrl(UrlEntity("www.google.com", "test$it", null))
-            }
-        }
-    }
-
-    fun saveUrl(url: String, thumbnail: Drawable?) {
-        CoroutineScope(Dispatchers.IO).launch {
+    suspend fun saveUrl(url: String, thumbnail: Drawable?) {
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
             val imageUrlString = mNetwork.fetchImageUrl(url)
             val imageAbsolutePath = imageUrlString?.let {
@@ -36,11 +28,10 @@ class Repository private constructor(context: Context) {
                 thumbnail?.let { saveImageToInternalStorage(thumbnail, imageFileName) }
             }
             mDao.insertUrl(UrlEntity(url, urlContentTitle, imageAbsolutePath))
-        }
     }
 
     fun deleteUrl(id: Int) {
-        CoroutineScope(Dispatchers.IO).launch { mDao.deleteUrl(id) }
+       mCoroutineScope.launch { mDao.deleteUrl(id) }
     }
 
     /**
@@ -79,21 +70,18 @@ class Repository private constructor(context: Context) {
     }
 
     fun insertUrl(urlItem: UrlEntity) {
-        CoroutineScope(Dispatchers.IO).launch {
+        mCoroutineScope.launch {
             mDao.insertUrl(urlItem)
         }
     }
 
     companion object {
-        private const val TAG = "Repository"
         private var mInstance: Repository? = null
         fun getInstance(context: Context) = mInstance ?: synchronized(this) {
             mInstance = Repository(context)
             mInstance!!
         }
     }
-
-
 }
 
 
