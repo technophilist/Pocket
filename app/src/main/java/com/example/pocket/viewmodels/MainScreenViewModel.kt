@@ -34,7 +34,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
     suspend fun filter(searchString: String) = withContext(Dispatchers.Default) {
         savedUrls.value?.filter {
             it.contentTitle.contains(searchString, true)
-        }
+        } ?: listOf()
     }
 
 }

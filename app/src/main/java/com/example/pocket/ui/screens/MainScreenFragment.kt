@@ -22,8 +22,14 @@ class MainScreenFragment : Fragment() {
     private var _mBinding: MainFragmentBinding? = null
     private lateinit var mViewModel: MainScreenViewModel
     private lateinit var mAdapter: PocketAdapter
-    private val TAG = "MainScreenFragment"
-    
+
+    /*
+    Removed the insertion of fake urls intended for testing from repository
+    Changed MainScreenViewModel.filter() to return an empty list if the live data is null
+    Created a common coroutine scope for all coroutines in the PocketRepository
+    Removed coroutine from saveUrl() and made saveUrl as suspend function
+    Known Issues : Thumbnails not working
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,10 +54,13 @@ class MainScreenFragment : Fragment() {
                         .show()
                 }
             }
+
             mViewModel.savedUrls.observe(viewLifecycleOwner) { mAdapter.submitList(it) }
             searchView.apply {
                 setOnClickListener { mBinding.searchView.isIconified = false }
-                doOnTextChanged { lifecycleScope.launch { mAdapter.submitList(mViewModel.filter(it)!!) } }
+                doOnTextChanged {
+                    lifecycleScope.launchWhenStarted { mAdapter.submitList(mViewModel.filter(it)) }
+                }
             }
         }
 

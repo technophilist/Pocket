@@ -1,8 +1,10 @@
 package com.example.pocket
 
 import kotlinx.coroutines.*
+import org.jsoup.Jsoup
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.util.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -16,22 +18,18 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun couroutineTest() {
-        runBlocking {
-            val scope = CoroutineScope(Dispatchers.IO)
-            val job1 = scope.launch {
-                delay(1000 * 2)
-                println("first Coroutine")
-            }
-            job1.join()
+    fun imageFetchTest() {
+        val arr = Jsoup.connect("https://www.theverge.com/platform/amp/2021/4/15/22386533/ios-app-scam-jungle-runner-magical-forest-apple-kosta")
+            .get()
+            .allElements
 
-            scope.launch {
-                println("Second Coroutine")
-            }
-
-
-
+        for (e in arr){
+            println(e)
         }
+
+
+       assert(arr.size>0)
+
     }
 
 }
