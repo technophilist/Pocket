@@ -17,4 +17,7 @@ interface Dao {
     @Insert
     suspend fun insertUrl(item: UrlEntity)
 
+    @Query("select exists(select url from SavedUrlItems where url =:urlString )")
+    suspend fun checkIfUrlExists(urlString: String):Int
+
 }
