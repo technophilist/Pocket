@@ -11,6 +11,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URL
+
+private const val TAG = "Repository"
 
 class Repository private constructor(context: Context) {
     private val mDatabase = UrlDatabase.getInstance(context)
@@ -20,18 +23,15 @@ class Repository private constructor(context: Context) {
     private val mCoroutineScope = CoroutineScope(Dispatchers.IO)
     val getUrls = mDao.getAllUrls()
 
-    suspend fun saveUrl(url: String, thumbnail: Drawable?) {
-            val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
-            val imageUrlString = mNetwork.fetchImageUrl(url)
-            val imageAbsolutePath = imageUrlString?.let {
-                val imageFileName = imageUrlString.substring(imageUrlString.length - 5)
-                thumbnail?.let { saveImageToInternalStorage(thumbnail, imageFileName) }
-            }
-            mDao.insertUrl(UrlEntity(url, urlContentTitle, imageAbsolutePath))
+    suspend fun saveUrl(urlString: String, thumbnail: Drawable?) {
+        val url = URL(urlString)
+        val urlContentTitle = mNetwork.fetchWebsiteContentTitle(urlString)
+        val imageAbsolutePath = thumbnail?.let { saveImageToInternalStorage(thumbnail, url.host + urlContentTitle) }
+        mDao.insertUrl(UrlEntity(urlString, urlContentTitle, imageAbsolutePath))
     }
 
     fun deleteUrl(id: Int) {
-       mCoroutineScope.launch { mDao.deleteUrl(id) }
+        mCoroutineScope.launch { mDao.deleteUrl(id) }
     }
 
     /**

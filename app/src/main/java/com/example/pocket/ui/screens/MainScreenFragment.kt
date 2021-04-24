@@ -22,14 +22,6 @@ class MainScreenFragment : Fragment() {
     private var _mBinding: MainFragmentBinding? = null
     private lateinit var mViewModel: MainScreenViewModel
     private lateinit var mAdapter: PocketAdapter
-
-    /*
-    Removed the insertion of fake urls intended for testing from repository
-    Changed MainScreenViewModel.filter() to return an empty list if the live data is null
-    Created a common coroutine scope for all coroutines in the PocketRepository
-    Removed coroutine from saveUrl() and made saveUrl as suspend function
-    Known Issues : Thumbnails not working
-     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
