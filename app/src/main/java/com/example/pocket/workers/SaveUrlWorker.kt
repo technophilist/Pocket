@@ -2,7 +2,6 @@ package com.example.pocket.workers
 
 import android.content.Context
 import androidx.work.CoroutineWorker
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.pocket.data.database.Repository
 import com.example.pocket.ui.activities.HandleUrlActivity
@@ -20,7 +19,7 @@ class SaveUrlWorker(
         inputData.getString(HandleUrlActivity.EXTRA_URL)?.let {
             Repository
                 .getInstance(applicationContext)
-                .saveUrl(it,downloadImage(applicationContext,it))
+                .saveUrl(urlString = it,thumbnail = downloadImage(applicationContext,it))
             Result.success()
         } ?: Result.failure()
 }
