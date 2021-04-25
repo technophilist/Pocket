@@ -36,5 +36,4 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
             it.contentTitle.contains(searchString, true)
         } ?: listOf()
     }
-
 }
