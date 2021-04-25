@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.pocket.data.database.Repository
+import com.example.pocket.data.network.PocketNetwork
 import com.example.pocket.ui.activities.HandleUrlActivity
-import com.example.pocket.utils.downloadImage
 
 /**
  * This worker is triggered whenever the user saves the url
@@ -19,7 +19,10 @@ class SaveUrlWorker(
         inputData.getString(HandleUrlActivity.EXTRA_URL)?.let {
             Repository
                 .getInstance(applicationContext)
-                .saveUrl(urlString = it,thumbnail = downloadImage(applicationContext,it))
+                .saveUrl(
+                    urlString = it,
+                    thumbnail = PocketNetwork.getInstance().downloadImage(applicationContext, it)
+                )
             Result.success()
         } ?: Result.failure()
 }
