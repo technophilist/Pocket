@@ -2,7 +2,7 @@ package com.example.pocket.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-//https://material.io/design/color/the-color-system.html#tools-for-picking-colors
+
 
 //Light Colors
 val Pink100 = Color(0xFFFFF1F1)
