@@ -1,18 +1,97 @@
 package com.example.pocket.ui.activities
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.KeyEvent
-import com.example.pocket.R
-import com.example.pocket.databinding.ActivityMainBinding
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.ui.screens.UrlCard
+import com.example.pocket.ui.theme.PocketAppTheme
+import com.example.pocket.viewmodels.MainScreenViewModel
+import kotlin.math.roundToInt
+
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var mBinding:ActivityMainBinding
+    private lateinit var mViewModel: MainScreenViewModel
+
+    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(mBinding.root)
+        mViewModel = ViewModelProvider(this).get(MainScreenViewModel::class.java)
+        setContent {
+            PocketAppTheme {
+                HomeScreen(mViewModel)
+            }
+        }
+    }
+
+    @ExperimentalMaterialApi
+    @Composable
+    private fun HomeScreen(viewModel: MainScreenViewModel) {
+        val urlItems = viewModel.savedUrls.observeAsState()
+        var searchText by remember { mutableStateOf("") }
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .offset()
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                value = searchText,
+                onValueChange = { searchText = it },
+                label = { Text(text = "Search...") }
+            )
+            urlItems.value?.let {
+                UrlList(it)
+            }
+        }
+    }
+
+    @ExperimentalMaterialApi
+    @Composable
+    private fun UrlList(urlItems: List<UrlEntity>) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentPadding = PaddingValues(8.dp)
+        ) {
+            items(urlItems) { urlItem ->
+                UrlCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(bottom = 8.dp)
+                        .clickable { openUrl(urlItem.url) },
+                    urlItem = urlItem
+                )
+            }
+        }
+    }
+
+    private fun openUrl(urlString: String) {
+        val uri = Uri.parse(urlString)
+        val openLinkIntent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(openLinkIntent)
     }
 
 
 }
+

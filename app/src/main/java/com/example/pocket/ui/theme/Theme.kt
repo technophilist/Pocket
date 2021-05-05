@@ -30,7 +30,7 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun ComposePlaygroundTheme(
+fun PocketAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
@@ -38,6 +38,5 @@ fun ComposePlaygroundTheme(
     MaterialTheme(
         colors = colors,
         typography = Typography,
-        shapes = Shapes,
     ) { content()  }
 }
