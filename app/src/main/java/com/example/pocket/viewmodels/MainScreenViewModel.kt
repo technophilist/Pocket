@@ -1,11 +1,12 @@
 package com.example.pocket.viewmodels
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.pocket.data.database.Repository
 import com.example.pocket.data.database.UrlEntity
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainScreenViewModel(application: Application) : AndroidViewModel(application) {
@@ -30,13 +31,10 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-
     suspend fun filter(searchString: String) {
-       val filteredList =  withContext(Dispatchers.Default) {
-            savedUrls.value?.filter {
-                it.contentTitle.contains(searchString, true)
-            } ?: listOf()
+        val filteredList = withContext(Dispatchers.Default) {
+            savedUrls.value?.filter { it.contentTitle.contains(searchString, true) }
         }
-        _filteredUrlList.value = filteredList
+        filteredList?.let { _filteredUrlList.value = it }
     }
 }
