@@ -3,7 +3,6 @@ package com.example.pocket.ui.activities
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
@@ -20,10 +19,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
@@ -48,17 +49,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     @Composable
     private fun HomeScreen(viewModel: MainScreenViewModel) {
         val urlItems by viewModel.savedUrls.observeAsState()
         val filteredList by viewModel.filteredList.observeAsState()
         val focusManager = LocalFocusManager.current
+        val focusRequester = FocusRequester()
+        var isSearchIconVisible by remember {
+            mutableStateOf(true)
+        }
         var searchText by remember { mutableStateOf("") }
 
         Column(modifier = Modifier.fillMaxSize()) {
             OutlinedTextField(
                 modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { if (it == FocusState.Active) isSearchIconVisible = false }
                     .offset()
                     .fillMaxWidth()
                     .padding(8.dp),
@@ -70,13 +76,17 @@ class MainActivity : AppCompatActivity() {
                     }
                 },
                 label = { Text(text = "Search...") },
-                leadingIcon = { Icon(Icons.Filled.Search, "Search Icon") },
+                leadingIcon = {
+                    if(isSearchIconVisible){
+                        Icon(Icons.Filled.Search, "Search Icon")
+                    }
+                },
                 trailingIcon = {
                     Icon(
                         modifier = Modifier.clickable {
                             searchText = ""
+                            isSearchIconVisible = true
                             focusManager.clearFocus()
-
                         },
                         imageVector = Icons.Filled.Close,
                         contentDescription = "Close Icon"
