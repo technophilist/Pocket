@@ -5,11 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,16 +13,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.ui.screens.UrlCard
 import com.example.pocket.ui.theme.PocketAppTheme
 import com.example.pocket.viewmodels.MainScreenViewModel
-import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
@@ -60,14 +52,17 @@ class MainActivity : AppCompatActivity() {
                 label = { Text(text = "Search...") }
             )
             urlItems.value?.let {
-                UrlList(it)
+                UrlList(
+                    urlItems = it,
+                    onClickItem = { clickedItem -> openUrl(clickedItem.url) }
+                )
             }
         }
     }
 
     @ExperimentalMaterialApi
     @Composable
-    private fun UrlList(urlItems: List<UrlEntity>) {
+    private fun UrlList(urlItems: List<UrlEntity>, onClickItem: (UrlEntity) -> Unit) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
@@ -79,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                         .fillMaxWidth()
                         .height(200.dp)
                         .padding(bottom = 8.dp)
-                        .clickable { openUrl(urlItem.url) },
+                        .clickable { onClickItem(urlItem) },
                     urlItem = urlItem
                 )
             }
