@@ -10,6 +10,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -18,12 +20,11 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -36,6 +37,7 @@ import com.example.pocket.viewmodels.MainScreenViewModel
 class MainActivity : AppCompatActivity() {
     private lateinit var mViewModel: MainScreenViewModel
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel = ViewModelProvider(this).get(MainScreenViewModel::class.java)
@@ -45,6 +47,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     @Composable
     private fun HomeScreen(viewModel: MainScreenViewModel) {
@@ -79,8 +82,10 @@ class MainActivity : AppCompatActivity() {
                         contentDescription = "Close Icon"
                     )
                 },
-                singleLine = true
-                )
+                singleLine = true,
+                keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
+            )
             UrlList(
                 urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
                 onClickItem = { openUrl(it.url) }
