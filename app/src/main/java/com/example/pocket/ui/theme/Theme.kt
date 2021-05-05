@@ -35,8 +35,5 @@ fun PocketAppTheme(
     content: @Composable () -> Unit
 ) {
     val colors = if (darkTheme) DarkColorPalette else LightColorPalette
-    MaterialTheme(
-        colors = colors,
-        typography = Typography,
-    ) { content()  }
+    MaterialTheme(typography = Typography) { content()  }
 }

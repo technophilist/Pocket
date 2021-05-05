@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -31,7 +30,6 @@ import com.example.pocket.viewmodels.MainScreenViewModel
 class MainActivity : AppCompatActivity() {
     private lateinit var mViewModel: MainScreenViewModel
 
-    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel = ViewModelProvider(this).get(MainScreenViewModel::class.java)
@@ -42,14 +40,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @ExperimentalMaterialApi
     @Composable
     private fun HomeScreen(viewModel: MainScreenViewModel) {
+        //TODO fix search box not responding after first open and close
         val urlItems by viewModel.savedUrls.observeAsState()
         val filteredList by viewModel.filteredList.observeAsState()
         var searchText by remember { mutableStateOf("") }
         var isSearchTextBoxEnabled by remember { mutableStateOf(true) }
-
 
         Column(modifier = Modifier.fillMaxSize()) {
             OutlinedTextField(
@@ -79,16 +76,15 @@ class MainActivity : AppCompatActivity() {
                     )
                 },
                 enabled = isSearchTextBoxEnabled,
+                singleLine = true
             )
             UrlList(
-                urlItems = if (searchText.isBlank()) urlItems ?: listOf()
-                else filteredList ?: listOf(),
-                onClickItem = { clickedItem -> openUrl(clickedItem.url) }
+                urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
+                onClickItem = { openUrl(it.url) }
             )
         }
     }
 
-    @ExperimentalMaterialApi
     @Composable
     private fun UrlList(urlItems: List<UrlEntity>, onClickItem: (UrlEntity) -> Unit) {
         LazyColumn(
