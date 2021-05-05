@@ -51,7 +51,7 @@ class MainScreenFragment : Fragment() {
             searchView.apply {
                 setOnClickListener { mBinding.searchView.isIconified = false }
                 doOnTextChanged {
-                    lifecycleScope.launchWhenStarted { mAdapter.submitList(mViewModel.filter(it)) }
+//                    lifecycleScope.launchWhenStarted { mAdapter.submitList(mViewModel.filter(it)) }
                 }
             }
         }

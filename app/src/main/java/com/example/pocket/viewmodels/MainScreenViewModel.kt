@@ -1,10 +1,7 @@
 package com.example.pocket.viewmodels
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.pocket.data.database.Repository
 import com.example.pocket.data.database.UrlEntity
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +11,8 @@ import kotlinx.coroutines.withContext
 class MainScreenViewModel(application: Application) : AndroidViewModel(application) {
     private val mRepository = Repository.getInstance(application)
     private var mRecentlyDeletedItem: UrlEntity? = null
+    private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())
+    val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
     val savedUrls = mRepository.getUrls
 
     fun getUrlAtPos(pos: Int) = savedUrls.value!![pos].host
@@ -31,9 +30,13 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    suspend fun filter(searchString: String) = withContext(Dispatchers.Default) {
-        savedUrls.value?.filter {
-            it.contentTitle.contains(searchString, true)
-        } ?: listOf()
+
+    suspend fun filter(searchString: String) {
+       val filteredList =  withContext(Dispatchers.Default) {
+            savedUrls.value?.filter {
+                it.contentTitle.contains(searchString, true)
+            } ?: listOf()
+        }
+        _filteredUrlList.value = filteredList
     }
 }
