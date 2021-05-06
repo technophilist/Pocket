@@ -1,13 +1,13 @@
 package com.example.pocket.ui.screens
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -19,12 +19,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.viewmodels.HomeScreenViewModel
+import java.io.File
+import java.io.FileInputStream
 
 
 @Composable
@@ -104,3 +107,32 @@ private fun UrlList(urlItems: List<UrlEntity>, onClickItem: (UrlEntity) -> Unit)
         }
     }
 }
+
+@Composable
+fun UrlCard(modifier: Modifier = Modifier,urlItem:UrlEntity){
+    Card(modifier = modifier) {
+        Row(modifier = Modifier.fillMaxWidth()){
+            Column(modifier = Modifier.fillMaxWidth(0.7f)) {
+                Text(
+                    modifier=Modifier.padding(8.dp),
+                    text = urlItem.contentTitle,
+                    style = MaterialTheme.typography.h1
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = urlItem.host,
+                    style = MaterialTheme.typography.caption
+                )
+            }
+            urlItem.imageAbsolutePath?.let{
+                val bitmap = BitmapFactory.decodeStream(FileInputStream(File(it)))
+                Image(
+                    modifier=Modifier.fillMaxSize(),
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "Thumbnail"
+                )
+            }
+        }
+    }
+}
+
