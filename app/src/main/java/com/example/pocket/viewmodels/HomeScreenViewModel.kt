@@ -41,6 +41,6 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         val filteredList = withContext(Dispatchers.Default) {
             savedUrls.value?.filter { it.contentTitle.contains(searchString, true) }
         }
-        filteredList?.let { _filteredUrlList.value = it }
+        filteredList?.let { _filteredUrlList.postValue(it)  }
     }
 }
