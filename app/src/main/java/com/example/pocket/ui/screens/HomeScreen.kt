@@ -20,12 +20,16 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.viewmodels.HomeScreenViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 
@@ -48,7 +52,7 @@ fun HomeScreen(
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .onFocusChanged {
-                    if (it == FocusState.Active){
+                    if (it == FocusState.Active) {
                         isSearchIconVisible = false
                         isCloseIconVisible = true
                     }
@@ -79,7 +83,7 @@ fun HomeScreen(
             },
             singleLine = true,
             keyboardActions = KeyboardActions(onSearch = {
-                if(searchText.isBlank()){
+                if (searchText.isBlank()) {
                     isSearchIconVisible = true
                     isCloseIconVisible = false
                 }
@@ -116,6 +120,9 @@ private fun UrlList(urlItems: List<UrlEntity>, onClickItem: (UrlEntity) -> Unit)
 
 @Composable
 fun UrlCard(modifier: Modifier = Modifier, urlItem: UrlEntity) {
+    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+
     Card(modifier = modifier) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth(0.7f)) {
@@ -131,10 +138,19 @@ fun UrlCard(modifier: Modifier = Modifier, urlItem: UrlEntity) {
                 )
             }
             urlItem.imageAbsolutePath?.let {
-                val bitmap = BitmapFactory.decodeStream(FileInputStream(File(it)))
+                coroutineScope.launch {
+                    val bitmap = withContext(Dispatchers.IO) {
+                        File(urlItem.imageAbsolutePath)
+                            .inputStream()
+                            .use { BitmapFactory.decodeStream(it) }
+                    }
+                    imageBitmap = bitmap.asImageBitmap()
+                }
+            }
+            imageBitmap?.let {
                 Image(
                     modifier = Modifier.fillMaxSize(),
-                    bitmap = bitmap.asImageBitmap(),
+                    bitmap = it,
                     contentDescription = "Thumbnail",
                 )
             }
