@@ -34,7 +34,6 @@ import java.io.FileInputStream
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
-    lifecycleCoroutineScope: LifecycleCoroutineScope,
     onClickUrlItem: (UrlEntity) -> Unit
 ) {
     val urlItems by viewModel.savedUrls.observeAsState()
