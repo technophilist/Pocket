@@ -9,7 +9,7 @@ import com.example.pocket.data.database.UrlEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class MainScreenViewModel(application: Application) : AndroidViewModel(application) {
+class HomeScreenViewModel(application: Application) : AndroidViewModel(application) {
     private val mRepository = Repository.getInstance(application)
     private var mRecentlyDeletedItem: UrlEntity? = null
     private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())

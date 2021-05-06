@@ -23,12 +23,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.example.pocket.data.database.UrlEntity
-import com.example.pocket.viewmodels.MainScreenViewModel
+import com.example.pocket.viewmodels.HomeScreenViewModel
 
 
 @Composable
 fun HomeScreen(
-    viewModel: MainScreenViewModel,
+    viewModel: HomeScreenViewModel,
     lifecycleCoroutineScope: LifecycleCoroutineScope,
     onClickUrlItem:(UrlEntity)->Unit
 ) {
