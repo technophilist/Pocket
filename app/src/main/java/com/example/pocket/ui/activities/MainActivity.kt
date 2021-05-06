@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
             PocketAppTheme {
                 HomeScreen(
                     viewModel = mViewModel,
-                    lifecycleCoroutineScope = lifecycleScope,
                     onClickUrlItem = { openUrl(it.url) }
                 )
             }
