@@ -9,15 +9,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.pocket.ui.screens.HomeScreen
 import com.example.pocket.ui.theme.PocketAppTheme
-import com.example.pocket.viewmodels.MainScreenViewModel
+import com.example.pocket.viewmodels.HomeScreenViewModel
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var mViewModel: MainScreenViewModel
+    private lateinit var mViewModel: HomeScreenViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mViewModel = ViewModelProvider(this).get(MainScreenViewModel::class.java)
+        mViewModel = ViewModelProvider(this).get(HomeScreenViewModel::class.java)
         setContent {
             PocketAppTheme {
                 HomeScreen(
