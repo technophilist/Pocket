@@ -1,4 +1,5 @@
 package com.example.pocket.ui.screens
+
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -34,15 +35,13 @@ import java.io.FileInputStream
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
     lifecycleCoroutineScope: LifecycleCoroutineScope,
-    onClickUrlItem:(UrlEntity)->Unit
+    onClickUrlItem: (UrlEntity) -> Unit
 ) {
     val urlItems by viewModel.savedUrls.observeAsState()
     val filteredList by viewModel.filteredList.observeAsState()
     val focusManager = LocalFocusManager.current
     val focusRequester = FocusRequester()
-    var isSearchIconVisible by remember {
-        mutableStateOf(true)
-    }
+    var isSearchIconVisible by remember { mutableStateOf(true) }
     var searchText by rememberSaveable { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -56,13 +55,11 @@ fun HomeScreen(
             value = searchText,
             onValueChange = {
                 searchText = it
-                lifecycleCoroutineScope.launchWhenStarted {
-                    viewModel.filter(it)
-                }
+                viewModel.onSearchTextValueChange(it)
             },
             label = { Text(text = "Search...") },
             leadingIcon = {
-                if(isSearchIconVisible){
+                if (isSearchIconVisible) {
                     Icon(Icons.Filled.Search, "Search Icon")
                 }
             },
@@ -109,12 +106,12 @@ private fun UrlList(urlItems: List<UrlEntity>, onClickItem: (UrlEntity) -> Unit)
 }
 
 @Composable
-fun UrlCard(modifier: Modifier = Modifier,urlItem:UrlEntity){
+fun UrlCard(modifier: Modifier = Modifier, urlItem: UrlEntity) {
     Card(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth()){
+        Row(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                 Text(
-                    modifier=Modifier.padding(8.dp),
+                    modifier = Modifier.padding(8.dp),
                     text = urlItem.contentTitle,
                     style = MaterialTheme.typography.h1
                 )
@@ -124,10 +121,10 @@ fun UrlCard(modifier: Modifier = Modifier,urlItem:UrlEntity){
                     style = MaterialTheme.typography.caption
                 )
             }
-            urlItem.imageAbsolutePath?.let{
+            urlItem.imageAbsolutePath?.let {
                 val bitmap = BitmapFactory.decodeStream(FileInputStream(File(it)))
                 Image(
-                    modifier=Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     bitmap = bitmap.asImageBitmap(),
                     contentDescription = "Thumbnail"
                 )

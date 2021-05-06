@@ -4,9 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.pocket.data.database.Repository
 import com.example.pocket.data.database.UrlEntity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class HomeScreenViewModel(application: Application) : AndroidViewModel(application) {
@@ -15,8 +17,6 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
     private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())
     val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
     val savedUrls = mRepository.getUrls
-
-    fun getUrlAtPos(pos: Int) = savedUrls.value!![pos].host
 
     fun deleteUrlItem(pos: Int) {
         savedUrls.value?.let {
@@ -31,7 +31,13 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    suspend fun filter(searchString: String) {
+    fun onSearchTextValueChange(searchText:String){
+        viewModelScope.launch(Dispatchers.Default) {
+            filter(searchText)
+        }
+    }
+
+    private suspend fun filter(searchString: String) {
         val filteredList = withContext(Dispatchers.Default) {
             savedUrls.value?.filter { it.contentTitle.contains(searchString, true) }
         }
