@@ -21,11 +21,9 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LifecycleCoroutineScope
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import java.io.File
@@ -42,13 +40,19 @@ fun HomeScreen(
     val focusManager = LocalFocusManager.current
     val focusRequester = FocusRequester()
     var isSearchIconVisible by remember { mutableStateOf(true) }
+    var isCloseIconVisible by remember { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
             modifier = Modifier
                 .focusRequester(focusRequester)
-                .onFocusChanged { if (it == FocusState.Active) isSearchIconVisible = false }
+                .onFocusChanged {
+                    if (it == FocusState.Active){
+                        isSearchIconVisible = false
+                        isCloseIconVisible = true
+                    }
+                }
                 .offset()
                 .fillMaxWidth()
                 .padding(8.dp),
@@ -58,24 +62,29 @@ fun HomeScreen(
                 viewModel.onSearchTextValueChange(it)
             },
             label = { Text(text = "Search...") },
-            leadingIcon = {
-                if (isSearchIconVisible) {
-                    Icon(Icons.Filled.Search, "Search Icon")
+            leadingIcon = { if (isSearchIconVisible) Icon(Icons.Filled.Search, "Search Icon") },
+            trailingIcon = {
+                if (isCloseIconVisible) {
+                    Icon(
+                        modifier = Modifier.clickable {
+                            searchText = ""
+                            isSearchIconVisible = true
+                            isCloseIconVisible = false
+                            focusManager.clearFocus()
+                        },
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = "Close Icon"
+                    )
                 }
             },
-            trailingIcon = {
-                Icon(
-                    modifier = Modifier.clickable {
-                        searchText = ""
-                        isSearchIconVisible = true
-                        focusManager.clearFocus()
-                    },
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "Close Icon"
-                )
-            },
             singleLine = true,
-            keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+            keyboardActions = KeyboardActions(onSearch = {
+                if(searchText.isBlank()){
+                    isSearchIconVisible = true
+                    isCloseIconVisible = false
+                }
+                focusManager.clearFocus()
+            }),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
         )
         UrlList(
