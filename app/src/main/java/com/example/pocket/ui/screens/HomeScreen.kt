@@ -21,6 +21,7 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -125,7 +126,7 @@ fun UrlCard(modifier: Modifier = Modifier, urlItem: UrlEntity) {
                 Image(
                     modifier = Modifier.fillMaxSize(),
                     bitmap = bitmap.asImageBitmap(),
-                    contentDescription = "Thumbnail"
+                    contentDescription = "Thumbnail",
                 )
             }
         }
