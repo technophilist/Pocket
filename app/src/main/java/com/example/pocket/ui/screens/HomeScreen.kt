@@ -135,7 +135,11 @@ fun UrlCard(
     val coroutineScope = rememberCoroutineScope()
     val dismissState = rememberDismissState()
 
-    SwipeToDismiss(state = dismissState, background = { /*TODO*/ }) {
+    SwipeToDismiss(
+        state = dismissState,
+        background = { /*TODO*/ },
+        directions = setOf(DismissDirection.StartToEnd)
+    ) {
         Card(modifier = modifier) {
             Row(
                 modifier = Modifier
