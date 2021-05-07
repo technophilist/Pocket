@@ -1,6 +1,8 @@
 package com.example.pocket.viewmodels
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +12,7 @@ import com.example.pocket.data.database.UrlEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class HomeScreenViewModel(application: Application) : AndroidViewModel(application) {
     private val mRepository = Repository.getInstance(application)
@@ -31,7 +34,7 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun onSearchTextValueChange(searchText:String){
+    fun onSearchTextValueChange(searchText: String) {
         viewModelScope.launch(Dispatchers.Default) {
             filter(searchText)
         }
@@ -41,6 +44,17 @@ class HomeScreenViewModel(application: Application) : AndroidViewModel(applicati
         val filteredList = withContext(Dispatchers.Default) {
             savedUrls.value?.filter { it.contentTitle.contains(searchString, true) }
         }
-        filteredList?.let { _filteredUrlList.postValue(it)  }
+        filteredList?.let { _filteredUrlList.postValue(it) }
     }
+
+    suspend fun getBitmap(imageAbsolutePathString: String):Bitmap =
+        withContext(Dispatchers.IO) {
+            File(imageAbsolutePathString)
+                .inputStream()
+                .use { BitmapFactory.decodeStream(it) }
+        }
+
 }
+
+
+

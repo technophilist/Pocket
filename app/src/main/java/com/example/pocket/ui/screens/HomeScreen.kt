@@ -1,6 +1,5 @@
 package com.example.pocket.ui.screens
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,8 +31,8 @@ import com.example.pocket.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
+@ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel,
@@ -92,14 +91,22 @@ fun HomeScreen(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
         )
         UrlList(
+            imageBitmap = {
+                withContext(Dispatchers.IO) { viewModel.getBitmap(it).asImageBitmap() }
+            },
             urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
             onClickItem = onClickUrlItem
         )
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
-private fun UrlList(urlItems: List<UrlEntity>, onClickItem: (UrlEntity) -> Unit) {
+private fun UrlList(
+    imageBitmap: suspend (String) -> ImageBitmap,
+    urlItems: List<UrlEntity>,
+    onClickItem: (UrlEntity) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -107,6 +114,7 @@ private fun UrlList(urlItems: List<UrlEntity>, onClickItem: (UrlEntity) -> Unit)
     ) {
         items(urlItems) { urlItem ->
             UrlCard(
+                imageBitmap = imageBitmap,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
@@ -118,51 +126,50 @@ private fun UrlList(urlItems: List<UrlEntity>, onClickItem: (UrlEntity) -> Unit)
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun UrlCard(
     modifier: Modifier = Modifier,
+    imageBitmap: suspend (String) -> ImageBitmap,
     urlItem: UrlEntity,
     color: Color = MaterialTheme.colors.surface
 ) {
-    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
     val coroutineScope = rememberCoroutineScope()
+    val dismissState = rememberDismissState()
 
-    Card(modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color)
-        ) {
-            Column(modifier = Modifier.fillMaxWidth(0.7f)) {
-                Text(
-                    modifier = Modifier.padding(8.dp),
-                    text = urlItem.contentTitle,
-                    style = MaterialTheme.typography.h1
-                )
-                Text(
-                    modifier = Modifier.padding(start = 8.dp),
-                    text = urlItem.host,
-                    style = MaterialTheme.typography.caption
-                )
-            }
-            urlItem.imageAbsolutePath?.let {
-                coroutineScope.launch {
-                    val bitmap = withContext(Dispatchers.IO) {
-                        File(urlItem.imageAbsolutePath)
-                            .inputStream()
-                            .use { BitmapFactory.decodeStream(it) }
-                    }
-                    imageBitmap = bitmap.asImageBitmap()
+    SwipeToDismiss(state = dismissState, background = { /*TODO*/ }) {
+        Card(modifier = modifier) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color)
+            ) {
+                Column(modifier = Modifier.fillMaxWidth(0.7f)) {
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = urlItem.contentTitle,
+                        style = MaterialTheme.typography.h1
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        text = urlItem.host,
+                        style = MaterialTheme.typography.caption
+                    )
                 }
-            }
-            imageBitmap?.let {
-                Image(
-                    modifier = Modifier.fillMaxSize(),
-                    bitmap = it,
-                    contentDescription = "Thumbnail",
-                )
+                urlItem.imageAbsolutePath?.let {
+                    coroutineScope.launch { imageBitmapState = imageBitmap(it) }
+                }
+                imageBitmapState?.let {
+                    Image(
+                        modifier = Modifier.fillMaxSize(),
+                        bitmap = it,
+                        contentDescription = "Thumbnail",
+                    )
+                }
             }
         }
     }
 }
+
 
