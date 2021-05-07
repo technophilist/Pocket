@@ -107,18 +107,15 @@ private fun UrlList(
     urlItems: List<UrlEntity>,
     onClickItem: (UrlEntity) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentPadding = PaddingValues(8.dp)
-    ) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(urlItems) { urlItem ->
             UrlCard(
                 imageBitmap = imageBitmap,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding()
                     .height(200.dp)
-                    .padding(bottom = 8.dp)
+                    .padding(start = 8.dp,end=8.dp,bottom = 8.dp)
                     .clickable { onClickItem(urlItem) },
                 urlItem = urlItem,
             )
