@@ -79,7 +79,7 @@ class Repository private constructor(context: Context) {
                 imageFile.createNewFile()
 
                 //writing the image to the file using FileOutputStream
-                FileOutputStream(imageFile).use {
+                imageFile.outputStream().use {
                     bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, it)
                     savedImagePath = imageFile.absolutePath
                 }
