@@ -2,6 +2,7 @@ package com.example.pocket.ui.screens
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,6 +21,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
@@ -31,8 +33,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileInputStream
-
 
 @Composable
 fun HomeScreen(
@@ -112,19 +112,27 @@ private fun UrlList(urlItems: List<UrlEntity>, onClickItem: (UrlEntity) -> Unit)
                     .height(200.dp)
                     .padding(bottom = 8.dp)
                     .clickable { onClickItem(urlItem) },
-                urlItem = urlItem
+                urlItem = urlItem,
             )
         }
     }
 }
 
 @Composable
-fun UrlCard(modifier: Modifier = Modifier, urlItem: UrlEntity) {
+fun UrlCard(
+    modifier: Modifier = Modifier,
+    urlItem: UrlEntity,
+    color: Color = MaterialTheme.colors.surface
+) {
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
     Card(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color)
+        ) {
             Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                 Text(
                     modifier = Modifier.padding(8.dp),
