@@ -7,10 +7,11 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.example.pocket.ui.screens.HomeScreen
 import com.example.pocket.ui.theme.PocketAppTheme
 import com.example.pocket.viewmodels.HomeScreenViewModel
+import com.example.pocket.viewmodels.HomeScreenViewModelImpl
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mViewModel = ViewModelProvider(this).get(HomeScreenViewModel::class.java)
+        mViewModel = ViewModelProvider(this).get(HomeScreenViewModelImpl::class.java)
         setContent {
             PocketAppTheme {
                 HomeScreen(
