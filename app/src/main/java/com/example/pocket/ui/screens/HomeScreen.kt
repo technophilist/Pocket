@@ -114,7 +114,14 @@ private fun UrlList(
     onItemSwiped: (UrlEntity) -> Unit = {},
     onFetchImageBitmap: suspend (String) -> ImageBitmap,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            vertical = 8.dp,
+            horizontal = 8.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         items(
             items = urlItems,
             key = { it.id }
@@ -122,13 +129,11 @@ private fun UrlList(
             UrlCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding()
                     .height(200.dp)
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                     .clickable { onClickItem(urlItem) },
                 onFetchImageBitmap = onFetchImageBitmap,
                 onCardSwiped = onItemSwiped,
-                urlItem = urlItem,
+                urlItem = urlItem
             )
         }
     }
