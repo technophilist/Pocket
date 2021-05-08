@@ -28,9 +28,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.viewmodels.HomeScreenViewModel
+import com.example.pocket.viewmodels.HomeScreenViewModelImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private const val TAG = "HomeScreen"
 
 @ExperimentalMaterialApi
 @Composable
@@ -91,11 +94,14 @@ fun HomeScreen(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
         )
         UrlList(
-            imageBitmap = {
-                withContext(Dispatchers.IO) { viewModel.getBitmap(it).asImageBitmap() }
+            onFetchImageBitmap = {
+                withContext(Dispatchers.IO) {
+                    viewModel.getBitmap(it).asImageBitmap()
+                }
             },
             urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
-            onClickItem = onClickUrlItem
+            onClickItem = onClickUrlItem,
+            onItemSwiped = viewModel::deleteUrlItem
         )
     }
 }
@@ -103,20 +109,25 @@ fun HomeScreen(
 @ExperimentalMaterialApi
 @Composable
 private fun UrlList(
-    imageBitmap: suspend (String) -> ImageBitmap,
     urlItems: List<UrlEntity>,
-    onClickItem: (UrlEntity) -> Unit
+    onClickItem: (UrlEntity) -> Unit,
+    onItemSwiped: (UrlEntity) -> Unit = {},
+    onFetchImageBitmap: suspend (String) -> ImageBitmap,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(urlItems) { urlItem ->
+        items(
+            items = urlItems,
+            key = { it.id }
+        ) { urlItem ->
             UrlCard(
-                imageBitmap = imageBitmap,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding()
                     .height(200.dp)
-                    .padding(start = 8.dp,end=8.dp,bottom = 8.dp)
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                     .clickable { onClickItem(urlItem) },
+                onFetchImageBitmap = onFetchImageBitmap,
+                onCardSwiped = onItemSwiped,
                 urlItem = urlItem,
             )
         }
@@ -127,17 +138,23 @@ private fun UrlList(
 @Composable
 fun UrlCard(
     modifier: Modifier = Modifier,
-    imageBitmap: suspend (String) -> ImageBitmap,
+    onFetchImageBitmap: suspend (String) -> ImageBitmap,
+    onCardSwiped: (UrlEntity) -> Unit = {},
     urlItem: UrlEntity,
     color: Color = MaterialTheme.colors.surface
 ) {
     var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
+    val dismissState = rememberDismissState {
+        if(it == DismissValue.DismissedToEnd){
+            onCardSwiped(urlItem)
+            true
+        }else false
+    }
     val coroutineScope = rememberCoroutineScope()
-    val dismissState = rememberDismissState()
 
     SwipeToDismiss(
         state = dismissState,
-        background = { /*TODO*/ },
+        background = {},
         directions = setOf(DismissDirection.StartToEnd)
     ) {
         Card(modifier = modifier) {
@@ -159,7 +176,7 @@ fun UrlCard(
                     )
                 }
                 urlItem.imageAbsolutePath?.let {
-                    coroutineScope.launch { imageBitmapState = imageBitmap(it) }
+                    coroutineScope.launch { imageBitmapState = onFetchImageBitmap(it) }
                 }
                 imageBitmapState?.let {
                     Image(
