@@ -37,15 +37,14 @@ class HomeScreenViewModelImpl(application: Application) : AndroidViewModel(appli
     override fun deleteUrlItem(urlItem:UrlEntity) {
         savedUrls.value?.let {
             //TODO REMOVE THE THUMBNAIL IMAGE FROM INTERNAL STORAGE WHEN DELETING
-//            mRecentlyDeletedItem = it[pos]
+            val indexOfDeletedItem = it.indexOf(urlItem)
+            mRecentlyDeletedItem = it[indexOfDeletedItem]
             mRepository.deleteUrl(urlItem.id)
         }
     }
 
     override fun undoDelete() {
-        mRecentlyDeletedItem?.let {
-            mRepository.insertUrl(it)
-        }
+        mRecentlyDeletedItem?.let { mRepository.insertUrl(it) }
     }
 
     override fun onSearchTextValueChange(searchText: String) {
