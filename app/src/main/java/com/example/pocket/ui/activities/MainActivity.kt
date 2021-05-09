@@ -13,7 +13,6 @@ import com.example.pocket.viewmodels.HomeScreenViewModel
 import com.example.pocket.viewmodels.HomeScreenViewModelImpl
 
 
-
 class MainActivity : AppCompatActivity() {
     private lateinit var mViewModel: HomeScreenViewModel
 
@@ -23,10 +22,7 @@ class MainActivity : AppCompatActivity() {
         mViewModel = ViewModelProvider(this).get(HomeScreenViewModelImpl::class.java)
         setContent {
             PocketAppTheme {
-                HomeScreen(
-                    viewModel = mViewModel,
-                    onClickUrlItem = { openUrl(it.url) }
-                )
+                HomeScreen(viewModel = mViewModel, onClickUrlItem = { openUrl(it.url) })
             }
         }
     }

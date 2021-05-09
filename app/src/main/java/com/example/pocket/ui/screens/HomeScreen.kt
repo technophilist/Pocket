@@ -1,5 +1,6 @@
 package com.example.pocket.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
@@ -28,8 +30,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.viewmodels.HomeScreenViewModel
-import com.example.pocket.viewmodels.HomeScreenViewModelImpl
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -41,67 +43,84 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel,
     onClickUrlItem: (UrlEntity) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val snackBarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val focusRequester = FocusRequester()
+
     val urlItems by viewModel.savedUrls.observeAsState()
     val filteredList by viewModel.filteredList.observeAsState()
-    val focusManager = LocalFocusManager.current
-    val focusRequester = FocusRequester()
     var isSearchIconVisible by remember { mutableStateOf(true) }
     var isCloseIconVisible by remember { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        OutlinedTextField(
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .onFocusChanged {
-                    if (it == FocusState.Active) {
-                        isSearchIconVisible = false
-                        isCloseIconVisible = true
+    Box(modifier = Modifier.fillMaxSize()){
+        Column(modifier = Modifier.fillMaxSize()) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .onFocusChanged {
+                        if (it == FocusState.Active) {
+                            isSearchIconVisible = false
+                            isCloseIconVisible = true
+                        }
+                    }
+                    .offset()
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                value = searchText,
+                onValueChange = {
+                    searchText = it
+                    viewModel.onSearchTextValueChange(it)
+                },
+                label = { Text(text = "Search...") },
+                leadingIcon = { if (isSearchIconVisible) Icon(Icons.Filled.Search, "Search Icon") },
+                trailingIcon = {
+                    if (isCloseIconVisible) {
+                        Icon(
+                            modifier = Modifier.clickable {
+                                searchText = ""
+                                isSearchIconVisible = true
+                                isCloseIconVisible = false
+                                focusManager.clearFocus()
+                            },
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = "Close Icon"
+                        )
+                    }
+                },
+                singleLine = true,
+                keyboardActions = KeyboardActions(onSearch = {
+                    if (searchText.isBlank()) {
+                        isSearchIconVisible = true
+                        isCloseIconVisible = false
+                    }
+                    focusManager.clearFocus()
+                }),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
+            )
+            UrlList(
+                onFetchImageBitmap = { withContext(Dispatchers.IO) { viewModel.getBitmap(it).asImageBitmap() } },
+                urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
+                onClickItem = onClickUrlItem,
+                onItemSwiped = {
+                    viewModel.deleteUrlItem(it)
+                    coroutineScope.launch {
+                        val snackBarResult = snackBarHostState.showSnackbar(
+                            "This is a snackBar",
+                            "Undo",
+
+                        )
+                        if (snackBarResult == SnackbarResult.ActionPerformed){
+                            viewModel.undoDelete()
+                        }
                     }
                 }
-                .offset()
-                .fillMaxWidth()
-                .padding(8.dp),
-            value = searchText,
-            onValueChange = {
-                searchText = it
-                viewModel.onSearchTextValueChange(it)
-            },
-            label = { Text(text = "Search...") },
-            leadingIcon = { if (isSearchIconVisible) Icon(Icons.Filled.Search, "Search Icon") },
-            trailingIcon = {
-                if (isCloseIconVisible) {
-                    Icon(
-                        modifier = Modifier.clickable {
-                            searchText = ""
-                            isSearchIconVisible = true
-                            isCloseIconVisible = false
-                            focusManager.clearFocus()
-                        },
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Close Icon"
-                    )
-                }
-            },
-            singleLine = true,
-            keyboardActions = KeyboardActions(onSearch = {
-                if (searchText.isBlank()) {
-                    isSearchIconVisible = true
-                    isCloseIconVisible = false
-                }
-                focusManager.clearFocus()
-            }),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
-        )
-        UrlList(
-            onFetchImageBitmap = {
-                withContext(Dispatchers.IO) {
-                    viewModel.getBitmap(it).asImageBitmap()
-                }
-            },
-            urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
-            onClickItem = onClickUrlItem,
-            onItemSwiped = viewModel::deleteUrlItem
+            )
+        }
+        SnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            hostState = snackBarHostState
         )
     }
 }
