@@ -1,6 +1,5 @@
 package com.example.pocket.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,8 +34,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private const val TAG = "HomeScreen"
-
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
@@ -53,6 +50,21 @@ fun HomeScreen(
     var isSearchIconVisible by remember { mutableStateOf(true) }
     var isCloseIconVisible by remember { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
+
+    val trailingIcon = @Composable {
+        if (isCloseIconVisible) {
+            Icon(
+                modifier = Modifier.clickable {
+                    searchText = ""
+                    isSearchIconVisible = true
+                    isCloseIconVisible = false
+                    focusManager.clearFocus()
+                },
+                imageVector = Icons.Filled.Close,
+                contentDescription = "Close Icon"
+            )
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()){
         Column(modifier = Modifier.fillMaxSize()) {
@@ -75,20 +87,7 @@ fun HomeScreen(
                 },
                 label = { Text(text = "Search...") },
                 leadingIcon = { if (isSearchIconVisible) Icon(Icons.Filled.Search, "Search Icon") },
-                trailingIcon = {
-                    if (isCloseIconVisible) {
-                        Icon(
-                            modifier = Modifier.clickable {
-                                searchText = ""
-                                isSearchIconVisible = true
-                                isCloseIconVisible = false
-                                focusManager.clearFocus()
-                            },
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = "Close Icon"
-                        )
-                    }
-                },
+                trailingIcon = trailingIcon,
                 singleLine = true,
                 keyboardActions = KeyboardActions(onSearch = {
                     if (searchText.isBlank()) {
@@ -106,22 +105,13 @@ fun HomeScreen(
                 onItemSwiped = {
                     viewModel.deleteUrlItem(it)
                     coroutineScope.launch {
-                        val snackBarResult = snackBarHostState.showSnackbar(
-                            "This is a snackBar",
-                            "Undo",
-
-                        )
-                        if (snackBarResult == SnackbarResult.ActionPerformed){
-                            viewModel.undoDelete()
-                        }
+                        val snackBarResult = snackBarHostState.showSnackbar("Deleted", "Undo")
+                        if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
                     }
                 }
             )
         }
-        SnackbarHost(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            hostState = snackBarHostState
-        )
+        SnackbarHost(modifier = Modifier.align(Alignment.BottomCenter), hostState = snackBarHostState)
     }
 }
 
