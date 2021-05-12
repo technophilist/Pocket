@@ -46,15 +46,10 @@ class HomeScreenViewModelImpl(application: Application) : AndroidViewModel(appli
 
     override fun onSearchTextValueChange(searchText: String) {
         viewModelScope.launch(Dispatchers.Default) {
-            filter(searchText)
+            //filtering the list based on the searchText
+            val filteredList = savedUrls.value?.filter { it.contentTitle.contains(searchText, true) }
+            filteredList?.let { _filteredUrlList.postValue(it) }
         }
-    }
-
-    private suspend fun filter(searchString: String) {
-        val filteredList = withContext(Dispatchers.Default) {
-            savedUrls.value?.filter { it.contentTitle.contains(searchString, true) }
-        }
-        filteredList?.let { _filteredUrlList.postValue(it) }
     }
 
     override suspend fun getBitmap(imageAbsolutePathString: String): Bitmap =
