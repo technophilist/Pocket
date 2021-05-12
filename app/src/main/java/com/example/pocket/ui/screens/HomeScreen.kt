@@ -194,10 +194,6 @@ fun UrlCard(
                     )
                 }
                 urlItem.imageAbsolutePath?.let {
-                    SideEffect {
-
-
-                    }
                     LaunchedEffect(urlItem.id) { imageBitmapState = onFetchImageBitmap(it) }
                 }
                 imageBitmapState?.let {
