@@ -52,8 +52,12 @@ class Repository private constructor(context: Context) {
             else -> true
         }
 
-    fun deleteUrl(id: Int) {
-        mCoroutineScope.launch { mDao.deleteUrl(id) }
+    fun deleteUrl(urlItem: UrlEntity):UrlEntity {
+        mCoroutineScope.launch {
+            urlItem.imageAbsolutePath?.let{ File(it).delete() }
+            mDao.deleteUrl(urlItem.id)
+        }
+        return urlItem
     }
 
     /**
