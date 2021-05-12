@@ -1,5 +1,6 @@
 package com.example.pocket.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,10 +30,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.viewmodels.HomeScreenViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
+private const val TAG = "HomeScreen"
 
 @ExperimentalMaterialApi
 @Composable
@@ -66,7 +66,7 @@ fun HomeScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             OutlinedTextField(
                 modifier = Modifier
@@ -99,7 +99,7 @@ fun HomeScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
             )
             UrlList(
-                onFetchImageBitmap = { withContext(Dispatchers.IO) { viewModel.getBitmap(it).asImageBitmap() } },
+                onFetchImageBitmap = { viewModel.getBitmap(it).asImageBitmap() },
                 urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
                 onClickItem = onClickUrlItem,
                 onItemSwiped = {
@@ -112,7 +112,10 @@ fun HomeScreen(
                 }
             )
         }
-        SnackbarHost(modifier = Modifier.align(Alignment.BottomCenter), hostState = snackBarHostState)
+        SnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            hostState = snackBarHostState
+        )
     }
 }
 
@@ -158,12 +161,13 @@ fun UrlCard(
     urlItem: UrlEntity,
     color: Color = MaterialTheme.colors.surface
 ) {
+    Log.d(TAG, "UrlCard: ")
     var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
     val dismissState = rememberDismissState {
-        if(it == DismissValue.DismissedToEnd){
+        if (it == DismissValue.DismissedToEnd) {
             onCardSwiped(urlItem)
             true
-        }else false
+        } else false
     }
     val coroutineScope = rememberCoroutineScope()
 
@@ -178,7 +182,7 @@ fun UrlCard(
                     .fillMaxWidth()
                     .background(color)
             ) {
-                Column(modifier = Modifier.fillMaxWidth(0.7f)) { 
+                Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                     Text(
                         modifier = Modifier.padding(8.dp),
                         text = urlItem.contentTitle,
@@ -191,7 +195,11 @@ fun UrlCard(
                     )
                 }
                 urlItem.imageAbsolutePath?.let {
-                    coroutineScope.launch { imageBitmapState = onFetchImageBitmap(it) }
+                    SideEffect {
+
+
+                    }
+                    LaunchedEffect(urlItem.id) { imageBitmapState = onFetchImageBitmap(it) }
                 }
                 imageBitmapState?.let {
                     Image(

@@ -27,20 +27,17 @@ interface HomeScreenViewModel {
 }
 
 private const val TAG = "HomeScreenViewModelImpl"
-class HomeScreenViewModelImpl(application: Application) : AndroidViewModel(application),HomeScreenViewModel {
+
+class HomeScreenViewModelImpl(application: Application) : AndroidViewModel(application),
+    HomeScreenViewModel {
     private val mRepository = Repository.getInstance(application)
     private var mRecentlyDeletedItem: UrlEntity? = null
     private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())
     override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
     override val savedUrls = mRepository.getUrls
 
-    override fun deleteUrlItem(urlItem:UrlEntity) {
-        savedUrls.value?.let {
-            //TODO REMOVE THE THUMBNAIL IMAGE FROM INTERNAL STORAGE WHEN DELETING
-            val indexOfDeletedItem = it.indexOf(urlItem)
-            mRecentlyDeletedItem = it[indexOfDeletedItem]
-            mRepository.deleteUrl(urlItem.id)
-        }
+    override fun deleteUrlItem(urlItem: UrlEntity) {
+        mRecentlyDeletedItem = savedUrls.value?.let { mRepository.deleteUrl(urlItem) }
     }
 
     override fun undoDelete() {
@@ -60,8 +57,11 @@ class HomeScreenViewModelImpl(application: Application) : AndroidViewModel(appli
         filteredList?.let { _filteredUrlList.postValue(it) }
     }
 
-    override suspend fun getBitmap(imageAbsolutePathString: String):Bitmap =
+    override suspend fun getBitmap(imageAbsolutePathString: String): Bitmap =
         withContext(Dispatchers.IO) {
+            /*
+            FIXME Known bug - Undo delete not working because thumbnail gets deleted
+             */
             File(imageAbsolutePathString)
                 .inputStream()
                 .use { BitmapFactory.decodeStream(it) }
