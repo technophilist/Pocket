@@ -105,7 +105,7 @@ fun HomeScreen(
                 onItemSwiped = {
                     viewModel.deleteUrlItem(it)
                     coroutineScope.launch {
-                        snackBarHostState.currentSnackbarData?.dismiss() //if there is another snackbar,dismiss it
+                        snackBarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
                         val snackBarResult = snackBarHostState.showSnackbar("Deleted", "Undo")
                         if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
                     }
@@ -169,7 +169,6 @@ fun UrlCard(
             true
         } else false
     }
-    val coroutineScope = rememberCoroutineScope()
 
     SwipeToDismiss(
         state = dismissState,
