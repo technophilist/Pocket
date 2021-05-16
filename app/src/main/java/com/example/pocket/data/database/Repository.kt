@@ -4,15 +4,14 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Log
 import com.example.pocket.data.network.PocketNetwork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 import java.net.URL
+
 
 class Repository private constructor(context: Context) {
     private val mDatabase = UrlDatabase.getInstance(context)
@@ -35,8 +34,7 @@ class Repository private constructor(context: Context) {
         if (!urlExists(urlString)) {
             val url = URL(urlString)
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(urlString)
-            val imageAbsolutePath =
-                thumbnail?.let { saveImageToInternalStorage(thumbnail, url.host + urlContentTitle) }
+            val imageAbsolutePath = runCatching { saveImageToInternalStorage(thumbnail, url.host + urlContentTitle) }.getOrNull()
             mDao.insertUrl(UrlEntity(urlString, urlContentTitle, imageAbsolutePath))
         }
     }
@@ -52,9 +50,9 @@ class Repository private constructor(context: Context) {
             else -> true
         }
 
-    fun deleteUrl(urlItem: UrlEntity):UrlEntity {
+    fun deleteUrl(urlItem: UrlEntity): UrlEntity {
         mCoroutineScope.launch {
-            urlItem.imageAbsolutePath?.let{ File(it).delete() }
+            urlItem.imageAbsolutePath?.let { File(it).delete() }
             mDao.deleteUrl(urlItem.id)
         }
         return urlItem
