@@ -1,9 +1,12 @@
-package com.example.pocket.data.database
+package com.example.pocket.data
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.lifecycle.LiveData
+import com.example.pocket.data.database.UrlDatabase
+import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.network.PocketNetwork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,14 +15,20 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URL
 
+interface Repository{
+    val getUrls:LiveData<List<UrlEntity>>
+    suspend fun saveUrl(urlString: String, thumbnail: Drawable?)
+    fun deleteUrl(urlItem: UrlEntity): UrlEntity
+    fun insertUrl(urlItem: UrlEntity)
+}
 
-class Repository private constructor(context: Context) {
+class PocketRepository private constructor(context: Context):Repository {
     private val mDatabase = UrlDatabase.getInstance(context)
     private val mDao = mDatabase.getDao()
     private val mNetwork = PocketNetwork.getInstance()
     private val mFilesDirectory = context.filesDir
     private val mCoroutineScope = CoroutineScope(Dispatchers.IO)
-    val getUrls = mDao.getAllUrls()
+    override val getUrls = mDao.getAllUrls()
 
     /**
      * Used for saving the url,absolute path of the thumbnail and the
@@ -30,7 +39,7 @@ class Repository private constructor(context: Context) {
      * @param urlString string representing the complete url
      * @param thumbnail the drawable image that will be used for the thumbnail
      */
-    suspend fun saveUrl(urlString: String, thumbnail: Drawable?) {
+    override suspend fun saveUrl(urlString: String, thumbnail: Drawable?) {
         if (!urlExists(urlString)) {
             val url = URL(urlString)
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(urlString)
@@ -50,7 +59,7 @@ class Repository private constructor(context: Context) {
             else -> true
         }
 
-    fun deleteUrl(urlItem: UrlEntity): UrlEntity {
+    override fun deleteUrl(urlItem: UrlEntity): UrlEntity {
         mCoroutineScope.launch {
             urlItem.imageAbsolutePath?.let { File(it).delete() }
             mDao.deleteUrl(urlItem.id)
@@ -93,14 +102,14 @@ class Repository private constructor(context: Context) {
         }
     }
 
-    fun insertUrl(urlItem: UrlEntity) {
+    override fun insertUrl(urlItem: UrlEntity) {
         mCoroutineScope.launch { mDao.insertUrl(urlItem) }
     }
 
     companion object {
-        private var mInstance: Repository? = null
+        private var mInstance: PocketRepository? = null
         fun getInstance(context: Context) = mInstance ?: synchronized(this) {
-            mInstance = Repository(context)
+            mInstance = PocketRepository(context)
             mInstance!!
         }
     }
