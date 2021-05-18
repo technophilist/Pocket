@@ -18,7 +18,7 @@ import java.io.File
 import java.net.URL
 
 interface Repository{
-    val getUrls:LiveData<List<UrlEntity>>
+    val savedUrls:LiveData<List<UrlEntity>>
     suspend fun saveUrl(urlString: String, thumbnail: Drawable?)
     fun deleteUrl(urlItem: UrlEntity): UrlEntity
     fun insertUrl(urlItem: UrlEntity)
@@ -31,7 +31,7 @@ class PocketRepository(
 ):Repository {
     private val mFilesDirectory = context.filesDir
     private val mCoroutineScope = CoroutineScope(Dispatchers.IO)
-    override val getUrls = mDao.getAllUrls()
+    override val savedUrls = mDao.getAllUrls()
 
     /**
      * Used for saving the url,absolute path of the thumbnail and the
