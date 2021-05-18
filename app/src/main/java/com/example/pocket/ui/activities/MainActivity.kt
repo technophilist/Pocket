@@ -10,6 +10,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.lifecycle.ViewModelProvider
 import com.example.pocket.data.PocketRepository
 import com.example.pocket.data.Repository
+import com.example.pocket.di.PocketApplication
 import com.example.pocket.ui.screens.HomeScreen
 import com.example.pocket.ui.theme.PocketAppTheme
 import com.example.pocket.utils.HomeScreenViewModelFactory
@@ -19,17 +20,15 @@ import com.example.pocket.viewmodels.HomeScreenViewModelImpl
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mViewModel: HomeScreenViewModel
-    private lateinit var mRepository: Repository
 
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mRepository = PocketRepository.getInstance(applicationContext)
-
+        val appContainer = (application as PocketApplication).appContainer
         mViewModel = ViewModelProvider(
             this,
-            HomeScreenViewModelFactory(application,mRepository)
+            HomeScreenViewModelFactory(application,appContainer.pocketRepository)
         ).get(HomeScreenViewModelImpl::class.java)
 
         setContent {
