@@ -5,8 +5,10 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
+import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlDatabase
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.data.network.Network
 import com.example.pocket.data.network.PocketNetwork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +24,11 @@ interface Repository{
     fun insertUrl(urlItem: UrlEntity)
 }
 
-class PocketRepository(context: Context):Repository {
-    private val mDatabase = UrlDatabase.getInstance(context)
-    private val mDao = mDatabase.getDao()
-    private val mNetwork = PocketNetwork.getInstance()
+class PocketRepository(
+    private val mNetwork: Network,
+    private val mDao:Dao,
+    context: Context
+):Repository {
     private val mFilesDirectory = context.filesDir
     private val mCoroutineScope = CoroutineScope(Dispatchers.IO)
     override val getUrls = mDao.getAllUrls()

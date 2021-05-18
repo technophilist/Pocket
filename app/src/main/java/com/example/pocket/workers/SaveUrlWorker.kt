@@ -20,7 +20,7 @@ class SaveUrlWorker(
             val repository = (applicationContext as PocketApplication).appContainer.pocketRepository
             repository.saveUrl(
                 urlString = it,
-                thumbnail = PocketNetwork.getInstance().downloadImage(applicationContext, it)
+                thumbnail = PocketNetwork().downloadImage(applicationContext, it)
             )
             Result.success()
         } ?: Result.failure()
