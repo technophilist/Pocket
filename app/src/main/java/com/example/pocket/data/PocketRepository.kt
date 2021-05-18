@@ -22,7 +22,7 @@ interface Repository{
     fun insertUrl(urlItem: UrlEntity)
 }
 
-class PocketRepository private constructor(context: Context):Repository {
+class PocketRepository(context: Context):Repository {
     private val mDatabase = UrlDatabase.getInstance(context)
     private val mDao = mDatabase.getDao()
     private val mNetwork = PocketNetwork.getInstance()
@@ -106,13 +106,6 @@ class PocketRepository private constructor(context: Context):Repository {
         mCoroutineScope.launch { mDao.insertUrl(urlItem) }
     }
 
-    companion object {
-        private var mInstance: PocketRepository? = null
-        fun getInstance(context: Context) = mInstance ?: synchronized(this) {
-            mInstance = PocketRepository(context)
-            mInstance!!
-        }
-    }
 }
 
 
