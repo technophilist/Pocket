@@ -10,13 +10,19 @@ import org.jsoup.Jsoup
 import java.lang.Exception
 import java.net.URL
 
-class PocketNetwork private constructor() {
+
+interface Network{
+    suspend fun fetchWebsiteContentTitle(url: String): String
+    suspend fun downloadImage(context: Context, url: String): Drawable?
+}
+
+class PocketNetwork:Network {
     /**
      * Gets the content of the title tag of the [url]
      * @param url The string representation of the url
      * @return The content of the title tag of the website.
      */
-    suspend fun fetchWebsiteContentTitle(url: String): String =
+    override suspend fun fetchWebsiteContentTitle(url: String): String =
         withContext(Dispatchers.IO) { Jsoup.connect(url).get().title() }
 
     /**
@@ -27,7 +33,7 @@ class PocketNetwork private constructor() {
      * @param url the complete url of the website
      * @return null if some error occurred while downloading
      */
-    suspend fun downloadImage(context: Context, url: String): Drawable? = withContext(Dispatchers.IO) {
+    override suspend fun downloadImage(context: Context, url: String): Drawable? = withContext(Dispatchers.IO) {
         getImageUrl(url)?.let {
             Glide.with(context)
                 .load(it)
@@ -71,12 +77,4 @@ class PocketNetwork private constructor() {
                 null
             }
         }
-
-    companion object {
-        private var mInstance: PocketNetwork? = null
-        fun getInstance() = mInstance ?: synchronized(this) {
-            mInstance = PocketNetwork()
-            mInstance!!
-        }
-    }
 }
