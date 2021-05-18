@@ -4,10 +4,7 @@ import android.app.Application
 import com.example.pocket.data.PocketRepository
 
 class AppContainer(application: Application) {
-
-
-
-    val pocketRepository = PocketRepository.getInstance(application)
-
+    
+    val pocketRepository = PocketRepository(application)
 
 }
