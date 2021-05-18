@@ -7,7 +7,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.pocket.data.PocketRepository
 import com.example.pocket.data.Repository
 import com.example.pocket.data.database.UrlEntity
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +33,7 @@ class HomeScreenViewModelImpl(
     private var mRecentlyDeletedItem: UrlEntity? = null
     private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())
     override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
-    override val savedUrls = mRepository.getUrls
+    override val savedUrls = mRepository.savedUrls
 
     override fun deleteUrlItem(urlItem: UrlEntity) {
         mRecentlyDeletedItem = savedUrls.value?.let { mRepository.deleteUrl(urlItem) }
