@@ -66,6 +66,14 @@ class PocketRepository(
             else -> true
         }
 
+    /**
+     * Used for deleting the url from the database.
+     * Even though the url entity will be deleted immediately, the thumbnail
+     * of the url will remain in the devices' internal storage for
+     * [mLongSnackbarDuration] seconds before getting deleted.
+     * @param urlItem the url item to be deleted
+     * @return the deleted url item
+     */
     override fun deleteUrl(urlItem: UrlEntity): UrlEntity {
         /*
          Jetpack compose doesn't support item delete animations for lazy lists.So it
