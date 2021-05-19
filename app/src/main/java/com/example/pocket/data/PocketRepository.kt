@@ -10,10 +10,7 @@ import com.example.pocket.data.database.UrlDatabase
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.network.Network
 import com.example.pocket.data.network.PocketNetwork
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.File
 import java.net.URL
 
@@ -23,14 +20,15 @@ interface Repository{
     fun deleteUrl(urlItem: UrlEntity): UrlEntity
     fun insertUrl(urlItem: UrlEntity)
 }
-
 class PocketRepository(
     private val mNetwork: Network,
-    private val mDao:Dao,
+    private val mDao: Dao,
     context: Context
-):Repository {
+) : Repository {
     private val mFilesDirectory = context.filesDir
     private val mCoroutineScope = CoroutineScope(Dispatchers.IO)
+    private val mLongSnackbarDuration = 10_000L
+    private var mRecentThumbnailDeleteJob: Job? = null
     override val savedUrls = mDao.getAllUrls()
 
     /**
@@ -46,7 +44,12 @@ class PocketRepository(
         if (!urlExists(urlString)) {
             val url = URL(urlString)
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(urlString)
-            val imageAbsolutePath = runCatching { saveImageToInternalStorage(thumbnail, url.host + urlContentTitle) }.getOrNull()
+            val imageAbsolutePath = runCatching {
+                saveImageToInternalStorage(
+                    thumbnail,
+                    url.host + urlContentTitle
+                )
+            }.getOrNull()
             mDao.insertUrl(UrlEntity(urlString, urlContentTitle, imageAbsolutePath))
         }
     }
@@ -63,12 +66,27 @@ class PocketRepository(
         }
 
     override fun deleteUrl(urlItem: UrlEntity): UrlEntity {
-        mCoroutineScope.launch {
+        /*
+         Jetpack compose doesn't support item delete animations for lazy lists.So it
+         becomes necessary to delete the item from the database and re-insert it if the
+         user clicks on the undo action of the snackBar.
+        * */
+        mCoroutineScope.launch { mDao.deleteUrl(urlItem.id) }
+
+        /*
+        If mRecentThumbnailDeleteJob is not null and a new
+        Job is assigned to it, it means that the undo delete
+        snack bar for that particular url was dismissed.Which
+        means that it is safe to delete that thumbnail from the
+        device storage.
+         */
+        mRecentThumbnailDeleteJob = mCoroutineScope.launch {
+            delay(mLongSnackbarDuration)
             urlItem.imageAbsolutePath?.let { File(it).delete() }
-            mDao.deleteUrl(urlItem.id)
         }
         return urlItem
     }
+
 
     /**
      * Saves the [resource] as a jpg file to internal storage
@@ -107,9 +125,17 @@ class PocketRepository(
 
     override fun insertUrl(urlItem: UrlEntity) {
         mCoroutineScope.launch { mDao.insertUrl(urlItem) }
+        if (mRecentThumbnailDeleteJob?.isActive == true) {
+            /*
+            If it is active it means this function was called as
+            a result of the user clicking the 'undo' button
+            of the snack bar.
+             */
+
+            //Cancelling the job , so it doesn't delete the thumbnail
+            mRecentThumbnailDeleteJob?.cancel()
+        }
+
     }
-
 }
-
-
 

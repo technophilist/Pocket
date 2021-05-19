@@ -26,7 +26,7 @@ interface HomeScreenViewModel {
 }
 
 class HomeScreenViewModelImpl(
-    private val mRepository:Repository,
+    private val mRepository: Repository,
     application: Application
 ) : AndroidViewModel(application),
     HomeScreenViewModel {
@@ -46,16 +46,14 @@ class HomeScreenViewModelImpl(
     override fun onSearchTextValueChange(searchText: String) {
         viewModelScope.launch(Dispatchers.Default) {
             //filtering the list based on the searchText
-            val filteredList = savedUrls.value?.filter { it.contentTitle.contains(searchText, true) }
+            val filteredList =
+                savedUrls.value?.filter { it.contentTitle.contains(searchText, true) }
             filteredList?.let { _filteredUrlList.postValue(it) }
         }
     }
 
     override suspend fun getBitmap(imageAbsolutePathString: String): Bitmap =
         withContext(Dispatchers.IO) {
-            /*
-            FIXME Known bug - Undo delete not working because thumbnail gets deleted
-             */
             File(imageAbsolutePathString)
                 .inputStream()
                 .use { BitmapFactory.decodeStream(it) }
