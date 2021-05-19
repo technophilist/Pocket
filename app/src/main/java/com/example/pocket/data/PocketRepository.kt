@@ -23,10 +23,11 @@ interface Repository{
 class PocketRepository(
     private val mNetwork: Network,
     private val mDao: Dao,
+    private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
     context: Context
 ) : Repository {
     private val mFilesDirectory = context.filesDir
-    private val mCoroutineScope = CoroutineScope(Dispatchers.IO)
+    private val mCoroutineScope = CoroutineScope(mDefaultDispatcher)
     private val mLongSnackbarDuration = 10_000L
     private var mRecentThumbnailDeleteJob: Job? = null
     override val savedUrls = mDao.getAllUrls()
@@ -60,7 +61,7 @@ class PocketRepository(
      * @return true if exists else false
      */
     private suspend fun urlExists(urlString: String) =
-        when (withContext(Dispatchers.IO) { mDao.checkIfUrlExists(urlString) }) {
+        when (withContext(mDefaultDispatcher) { mDao.checkIfUrlExists(urlString) }) {
             0 -> false
             else -> true
         }
@@ -106,7 +107,7 @@ class PocketRepository(
         val imageFile = File("${thumbnailsDirectory.absolutePath}/" + fileName + ".jpeg")
         var savedImagePath: String? = null
 
-        return withContext(Dispatchers.IO) {
+        return withContext(mDefaultDispatcher) {
             try {
                 imageFile.createNewFile()
 
