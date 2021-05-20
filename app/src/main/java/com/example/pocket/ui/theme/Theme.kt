@@ -7,7 +7,7 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val DarkColorPalette = darkColors(
+private val darkColorPalette = darkColors(
     primary = Green900,
     secondary = Green300,
     background = Gray,
@@ -18,7 +18,7 @@ private val DarkColorPalette = darkColors(
     onSurface = White850
 )
 
-private val LightColorPalette = lightColors(
+private val lightColorPalette = lightColors(
     primary = Pink100,
     secondary = Pink900,
     background = Color.White,
@@ -34,6 +34,6 @@ fun PocketAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) DarkColorPalette else LightColorPalette
-    MaterialTheme(typography = Typography) { content()  }
+    val colors = if (darkTheme) darkColors() else lightColors()
+    MaterialTheme(typography = Typography,colors = colors) { content()  }
 }
