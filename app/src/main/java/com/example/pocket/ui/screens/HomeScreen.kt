@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -37,6 +38,8 @@ private const val TAG = "HomeScreen"
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
+    isDarkModeSupported:Boolean = false,
+    onDarkModeIconClicked:(()->Unit) = {},
     viewModel: HomeScreenViewModel,
     onClickUrlItem: (UrlEntity) -> Unit
 ) {
@@ -64,9 +67,18 @@ fun HomeScreen(
                 contentDescription = "Close Icon"
             )
         }
+        if (!isDarkModeSupported && !isCloseIconVisible){
+            Icon(
+                modifier = Modifier.clickable {
+                  onDarkModeIconClicked()
+                },
+                imageVector = Icons.Filled.DarkMode,
+                contentDescription = "Dark Mode Icon"
+            )
+        }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
         Column(modifier = Modifier.fillMaxSize()) {
             OutlinedTextField(
                 modifier = Modifier
