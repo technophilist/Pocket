@@ -1,6 +1,6 @@
 <resources >
     <style name="Theme.Pocket" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:navigationBarColor">#FF121212</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 </resources>
