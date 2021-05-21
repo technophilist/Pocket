@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,8 +39,8 @@ private const val TAG = "HomeScreen"
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
-    isDarkModeSupported:Boolean = false,
-    onDarkModeIconClicked:(()->Unit) = {},
+    isDarkModeSupported: Boolean = false,
+    onDarkModeIconClicked: (() -> Unit) = {},
     viewModel: HomeScreenViewModel,
     onClickUrlItem: (UrlEntity) -> Unit
 ) {
@@ -48,6 +49,7 @@ fun HomeScreen(
     val coroutineScope = rememberCoroutineScope()
     val focusRequester = FocusRequester()
 
+    var isDarkModeEnabled by remember { mutableStateOf(false) }
     val urlItems by viewModel.savedUrls.observeAsState()
     val filteredList by viewModel.filteredList.observeAsState()
     var isSearchIconVisible by remember { mutableStateOf(true) }
@@ -67,18 +69,23 @@ fun HomeScreen(
                 contentDescription = "Close Icon"
             )
         }
-        if (!isDarkModeSupported && !isCloseIconVisible){
+        if (!isDarkModeSupported && !isCloseIconVisible) {
             Icon(
                 modifier = Modifier.clickable {
-                  onDarkModeIconClicked()
+                    onDarkModeIconClicked()
+                    isDarkModeEnabled = !isDarkModeEnabled
                 },
-                imageVector = Icons.Filled.DarkMode,
+                imageVector = if (isDarkModeEnabled)  Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
                 contentDescription = "Dark Mode Icon"
             )
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 16.dp)
+    ) {
         Column(modifier = Modifier.fillMaxSize()) {
             OutlinedTextField(
                 modifier = Modifier
