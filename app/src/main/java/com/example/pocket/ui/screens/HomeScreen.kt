@@ -56,58 +56,30 @@ fun HomeScreen(
     var isCloseIconVisible by remember { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
 
-    val trailingIcon = @Composable {
-        if (isCloseIconVisible) {
-            Icon(
-                modifier = Modifier.clickable {
-                    searchText = ""
-                    isSearchIconVisible = true
-                    isCloseIconVisible = false
-                    focusManager.clearFocus()
-                },
-                imageVector = Icons.Filled.Close,
-                contentDescription = "Close Icon"
-            )
-        }
-        if (!isDarkModeSupported && !isCloseIconVisible) {
-            Icon(
-                modifier = Modifier.clickable {
-                    onDarkModeIconClicked()
-                    isDarkModeEnabled = !isDarkModeEnabled
-                },
-                imageVector = if (isDarkModeEnabled)  Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
-                contentDescription = "Dark Mode Icon"
-            )
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 16.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            OutlinedTextField(
-                modifier = Modifier
-                    .focusRequester(focusRequester)
-                    .onFocusChanged {
-                        if (it == FocusState.Active) {
-                            isSearchIconVisible = false
-                            isCloseIconVisible = true
-                        }
-                    }
-                    .offset()
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                value = searchText,
-                onValueChange = {
+
+            PocketSearchBar(
+                isDarkModeEnabled = isDarkModeEnabled,
+                isDarkModeSupported = isDarkModeSupported,
+                isCloseIconVisible = isCloseIconVisible,
+                isSearchIconVisible = isSearchIconVisible,
+                focusRequester = focusRequester,
+                searchText = searchText,
+                onSearchTextChange = {
                     searchText = it
                     viewModel.onSearchTextValueChange(it)
                 },
-                label = { Text(text = "Search...") },
-                leadingIcon = { if (isSearchIconVisible) Icon(Icons.Filled.Search, "Search Icon") },
-                trailingIcon = trailingIcon,
-                singleLine = true,
+                onFocusChanged = {
+                    if (it == FocusState.Active) {
+                        isSearchIconVisible = false
+                        isCloseIconVisible = true
+                    }
+                },
                 keyboardActions = KeyboardActions(onSearch = {
                     if (searchText.isBlank()) {
                         isSearchIconVisible = true
@@ -115,7 +87,16 @@ fun HomeScreen(
                     }
                     focusManager.clearFocus()
                 }),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
+                onCloseIconClicked = {
+                    searchText = ""
+                    isSearchIconVisible = true
+                    isCloseIconVisible = false
+                    focusManager.clearFocus()
+                },
+                onDarkModeIconClicked = {
+                    onDarkModeIconClicked()
+                    isDarkModeEnabled = !isDarkModeEnabled
+                }
             )
             UrlList(
                 onFetchImageBitmap = { viewModel.getBitmap(it).asImageBitmap() },
@@ -137,6 +118,57 @@ fun HomeScreen(
         )
     }
 }
+
+@Composable
+fun PocketSearchBar(
+    searchText: String,
+    onSearchTextChange: (String) -> Unit,
+    focusRequester: FocusRequester = FocusRequester(),
+    onFocusChanged: ((FocusState) -> Unit)? = null,
+    onCloseIconClicked: (() -> Unit)? = null,
+    onDarkModeIconClicked: (() -> Unit)? = null,
+    isSearchIconVisible: Boolean = true,
+    isCloseIconVisible: Boolean = true,
+    isDarkModeSupported: Boolean = false,
+    isDarkModeEnabled: Boolean = false,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+) {
+
+    val trailingIcon = @Composable {
+        if (isCloseIconVisible) {
+            Icon(
+                modifier = Modifier.clickable { onCloseIconClicked?.invoke() },
+                imageVector = Icons.Filled.Close,
+                contentDescription = "Close Icon"
+            )
+        }
+        if (!isDarkModeSupported && !isCloseIconVisible) {
+            Icon(
+                modifier = Modifier.clickable { onDarkModeIconClicked?.invoke() },
+                imageVector = if (isDarkModeEnabled) Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
+                contentDescription = "Dark Mode Icon"
+            )
+        }
+    }
+
+    OutlinedTextField(
+        modifier = Modifier
+            .focusRequester(focusRequester)
+            .onFocusChanged { onFocusChanged?.invoke(it) }
+            .offset()
+            .fillMaxWidth()
+            .padding(8.dp),
+        value = searchText,
+        onValueChange = onSearchTextChange,
+        label = { Text(text = "Search...") },
+        leadingIcon = { if (isSearchIconVisible) Icon(Icons.Filled.Search, "Search Icon") },
+        trailingIcon = trailingIcon,
+        singleLine = true,
+        keyboardActions = keyboardActions,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
+    )
+}
+
 
 @ExperimentalMaterialApi
 @Composable
