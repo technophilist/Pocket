@@ -6,11 +6,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.*
@@ -81,7 +80,7 @@ fun PocketSearchBar(
         }
     }
 
-    OutlinedTextField(
+    TextField(
         modifier = modifier
             .focusRequester(state.focusRequester)
             .onFocusChanged { onFocusChanged(it) },
@@ -94,5 +93,6 @@ fun PocketSearchBar(
         keyboardActions = keyboardActions,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
     )
+
 }
 
