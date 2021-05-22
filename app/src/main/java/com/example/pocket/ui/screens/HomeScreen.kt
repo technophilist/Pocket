@@ -4,15 +4,12 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.runtime.*
@@ -20,15 +17,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.viewmodels.HomeScreenViewModel
@@ -44,131 +36,63 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel,
     onClickUrlItem: (UrlEntity) -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-    val snackBarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
-    val focusRequester = FocusRequester()
 
-    var isDarkModeEnabled by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
     val urlItems by viewModel.savedUrls.observeAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val filteredList by viewModel.filteredList.observeAsState()
-    var isSearchIconVisible by remember { mutableStateOf(true) }
-    var isCloseIconVisible by remember { mutableStateOf(false) }
     var searchText by rememberSaveable { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 16.dp)
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
 
-            PocketSearchBar(
-                isDarkModeEnabled = isDarkModeEnabled,
-                isDarkModeSupported = isDarkModeSupported,
-                isCloseIconVisible = isCloseIconVisible,
-                isSearchIconVisible = isSearchIconVisible,
-                focusRequester = focusRequester,
-                searchText = searchText,
-                onSearchTextChange = {
-                    searchText = it
-                    viewModel.onSearchTextValueChange(it)
-                },
-                onFocusChanged = {
-                    if (it == FocusState.Active) {
-                        isSearchIconVisible = false
-                        isCloseIconVisible = true
-                    }
-                },
-                keyboardActions = KeyboardActions(onSearch = {
-                    if (searchText.isBlank()) {
-                        isSearchIconVisible = true
-                        isCloseIconVisible = false
-                    }
-                    focusManager.clearFocus()
-                }),
-                onCloseIconClicked = {
-                    searchText = ""
-                    isSearchIconVisible = true
-                    isCloseIconVisible = false
-                    focusManager.clearFocus()
-                },
-                onDarkModeIconClicked = {
-                    onDarkModeIconClicked()
-                    isDarkModeEnabled = !isDarkModeEnabled
+    Column(modifier = Modifier.fillMaxSize()) {
+        PocketAppBar(isDarkModeSupported, onDarkModeIconClicked = onDarkModeIconClicked)
+        UrlList(
+            onFetchImageBitmap = { viewModel.getBitmap(it).asImageBitmap() },
+            urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
+            onClickItem = onClickUrlItem,
+            onItemSwiped = {
+                viewModel.deleteUrlItem(it)
+                coroutineScope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
+                    val snackBarResult = snackbarHostState.showSnackbar("Deleted", "Undo")
+                    if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
                 }
-            )
-            UrlList(
-                onFetchImageBitmap = { viewModel.getBitmap(it).asImageBitmap() },
-                urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
-                onClickItem = onClickUrlItem,
-                onItemSwiped = {
-                    viewModel.deleteUrlItem(it)
-                    coroutineScope.launch {
-                        snackBarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
-                        val snackBarResult = snackBarHostState.showSnackbar("Deleted", "Undo")
-                        if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
-                    }
-                }
-            )
-        }
-        SnackbarHost(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            hostState = snackBarHostState
+            }
         )
     }
 }
 
-@Composable
-fun PocketSearchBar(
-    searchText: String,
-    onSearchTextChange: (String) -> Unit,
-    focusRequester: FocusRequester = FocusRequester(),
-    onFocusChanged: ((FocusState) -> Unit)? = null,
-    onCloseIconClicked: (() -> Unit)? = null,
-    onDarkModeIconClicked: (() -> Unit)? = null,
-    isSearchIconVisible: Boolean = true,
-    isCloseIconVisible: Boolean = true,
-    isDarkModeSupported: Boolean = false,
-    isDarkModeEnabled: Boolean = false,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-) {
 
-    val trailingIcon = @Composable {
-        if (isCloseIconVisible) {
+@Composable
+fun PocketAppBar(
+    isDarkModeSupported: Boolean = false,
+    isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
+    onDarkModeIconClicked: (() -> Unit)? = null
+) {
+    TopAppBar {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = "Pocket",
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.SemiBold
+        )
+        Column(modifier = Modifier.padding(8.dp)) {
             Icon(
-                modifier = Modifier.clickable { onCloseIconClicked?.invoke() },
-                imageVector = Icons.Filled.Close,
-                contentDescription = "Close Icon"
+                modifier = Modifier
+                    .align(Alignment.End),
+                imageVector = Icons.Filled.Search,
+                contentDescription = ""
             )
         }
-        if (!isDarkModeSupported && !isCloseIconVisible) {
+        if (!isDarkModeSupported){
             Icon(
                 modifier = Modifier.clickable { onDarkModeIconClicked?.invoke() },
-                imageVector = if (isDarkModeEnabled) Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
-                contentDescription = "Dark Mode Icon"
+                imageVector = Icons.Outlined.DarkMode,
+                contentDescription = "Dark mode icon"
             )
         }
     }
-
-    OutlinedTextField(
-        modifier = Modifier
-            .focusRequester(focusRequester)
-            .onFocusChanged { onFocusChanged?.invoke(it) }
-            .offset()
-            .fillMaxWidth()
-            .padding(8.dp),
-        value = searchText,
-        onValueChange = onSearchTextChange,
-        label = { Text(text = "Search...") },
-        leadingIcon = { if (isSearchIconVisible) Icon(Icons.Filled.Search, "Search Icon") },
-        trailingIcon = trailingIcon,
-        singleLine = true,
-        keyboardActions = keyboardActions,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
-    )
 }
-
 
 @ExperimentalMaterialApi
 @Composable
@@ -258,5 +182,4 @@ fun UrlCard(
         }
     }
 }
-
 
