@@ -35,7 +35,8 @@ fun HomeScreen(
     isDarkModeSupported: Boolean = false,
     onDarkModeIconClicked: (() -> Unit) = {},
     viewModel: HomeScreenViewModel,
-    onClickUrlItem: (UrlEntity) -> Unit
+    onClickUrlItem: (UrlEntity) -> Unit,
+    isDarkModeEnabled:Boolean = isSystemInDarkTheme()
 ) {
     val urlItems by viewModel.savedUrls.observeAsState()
     val filteredList by viewModel.filteredList.observeAsState()
@@ -50,7 +51,8 @@ fun HomeScreen(
             PocketAppBar(
                 isDarkModeSupported = isDarkModeSupported,
                 onDarkModeIconClicked = onDarkModeIconClicked,
-                onSearchIconClicked = { searchBarExpanded = true }
+                onSearchIconClicked = { searchBarExpanded = true },
+                isDarkModeEnabled = isDarkModeEnabled
             )
         } else {
             PocketSearchBar(
