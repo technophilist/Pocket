@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
@@ -40,7 +41,9 @@ class MainActivity : AppCompatActivity() {
     private fun PocketApp() {
         val isDarkModeSupported = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
         var isDarkModeEnabled by remember { mutableStateOf(false) }
-        PocketAppTheme(isDarkModeEnabled) {
+        PocketAppTheme(
+            if(isDarkModeSupported) isSystemInDarkTheme() else isDarkModeEnabled
+        ) {
             Surface(Modifier.fillMaxSize()) {
                 HomeScreen(
                     viewModel = mViewModel,

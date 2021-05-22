@@ -74,7 +74,7 @@ fun PocketAppBar(
             modifier = Modifier.weight(1f),
             text = "Pocket",
             style = MaterialTheme.typography.h6,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
         )
         Column(modifier = Modifier.padding(8.dp)) {
             Icon(
@@ -88,7 +88,7 @@ fun PocketAppBar(
             Icon(
                 modifier = Modifier.clickable { onDarkModeIconClicked?.invoke() },
                 imageVector = Icons.Outlined.DarkMode,
-                contentDescription = "Dark mode icon"
+                contentDescription = "Dark mode icon",
             )
         }
     }
