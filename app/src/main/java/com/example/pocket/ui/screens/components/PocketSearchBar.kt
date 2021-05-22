@@ -42,7 +42,7 @@ fun rememberSearchBarState(
 ) = remember {
     SearchBarState(
         focusManager = focusManager,
-        focusRequester = FocusRequester(),
+        focusRequester = focusRequester,
         isSearchIconVisible = isSearchIconVisible,
         isCloseIconVisible = isCloseIconVisible
     )
