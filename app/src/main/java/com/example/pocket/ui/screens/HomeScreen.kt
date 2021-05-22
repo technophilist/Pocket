@@ -105,7 +105,9 @@ fun PocketAppBar(
         }
         if (!isDarkModeSupported) {
             Icon(
-                modifier = Modifier.clickable { onDarkModeIconClicked?.invoke() },
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .clickable { onDarkModeIconClicked?.invoke() },
                 imageVector = if (isDarkModeEnabled) Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
                 contentDescription = "Dark mode icon",
             )
