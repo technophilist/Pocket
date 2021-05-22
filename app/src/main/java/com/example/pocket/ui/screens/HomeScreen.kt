@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.runtime.*
@@ -20,9 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.ui.screens.components.PocketSearchBar
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.launch
 
@@ -36,16 +37,33 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel,
     onClickUrlItem: (UrlEntity) -> Unit
 ) {
-
-    val coroutineScope = rememberCoroutineScope()
     val urlItems by viewModel.savedUrls.observeAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
     val filteredList by viewModel.filteredList.observeAsState()
-    var searchText by rememberSaveable { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
+    var searchText by rememberSaveable { mutableStateOf("") }
+    var searchBarExpanded by rememberSaveable { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        PocketAppBar(isDarkModeSupported, onDarkModeIconClicked = onDarkModeIconClicked)
+        if (!searchBarExpanded) {
+            PocketAppBar(
+                isDarkModeSupported = isDarkModeSupported,
+                onDarkModeIconClicked = onDarkModeIconClicked,
+                onSearchIconClicked = { searchBarExpanded = true }
+            )
+        } else {
+            PocketSearchBar(
+                modifier = Modifier.fillMaxWidth(),
+                searchText = searchText,
+                onSearchTextChange = {
+                    searchText = it
+                    viewModel.onSearchTextValueChange(it)
+                },
+                onCloseIconClicked = { searchBarExpanded = false }
+            )
+        }
+
         UrlList(
             onFetchImageBitmap = { viewModel.getBitmap(it).asImageBitmap() },
             urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
@@ -67,27 +85,28 @@ fun HomeScreen(
 fun PocketAppBar(
     isDarkModeSupported: Boolean = false,
     isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
+    onSearchIconClicked: (() -> Unit)? = null,
     onDarkModeIconClicked: (() -> Unit)? = null
 ) {
-    TopAppBar {
+    TopAppBar(contentPadding = PaddingValues(top = 8.dp, start = 8.dp)) {
         Text(
             modifier = Modifier.weight(1f),
             text = "Pocket",
-            style = MaterialTheme.typography.h6,
-            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.h1,
         )
         Column(modifier = Modifier.padding(8.dp)) {
             Icon(
                 modifier = Modifier
-                    .align(Alignment.End),
+                    .align(Alignment.End)
+                    .clickable { onSearchIconClicked?.invoke() },
                 imageVector = Icons.Filled.Search,
                 contentDescription = ""
             )
         }
-        if (!isDarkModeSupported){
+        if (!isDarkModeSupported) {
             Icon(
                 modifier = Modifier.clickable { onDarkModeIconClicked?.invoke() },
-                imageVector = Icons.Outlined.DarkMode,
+                imageVector = if (isDarkModeEnabled) Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
                 contentDescription = "Dark mode icon",
             )
         }
