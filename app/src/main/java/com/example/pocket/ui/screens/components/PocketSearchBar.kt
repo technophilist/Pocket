@@ -1,27 +1,33 @@
 package com.example.pocket.ui.screens.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 
 
 class SearchBarState(
     val focusManager: FocusManager,
     val focusRequester: FocusRequester = FocusRequester(),
     isSearchIconVisible: Boolean = true,
-    isCloseIconVisible: Boolean = true,
+    isCloseIconVisible: Boolean = false,
 ) {
     var isSearchIconVisible by mutableStateOf(isSearchIconVisible)
     var isCloseIconVisible by mutableStateOf(isCloseIconVisible)
@@ -31,7 +37,7 @@ class SearchBarState(
 fun rememberSearchBarState(
     focusManager: FocusManager = LocalFocusManager.current,
     isSearchIconVisible: Boolean = true,
-    isCloseIconVisible: Boolean = true
+    isCloseIconVisible: Boolean = false
 ) = remember {
     SearchBarState(
         focusManager = focusManager,
@@ -47,6 +53,7 @@ fun PocketSearchBar(
     searchText: String,
     onSearchTextChange: (String) -> Unit,
     state: SearchBarState = rememberSearchBarState(),
+    textFieldColors:TextFieldColors = TextFieldDefaults.textFieldColors(),
     keyboardActions: KeyboardActions = KeyboardActions(onSearch = {
         if (searchText.isBlank()) {
             state.isSearchIconVisible = true
@@ -75,12 +82,13 @@ fun PocketSearchBar(
                     }
                 },
                 imageVector = Icons.Filled.Close,
-                contentDescription = "Close Icon"
+                contentDescription = "Close Icon",
+                tint = MaterialTheme.colors.onPrimary
             )
         }
     }
 
-    TextField(
+   TextField(
         modifier = modifier
             .focusRequester(state.focusRequester)
             .onFocusChanged { onFocusChanged(it) },
@@ -91,7 +99,8 @@ fun PocketSearchBar(
         trailingIcon = trailingIcon,
         singleLine = true,
         keyboardActions = keyboardActions,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        colors = textFieldColors,
     )
 
 }
