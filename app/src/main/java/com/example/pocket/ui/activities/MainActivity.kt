@@ -49,7 +49,8 @@ class MainActivity : AppCompatActivity() {
                     viewModel = mViewModel,
                     onClickUrlItem = { openUrl(it.url) },
                     isDarkModeSupported = isDarkModeSupported,
-                    onDarkModeIconClicked = { isDarkModeEnabled = !isDarkModeEnabled }
+                    onDarkModeIconClicked = { isDarkModeEnabled = !isDarkModeEnabled },
+                    isDarkModeEnabled = isDarkModeEnabled
                 )
             }
         }
