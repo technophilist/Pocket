@@ -83,7 +83,7 @@ fun PocketSearchBar(
                 },
                 imageVector = Icons.Filled.Close,
                 contentDescription = "Close Icon",
-                tint = MaterialTheme.colors.onPrimary
+                tint = MaterialTheme.colors.primary
             )
         }
     }
