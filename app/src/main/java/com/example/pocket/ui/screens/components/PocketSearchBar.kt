@@ -48,7 +48,7 @@ fun rememberSearchBarState(
 
 
 @Composable
-fun PocketSearchBar(
+fun SearchBar(
     modifier: Modifier = Modifier,
     searchText: String,
     onSearchTextChange: (String) -> Unit,

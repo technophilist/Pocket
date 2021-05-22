@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
-import com.example.pocket.ui.screens.components.PocketSearchBar
+import com.example.pocket.ui.screens.components.SearchBar
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.launch
 
@@ -55,7 +55,7 @@ fun HomeScreen(
                 isDarkModeEnabled = isDarkModeEnabled
             )
         } else {
-            PocketSearchBar(
+            SearchBar(
                 modifier = Modifier.fillMaxWidth(),
                 searchText = searchText,
                 onSearchTextChange = {
