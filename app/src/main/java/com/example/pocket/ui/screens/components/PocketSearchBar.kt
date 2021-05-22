@@ -36,11 +36,13 @@ class SearchBarState(
 @Composable
 fun rememberSearchBarState(
     focusManager: FocusManager = LocalFocusManager.current,
+    focusRequester: FocusRequester = FocusRequester(),
     isSearchIconVisible: Boolean = true,
     isCloseIconVisible: Boolean = false
 ) = remember {
     SearchBarState(
         focusManager = focusManager,
+        focusRequester = FocusRequester(),
         isSearchIconVisible = isSearchIconVisible,
         isCloseIconVisible = isCloseIconVisible
     )
