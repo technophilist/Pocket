@@ -5,11 +5,13 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import com.example.pocket.di.PocketApplication
@@ -18,7 +20,6 @@ import com.example.pocket.ui.theme.PocketAppTheme
 import com.example.pocket.utils.HomeScreenViewModelFactory
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import com.example.pocket.viewmodels.HomeScreenViewModelImpl
-
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mViewModel: HomeScreenViewModel
@@ -39,17 +40,26 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     @Composable
     private fun PocketApp() {
-        val isDarkModeSupported = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
-        var isDarkModeEnabled by remember { mutableStateOf(false) }
+        var isDarkModeEnabled by rememberSaveable { mutableStateOf(false) }
+        val isDarkModeSupported =
+            remember { android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q }
+
         PocketAppTheme(
-            if(isDarkModeSupported) isSystemInDarkTheme() else isDarkModeEnabled
+            if (isDarkModeSupported) isSystemInDarkTheme()
+            else isDarkModeEnabled
         ) {
             Surface(Modifier.fillMaxSize()) {
                 HomeScreen(
                     viewModel = mViewModel,
                     onClickUrlItem = { openUrl(it.url) },
                     isDarkModeSupported = isDarkModeSupported,
-                    onDarkModeIconClicked = { isDarkModeEnabled = !isDarkModeEnabled },
+                    onDarkModeIconClicked = {
+                        isDarkModeEnabled = !isDarkModeEnabled
+                        AppCompatDelegate.setDefaultNightMode(
+                            if (isDarkModeEnabled) AppCompatDelegate.MODE_NIGHT_YES
+                            else AppCompatDelegate.MODE_NIGHT_NO
+                        )
+                    },
                     isDarkModeEnabled = isDarkModeEnabled
                 )
             }
