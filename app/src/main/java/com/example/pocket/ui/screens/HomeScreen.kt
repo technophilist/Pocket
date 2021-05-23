@@ -21,6 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.ui.screens.components.SearchBar
@@ -94,9 +97,39 @@ fun HomeScreen(
                 }
             }
         )
+
+
     }
 }
 
+@Composable
+private fun ListEmptyMessage(modifier: Modifier = Modifier) {
+
+    val header = buildAnnotatedString {
+        pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+        append("Your list is empty \n")
+        pop()
+        toAnnotatedString()
+    }
+
+    val message = """
+        It's easy to add items to Pocket.
+        Use the share button of any
+        browser and tap on the Pocket 
+        icon to add an item.
+         """.trimIndent()
+
+    Column(modifier = modifier,verticalArrangement = Arrangement.Center) {
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = header
+        )
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = message
+        )
+    }
+}
 
 @Composable
 fun PocketAppBar(
