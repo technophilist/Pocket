@@ -68,7 +68,16 @@ fun HomeScreen(
                     searchText = it
                     viewModel.onSearchTextValueChange(it)
                 },
-                onCloseIconClicked = { searchBarExpanded = false },
+                onCloseIconClicked = {
+                    /*
+                    We are emptying the search text so that
+                    the UrlList() composable will list all the
+                    urls from viewModel.savedUrls instead of
+                    viewModel.filteredList.
+                    */
+                    searchText = ""
+                    searchBarExpanded = false
+                },
                 state = searchBarState
             )
             /*
@@ -119,7 +128,7 @@ private fun ListEmptyMessage(modifier: Modifier = Modifier) {
         icon to add an item.
          """.trimIndent()
 
-    Column(modifier = modifier,verticalArrangement = Arrangement.Center) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         Text(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = header
