@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.ui.screens.components.SearchBar
+import com.example.pocket.ui.screens.components.rememberSearchBarState
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.launch
 
@@ -36,18 +37,20 @@ fun HomeScreen(
     onDarkModeIconClicked: (() -> Unit) = {},
     viewModel: HomeScreenViewModel,
     onClickUrlItem: (UrlEntity) -> Unit,
-    isDarkModeEnabled:Boolean = isSystemInDarkTheme()
+    isDarkModeEnabled: Boolean = isSystemInDarkTheme()
 ) {
     val urlItems by viewModel.savedUrls.observeAsState()
     val filteredList by viewModel.filteredList.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val searchBarState = rememberSearchBarState(isCloseIconVisible = true)
 
     var searchText by rememberSaveable { mutableStateOf("") }
     var searchBarExpanded by rememberSaveable { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         if (!searchBarExpanded) {
+
             PocketAppBar(
                 isDarkModeSupported = isDarkModeSupported,
                 onDarkModeIconClicked = onDarkModeIconClicked,
@@ -62,8 +65,20 @@ fun HomeScreen(
                     searchText = it
                     viewModel.onSearchTextValueChange(it)
                 },
-                onCloseIconClicked = { searchBarExpanded = false }
+                onCloseIconClicked = { searchBarExpanded = false },
+                state = searchBarState
             )
+            /*
+            Make the searchbar immediately focused when the user clicks on
+            the search icon.
+             */
+            SideEffect {
+                /*
+                We are using a side effect to ensure that we are requesting
+                focus only after the searchbar has composed.
+                */
+                searchBarState.focusRequester.requestFocus()
+            }
         }
 
         UrlList(
