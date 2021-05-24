@@ -21,9 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.ui.screens.components.SearchBar
@@ -93,49 +92,51 @@ fun HomeScreen(
             }
         }
 
-        UrlList(
-            onFetchImageBitmap = { viewModel.getBitmap(it).asImageBitmap() },
-            urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
-            onClickItem = onClickUrlItem,
-            onItemSwiped = {
-                viewModel.deleteUrlItem(it)
-                coroutineScope.launch {
-                    snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
-                    val snackBarResult = snackbarHostState.showSnackbar("Deleted", "Undo")
-                    if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
-                }
+        urlItems?.let {
+            if (it.isEmpty()) {
+                ListEmptyMessage(modifier = Modifier.fillMaxSize())
+            } else {
+                UrlList(
+                    onFetchImageBitmap = { urlString ->
+                        viewModel.getBitmap(urlString).asImageBitmap()
+                    },
+                    urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
+                    onClickItem = onClickUrlItem,
+                    onItemSwiped = { urlEntity ->
+                        viewModel.deleteUrlItem(urlEntity)
+                        coroutineScope.launch {
+                            snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
+                            val snackBarResult = snackbarHostState.showSnackbar("Deleted", "Undo")
+                            if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
+                        }
+                    }
+                )
             }
-        )
-
-
+        }
     }
 }
 
 @Composable
 private fun ListEmptyMessage(modifier: Modifier = Modifier) {
-
-    val header = buildAnnotatedString {
-        pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-        append("Your list is empty \n")
-        pop()
-        toAnnotatedString()
-    }
-
     val message = """
         It's easy to add items to Pocket.
-        Use the share button of any
-        browser and tap on the Pocket 
-        icon to add an item.
+        Use the share button of any browser 
+        and tap on the Pocket  icon to add
+        an item.
          """.trimIndent()
 
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = header
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 0.dp),
+            text = "Your list is empty",
+            fontWeight = FontWeight.Bold
         )
         Text(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = message
+            text = message,
+            textAlign = TextAlign.Center
         )
     }
 }
