@@ -121,7 +121,7 @@ private fun ListEmptyMessage(modifier: Modifier = Modifier) {
     val message = """
         It's easy to add items to Pocket.
         Use the share button of any browser 
-        and tap on the Pocket  icon to add
+        and tap on the Pocket icon to add
         an item.
          """.trimIndent()
 
