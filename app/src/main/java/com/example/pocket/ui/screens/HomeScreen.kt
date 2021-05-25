@@ -1,6 +1,5 @@
 package com.example.pocket.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -217,7 +216,6 @@ fun UrlCard(
     urlItem: UrlEntity,
     color: Color = MaterialTheme.colors.surface
 ) {
-    Log.d(TAG, "UrlCard: ")
     var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
     val dismissState = rememberDismissState {
         if (it == DismissValue.DismissedToEnd) {
