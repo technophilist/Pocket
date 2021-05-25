@@ -6,17 +6,16 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import com.example.pocket.data.database.Dao
-import com.example.pocket.data.database.UrlDatabase
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.network.Network
-import com.example.pocket.data.network.PocketNetwork
 import kotlinx.coroutines.*
+import org.jsoup.helper.StringUtil
 import java.io.File
 import java.net.URL
 
 interface Repository{
     val savedUrls:LiveData<List<UrlEntity>>
-    suspend fun saveUrl(urlString: String, thumbnail: Drawable?)
+    suspend fun saveUrl(urlString: String)
     fun deleteUrl(urlItem: UrlEntity): UrlEntity
     fun insertUrl(urlItem: UrlEntity)
 }
@@ -24,9 +23,9 @@ class PocketRepository(
     private val mNetwork: Network,
     private val mDao: Dao,
     private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    context: Context
+    private val mContext: Context
 ) : Repository {
-    private val mFilesDirectory = context.filesDir
+    private val mFilesDirectory = mContext.filesDir
     private val mCoroutineScope = CoroutineScope(mDefaultDispatcher)
     private val mLongSnackbarDuration = 10_000L
     private var mRecentThumbnailDeleteJob: Job? = null
@@ -39,15 +38,14 @@ class PocketRepository(
      * path will be stored in the database.Whereas,the thumbnail image will be
      * stored to the internal storage of the device.
      * @param urlString string representing the complete url
-     * @param thumbnail the drawable image that will be used for the thumbnail
      */
-    override suspend fun saveUrl(urlString: String, thumbnail: Drawable?) {
+    override suspend fun saveUrl(urlString: String) {
         if (!urlExists(urlString)) {
             val url = URL(urlString)
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(urlString)
             val imageAbsolutePath = runCatching {
                 saveImageToInternalStorage(
-                    thumbnail,
+                   mNetwork.downloadImage(mContext,urlString),
                     url.host + urlContentTitle
                 )
             }.getOrNull()
