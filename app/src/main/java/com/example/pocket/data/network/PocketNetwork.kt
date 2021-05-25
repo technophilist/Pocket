@@ -2,7 +2,6 @@ package com.example.pocket.data.network
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.util.Log
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -43,22 +42,25 @@ class PocketNetwork:Network {
     }
 
     /**
-     * Tries to get the url of the first image that is displayed in the web page.It tries to
-     * get the src from the html img tag.If it fails to find the tag , it tries to get the src
-     * from the amp-img tag , which is commonly used in the web to display images.If it cannot
-     * find both the tags it returns null.
+     * Tries to get the url of the main image from the open graph meta tags in the html
+     * document.If it cannot find the tag,it returns null.
      * @param url the complete url of the page
      * @return the url of the image
      */
     private suspend fun getImageUrl(url: String): String? = withContext(Dispatchers.IO) {
         val document = Jsoup.connect(url).get()
-        var imgTags = document.getElementsByTag("img")
-        if (imgTags.isEmpty()) {
-            imgTags = document.getElementsByTag("amp-img")
+        val metaElements = document.select("meta")
+        val openGraphElements = metaElements.filter { it.attr("property").contains("og:") }
+        var imageUrl:String? = null
+        openGraphElements.forEach{
+            when(it.attr("property")){
+                "og:image" -> { imageUrl = it.attr("content")}
+            }
         }
-        if (imgTags.isEmpty()) null
-        else imgTags[0].absUrl("src")
+
+        imageUrl
     }
+
 
     /**
      * Tries to download the favicon of a web page.If the favicon is not found or
