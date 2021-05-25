@@ -18,10 +18,7 @@ class SaveUrlWorker(
     override suspend fun doWork() =
         inputData.getString(HandleUrlActivity.EXTRA_URL)?.let {
             val repository = (applicationContext as PocketApplication).appContainer.pocketRepository
-            repository.saveUrl(
-                urlString = it,
-                thumbnail = PocketNetwork().downloadImage(applicationContext, it)
-            )
+            repository.saveUrl(it)
             Result.success()
         } ?: Result.failure()
 }
