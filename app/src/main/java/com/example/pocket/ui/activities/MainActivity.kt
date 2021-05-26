@@ -24,6 +24,7 @@ import com.example.pocket.viewmodels.HomeScreenViewModelImpl
 class MainActivity : AppCompatActivity() {
     private lateinit var mViewModel: HomeScreenViewModel
 
+
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
             HomeScreenViewModelFactory(application, appContainer.pocketRepository)
         ).get(HomeScreenViewModelImpl::class.java)
 
+        //TODO Dark mode preferences not saved.If app is closed and reopened,it defaults to white mode
         setContent { PocketApp() }
     }
 
