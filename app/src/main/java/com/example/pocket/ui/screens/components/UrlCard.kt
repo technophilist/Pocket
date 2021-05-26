@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 
@@ -54,7 +55,9 @@ fun UrlCard(
                         .padding(8.dp)
                         .weight(0.5f),
                     text = urlItem.contentTitle,
-                    style = MaterialTheme.typography.h1
+                    style = MaterialTheme.typography.h1,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 UrlCardFooter(
                     modifier = Modifier
@@ -72,7 +75,7 @@ fun UrlCard(
 private fun UrlCardFooter(
     modifier: Modifier = Modifier,
     thumbnailBitmapState: ImageBitmap? = null,
-    hostName:String
+    hostName: String
 ) {
     Row(modifier = modifier) {
         thumbnailBitmapState?.let {
