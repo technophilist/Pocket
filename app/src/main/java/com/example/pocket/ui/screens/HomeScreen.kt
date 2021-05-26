@@ -1,6 +1,5 @@
 package com.example.pocket.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -16,18 +15,18 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.ui.screens.components.SearchBar
+import com.example.pocket.ui.screens.components.UrlCard
 import com.example.pocket.ui.screens.components.rememberSearchBarState
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.launch
+
 
 
 @ExperimentalMaterialApi
@@ -206,57 +205,4 @@ private fun UrlList(
     }
 }
 
-@ExperimentalMaterialApi
-@Composable
-fun UrlCard(
-    modifier: Modifier = Modifier,
-    onFetchImageBitmap: suspend (String) -> ImageBitmap,
-    onCardSwiped: (UrlEntity) -> Unit = {},
-    urlItem: UrlEntity,
-) {
-    var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
-    val dismissState = rememberDismissState {
-        if (it == DismissValue.DismissedToEnd) {
-            onCardSwiped(urlItem)
-            true
-        } else false
-    }
-
-    SwipeToDismiss(
-        state = dismissState,
-        background = {},
-        directions = setOf(DismissDirection.StartToEnd)
-    ) {
-        Card(modifier = modifier) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                urlItem.imageAbsolutePath?.let {
-                    LaunchedEffect(urlItem.id) { imageBitmapState = onFetchImageBitmap(it) }
-                }
-                imageBitmapState?.let {
-                    Image(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(3f),
-                        bitmap = it,
-                        contentDescription = "Thumbnail",
-                        contentScale = ContentScale.Crop
-                    )
-                }
-
-                Text(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .weight(0.5f),
-                    text = urlItem.contentTitle,
-                    style = MaterialTheme.typography.h1
-                )
-                Text(
-                    modifier = Modifier.padding(start = 8.dp),
-                    text = urlItem.host,
-                    style = MaterialTheme.typography.caption
-                )
-            }
-        }
-    }
-}
 
