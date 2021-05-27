@@ -3,36 +3,40 @@ package com.example.pocket.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.network.Network
-import com.example.pocket.data.preferences.PocketPreferencesManger
 import com.example.pocket.data.preferences.PreferencesManager
+import com.example.pocket.data.preferences.Theme
+import com.example.pocket.data.preferences.UserPreferences
 import kotlinx.coroutines.*
-import org.jsoup.helper.StringUtil
+import kotlinx.coroutines.flow.Flow
 import java.io.File
 import java.net.URL
 
-interface Repository{
-    val savedUrls:LiveData<List<UrlEntity>>
+interface Repository {
+    val savedUrls: LiveData<List<UrlEntity>>
+    val userPreferencesFlow: Flow<UserPreferences>
     suspend fun saveUrl(urlString: String)
+    suspend fun updateThemePreference(theme: Theme)
     fun deleteUrl(urlItem: UrlEntity): UrlEntity
     fun insertUrl(urlItem: UrlEntity)
 }
+
 class PocketRepository(
     private val mNetwork: Network,
     private val mDao: Dao,
     private val mPocketPreferencesManger: PreferencesManager,
     private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val mContext: Context
+    context: Context
 ) : Repository {
-    private val mFilesDirectory = mContext.filesDir
+    private val mFilesDirectory = context.filesDir
     private val mCoroutineScope = CoroutineScope(mDefaultDispatcher)
     private val mLongSnackbarDuration = 10_000L
     private var mRecentThumbnailDeleteJob: Job? = null
     override val savedUrls = mDao.getAllUrls()
+    override val userPreferencesFlow = mPocketPreferencesManger.userPreferences
 
     /**
      * Used for saving the url,absolute path of the thumbnail and the
@@ -48,7 +52,7 @@ class PocketRepository(
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(urlString)
             val imageAbsolutePath = runCatching {
                 saveImageToInternalStorage(
-                   mNetwork.downloadImage(urlString),
+                    mNetwork.downloadImage(urlString),
                     url.host + urlContentTitle
                 )
             }.getOrNull()
@@ -97,6 +101,9 @@ class PocketRepository(
         return urlItem
     }
 
+    override suspend fun updateThemePreference(theme: Theme) {
+        mPocketPreferencesManger.updateThemePreference(theme)
+    }
 
     /**
      * Saves the [resource] as a jpg file to internal storage
