@@ -4,20 +4,20 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.network.Network
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.data.preferences.PreferencesManager
-import com.example.pocket.data.preferences.UserPreferences
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import java.io.File
 import java.net.URL
 
 interface Repository {
     val savedUrls: LiveData<List<UrlEntity>>
-    val userPreferencesFlow: Flow<UserPreferences>
+    val appTheme: LiveData<PocketPreferences.AppTheme>
     suspend fun saveUrl(urlString: String)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     fun deleteUrl(urlItem: UrlEntity): UrlEntity
@@ -34,9 +34,21 @@ class PocketRepository(
     private val mFilesDirectory = context.filesDir
     private val mCoroutineScope = CoroutineScope(mDefaultDispatcher)
     private val mLongSnackbarDuration = 10_000L
+    private val userPreferencesFlow = mPocketPreferencesManger.userPreferences
+    private val _appTheme = MutableLiveData(PocketPreferences.AppTheme.SYSTEM)
     private var mRecentThumbnailDeleteJob: Job? = null
+
     override val savedUrls = mDao.getAllUrls()
-    override val userPreferencesFlow = mPocketPreferencesManger.userPreferences
+    override val appTheme = _appTheme as LiveData<PocketPreferences.AppTheme>
+
+    init {
+        mCoroutineScope.launch {
+            userPreferencesFlow.collect { preferences ->
+                _appTheme.postValue(preferences.appTheme)
+            }
+        }
+    }
+
 
     /**
      * Used for saving the url,absolute path of the thumbnail and the
