@@ -7,8 +7,8 @@ import androidx.lifecycle.LiveData
 import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.network.Network
+import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.data.preferences.PreferencesManager
-import com.example.pocket.data.preferences.Theme
 import com.example.pocket.data.preferences.UserPreferences
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +19,7 @@ interface Repository {
     val savedUrls: LiveData<List<UrlEntity>>
     val userPreferencesFlow: Flow<UserPreferences>
     suspend fun saveUrl(urlString: String)
-    suspend fun updateThemePreference(theme: Theme)
+    suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     fun deleteUrl(urlItem: UrlEntity): UrlEntity
     fun insertUrl(urlItem: UrlEntity)
 }
@@ -101,8 +101,8 @@ class PocketRepository(
         return urlItem
     }
 
-    override suspend fun updateThemePreference(theme: Theme) {
-        mPocketPreferencesManger.updateThemePreference(theme)
+    override suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme) {
+        mPocketPreferencesManger.updateThemePreference(appTheme)
     }
 
     /**

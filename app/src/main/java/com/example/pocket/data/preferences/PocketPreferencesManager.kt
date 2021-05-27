@@ -16,13 +16,13 @@ class PocketPreferencesManger(
 
     //TODO must handle errors
     override val userPreferences = mDataStore.data.map { preferences ->
-        val deviceTheme = Theme.valueOf(preferences[DEVICE_THEME] ?: Theme.SYSTEM.name)
+        val deviceTheme = PocketPreferences.AppTheme.valueOf(preferences[DEVICE_THEME] ?: PocketPreferences.AppTheme.SYSTEM.name)
         UserPreferences(deviceTheme)
     }
 
-    override suspend fun updateThemePreference(theme:Theme){
+    override suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme){
        mDataStore.edit {preferences->
-           preferences[DEVICE_THEME] = theme.name
+           preferences[DEVICE_THEME] = appTheme.name
        }
     }
 }
