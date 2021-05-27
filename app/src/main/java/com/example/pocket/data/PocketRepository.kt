@@ -34,7 +34,7 @@ class PocketRepository(
     private val mFilesDirectory = context.filesDir
     private val mCoroutineScope = CoroutineScope(mDefaultDispatcher)
     private val mLongSnackbarDuration = 10_000L
-    private val userPreferencesFlow = mPocketPreferencesManger.userPreferences
+    private val mUserPreferencesFlow = mPocketPreferencesManger.userPreferences
     private val _appTheme = MutableLiveData(PocketPreferences.AppTheme.SYSTEM)
     private var mRecentThumbnailDeleteJob: Job? = null
 
@@ -43,7 +43,7 @@ class PocketRepository(
 
     init {
         mCoroutineScope.launch {
-            userPreferencesFlow.collect { preferences ->
+            mUserPreferencesFlow.collect { preferences ->
                 _appTheme.postValue(preferences.appTheme)
             }
         }
