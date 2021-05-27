@@ -45,7 +45,7 @@ class PocketRepository(
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(urlString)
             val imageAbsolutePath = runCatching {
                 saveImageToInternalStorage(
-                   mNetwork.downloadImage(mContext,urlString),
+                   mNetwork.downloadImage(urlString),
                     url.host + urlContentTitle
                 )
             }.getOrNull()
