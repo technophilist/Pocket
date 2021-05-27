@@ -38,7 +38,7 @@ class PocketNetwork:Network {
                 .load(it)
                 .submit()
                 .get()
-        } ?: downloadFavicon(context, url)
+        }
     }
 
     /**
