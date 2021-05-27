@@ -3,26 +3,29 @@ package com.example.pocket.data.network
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
-import java.lang.Exception
 import java.net.URL
 
 
-interface Network{
+interface Network {
     suspend fun fetchWebsiteContentTitle(url: String): String
     suspend fun downloadImage(context: Context, url: String): Drawable?
 }
 
-class PocketNetwork:Network {
+class PocketNetwork(
+    private val mContext: Context,
+    private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : Network {
     /**
      * Gets the content of the title tag of the [url]
      * @param url The string representation of the url
      * @return The content of the title tag of the website.
      */
     override suspend fun fetchWebsiteContentTitle(url: String): String =
-        withContext(Dispatchers.IO) { Jsoup.connect(url).get().title() }
+        withContext(mDefaultDispatcher) { Jsoup.connect(url).get().title() }
 
     /**
      * Tries to download the image from the 'og:image' open graph  and uses glide to get the \
@@ -31,14 +34,15 @@ class PocketNetwork:Network {
      * @param url the complete url of the website
      * @return null if some error occurred while downloading
      */
-    override suspend fun downloadImage(context: Context, url: String): Drawable? = withContext(Dispatchers.IO) {
-        getImageUrl(url)?.let {
-            Glide.with(context)
-                .load(it)
-                .submit()
-                .get()
+    override suspend fun downloadImage(context: Context, url: String): Drawable? =
+        withContext(mDefaultDispatcher) {
+            getImageUrl(url)?.let {
+                Glide.with(context)
+                    .load(it)
+                    .submit()
+                    .get()
+            }
         }
-    }
 
     /**
      * Tries to get the url of the main image from the open graph meta tags in the html
@@ -46,14 +50,16 @@ class PocketNetwork:Network {
      * @param url the complete url of the page
      * @return the url of the image
      */
-    private suspend fun getImageUrl(url: String): String? = withContext(Dispatchers.IO) {
+    private suspend fun getImageUrl(url: String): String? = withContext(mDefaultDispatcher) {
         val document = Jsoup.connect(url).get()
         val metaElements = document.select("meta")
         val openGraphElements = metaElements.filter { it.attr("property").contains("og:") }
-        var imageUrl:String? = null
-        openGraphElements.forEach{
-            when(it.attr("property")){
-                "og:image" -> { imageUrl = it.attr("content")}
+        var imageUrl: String? = null
+        openGraphElements.forEach {
+            when (it.attr("property")) {
+                "og:image" -> {
+                    imageUrl = it.attr("content")
+                }
             }
         }
 
@@ -67,7 +73,7 @@ class PocketNetwork:Network {
      * @param urlString the complete url of the web page
      */
     private suspend fun downloadFavicon(context: Context, urlString: String): Drawable? =
-        withContext(Dispatchers.IO) {
+        withContext(mDefaultDispatcher) {
             val url = URL(urlString)
             try {
                 Glide.with(context)

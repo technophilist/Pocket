@@ -8,10 +8,15 @@ import kotlinx.coroutines.Dispatchers
 
 class AppContainer(application: Application) {
     private val applicationContext = application.applicationContext
-    private val network = PocketNetwork()
+
+    //Default Dispatcher
+    private val defaultRepositoryDispatcher = Dispatchers.IO
+    private val defaultNetworkDispatcher = Dispatchers.IO
+
+    private val network = PocketNetwork(applicationContext,Dispatchers.IO)
     private val database = UrlDatabase.getInstance(applicationContext)
     private val dao = database.getDao()
-    private val defaultRepositoryDispatcher = Dispatchers.IO
+
 
     val pocketRepository = PocketRepository(network, dao, defaultRepositoryDispatcher, applicationContext)
 }
