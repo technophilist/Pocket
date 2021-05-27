@@ -5,14 +5,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface PreferencesManager {
     val userPreferences: Flow<UserPreferences>
-    suspend fun updateThemePreference(theme: Theme)
-
+    suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
 
 }
-enum class Theme {
-    LIGHT,
-    DARK,
-    SYSTEM
+
+interface PocketPreferences {
+    enum class AppTheme {
+        LIGHT,
+        DARK,
+        SYSTEM
+    }
 }
 
-data class UserPreferences(val deviceTheme:Theme)
+data class UserPreferences(val appTheme: PocketPreferences.AppTheme)
