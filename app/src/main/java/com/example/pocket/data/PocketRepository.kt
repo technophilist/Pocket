@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData
 import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.network.Network
+import com.example.pocket.data.preferences.PocketPreferencesManger
+import com.example.pocket.data.preferences.PreferencesManager
 import kotlinx.coroutines.*
 import org.jsoup.helper.StringUtil
 import java.io.File
@@ -22,6 +24,7 @@ interface Repository{
 class PocketRepository(
     private val mNetwork: Network,
     private val mDao: Dao,
+    private val mPocketPreferencesManger: PreferencesManager,
     private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val mContext: Context
 ) : Repository {
