@@ -1,15 +1,9 @@
-package com.example.pocket.data
+package com.example.pocket.data.preferences
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.*
-import com.example.pocket.data.PocketPreferencesManger.PreferenceKeys.DEVICE_THEME
-import com.example.pocket.data.preferences.PreferencesManager
-import com.example.pocket.data.preferences.Theme
-import com.example.pocket.data.preferences.UserPreferences
-import kotlinx.coroutines.flow.catch
+import com.example.pocket.data.preferences.PocketPreferencesManger.PreferenceKeys.DEVICE_THEME
 import kotlinx.coroutines.flow.map
-import java.io.IOException
 
 
 class PocketPreferencesManger(
