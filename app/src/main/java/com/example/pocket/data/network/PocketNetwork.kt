@@ -25,9 +25,8 @@ class PocketNetwork:Network {
         withContext(Dispatchers.IO) { Jsoup.connect(url).get().title() }
 
     /**
-     * Tries to download the image from the src attribute of the image tag.
-     * If it cannot , it will try to download the favicon of the website.If that
-     * also fails , then it will return null.
+     * Tries to download the image from the 'og:image' open graph  and uses glide to get the \
+     * drawable.
      * @param context the context
      * @param url the complete url of the website
      * @return null if some error occurred while downloading
