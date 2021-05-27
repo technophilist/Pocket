@@ -12,7 +12,7 @@ import java.net.URL
 
 interface Network {
     suspend fun fetchWebsiteContentTitle(url: String): String
-    suspend fun downloadImage(context: Context, url: String): Drawable?
+    suspend fun downloadImage(url: String): Drawable?
 }
 
 class PocketNetwork(
@@ -34,10 +34,10 @@ class PocketNetwork(
      * @param url the complete url of the website
      * @return null if some error occurred while downloading
      */
-    override suspend fun downloadImage(context: Context, url: String): Drawable? =
+    override suspend fun downloadImage(url: String): Drawable? =
         withContext(mDefaultDispatcher) {
             getImageUrl(url)?.let {
-                Glide.with(context)
+                Glide.with(mContext)
                     .load(it)
                     .submit()
                     .get()
@@ -72,11 +72,11 @@ class PocketNetwork(
      * glide throws an error , it will return null.
      * @param urlString the complete url of the web page
      */
-    private suspend fun downloadFavicon(context: Context, urlString: String): Drawable? =
+    private suspend fun downloadFavicon(urlString: String): Drawable? =
         withContext(mDefaultDispatcher) {
             val url = URL(urlString)
             try {
-                Glide.with(context)
+                Glide.with(mContext)
                     .load("${url.protocol}://${url.host}/favicon.ico")
                     .submit()
                     .get()
