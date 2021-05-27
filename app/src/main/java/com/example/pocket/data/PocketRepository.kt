@@ -19,7 +19,7 @@ interface Repository {
     val savedUrls: LiveData<List<UrlEntity>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
     suspend fun saveUrl(urlString: String)
-    suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
+    fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     fun deleteUrl(urlItem: UrlEntity): UrlEntity
     fun insertUrl(urlItem: UrlEntity)
 }
@@ -113,8 +113,9 @@ class PocketRepository(
         return urlItem
     }
 
-    override suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme) {
-        mPocketPreferencesManger.updateThemePreference(appTheme)
+    override fun updateThemePreference(appTheme: PocketPreferences.AppTheme) {
+        mCoroutineScope.launch { mPocketPreferencesManger.updateThemePreference(appTheme) }
+
     }
 
     /**
