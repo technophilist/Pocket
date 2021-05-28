@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.pocket.data.Repository
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.data.preferences.PocketPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,22 +19,24 @@ import java.io.File
 interface HomeScreenViewModel {
     val filteredList: LiveData<List<UrlEntity>>
     val savedUrls: LiveData<List<UrlEntity>>
+    val currentAppTheme: LiveData<PocketPreferences.AppTheme>
 
     fun deleteUrlItem(urlItem: UrlEntity)
     fun undoDelete()
     fun onSearchTextValueChange(searchText: String)
+    fun changeAppTheme(theme:PocketPreferences.AppTheme)
     suspend fun getBitmap(imageAbsolutePathString: String): Bitmap
 }
 
 class HomeScreenViewModelImpl(
     private val mRepository: Repository,
     application: Application
-) : AndroidViewModel(application),
-    HomeScreenViewModel {
+) : AndroidViewModel(application), HomeScreenViewModel {
     private var mRecentlyDeletedItem: UrlEntity? = null
     private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())
     override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
     override val savedUrls = mRepository.savedUrls
+    override val currentAppTheme = mRepository.appTheme
 
     override fun deleteUrlItem(urlItem: UrlEntity) {
         mRecentlyDeletedItem = savedUrls.value?.let { mRepository.deleteUrl(urlItem) }
@@ -50,6 +53,10 @@ class HomeScreenViewModelImpl(
                 savedUrls.value?.filter { it.contentTitle.contains(searchText, true) }
             filteredList?.let { _filteredUrlList.postValue(it) }
         }
+    }
+
+    override fun changeAppTheme(theme: PocketPreferences.AppTheme) {
+        mRepository.updateThemePreference(theme)
     }
 
     override suspend fun getBitmap(imageAbsolutePathString: String): Bitmap =
