@@ -68,7 +68,7 @@ class PocketRepository(
                 )
             }.getOrNull()
 
-            val thumbnailPath = runCatching {
+            val faviconPath = runCatching {
                 saveImageToInternalStorage(
                     mNetwork.downloadFavicon(urlString),
                     url.host + urlContentTitle + "favicon"
@@ -80,7 +80,7 @@ class PocketRepository(
                     urlString,
                     urlContentTitle,
                     imageAbsolutePath,
-                    thumbnailPath
+                    faviconPath
                 )
             )
         }
