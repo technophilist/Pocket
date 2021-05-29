@@ -49,7 +49,6 @@ class PocketRepository(
         }
     }
 
-
     /**
      * Used for saving the url,absolute path of the thumbnail and the
      * thumbnail itself to the internal storage.It will save the url
@@ -68,7 +67,22 @@ class PocketRepository(
                     url.host + urlContentTitle
                 )
             }.getOrNull()
-            mDao.insertUrl(UrlEntity(urlString, urlContentTitle, imageAbsolutePath))
+
+            val thumbnailPath = runCatching {
+                saveImageToInternalStorage(
+                    mNetwork.downloadFavicon(urlString),
+                    url.host + urlContentTitle + "favicon"
+                )
+            }.getOrNull()
+
+            mDao.insertUrl(
+                UrlEntity(
+                    urlString,
+                    urlContentTitle,
+                    imageAbsolutePath,
+                    thumbnailPath
+                )
+            )
         }
     }
 
@@ -109,6 +123,9 @@ class PocketRepository(
         mRecentThumbnailDeleteJob = mCoroutineScope.launch {
             delay(mLongSnackbarDuration)
             urlItem.imageAbsolutePath?.let { File(it).delete() }
+            urlItem.thumbnailAbsolutePath?.let{
+                File(it).delete()
+            }
         }
         return urlItem
     }
