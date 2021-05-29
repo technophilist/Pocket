@@ -22,6 +22,7 @@ data class UrlEntity(
     val url: String,
     val contentTitle: String,
     val imageAbsolutePath: String?, //thumbnail
+    val thumbnailAbsolutePath:String?=null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 ) {
