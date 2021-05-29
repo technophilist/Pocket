@@ -114,16 +114,16 @@ class PocketRepository(
         mCoroutineScope.launch { mDao.deleteUrl(urlItem.id) }
 
         /*
-        If mRecentThumbnailDeleteJob is not null and a new
-        Job is assigned to it, it means that the undo delete
-        snack bar for that particular url was dismissed.Which
-        means that it is safe to delete that thumbnail from the
-        device storage.
+         If mRecentThumbnailDeleteJob is not null and a new
+         Job is assigned to it, it means that the undo delete
+         snack bar for that particular url was dismissed.Which
+         means that it is safe to delete the thumbnail and favicon
+         images associated with that url from the device storage.
          */
         mRecentThumbnailDeleteJob = mCoroutineScope.launch {
             delay(mLongSnackbarDuration)
             urlItem.imageAbsolutePath?.let { File(it).delete() }
-            urlItem.thumbnailAbsolutePath?.let{
+            urlItem.thumbnailAbsolutePath?.let {
                 File(it).delete()
             }
         }
