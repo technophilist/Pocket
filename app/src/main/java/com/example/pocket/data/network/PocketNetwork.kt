@@ -13,6 +13,7 @@ import java.net.URL
 interface Network {
     suspend fun fetchWebsiteContentTitle(url: String): String
     suspend fun downloadImage(url: String): Drawable?
+    suspend fun downloadFavicon(urlString:String): Drawable?
 }
 
 class PocketNetwork(
@@ -72,7 +73,7 @@ class PocketNetwork(
      * glide throws an error , it will return null.
      * @param urlString the complete url of the web page
      */
-    private suspend fun downloadFavicon(urlString: String): Drawable? =
+    override suspend fun downloadFavicon(urlString: String): Drawable? =
         withContext(mDefaultDispatcher) {
             val url = URL(urlString)
             try {
