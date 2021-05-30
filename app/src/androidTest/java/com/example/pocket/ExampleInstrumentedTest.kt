@@ -51,10 +51,19 @@ class ExampleInstrumentedTest {
         assertNotNull(a)
     }
 
-   
-
-
-
+    @Test
+    fun downloadFaviconFromTagTest() {
+        // <link rel="shortcut icon" href="URL goes here" />
+        val document =
+            Jsoup.connect("https://www.theverge.com/2021/5/27/22456248/oneplus-digital-wellpaper-app-usage-visualization-live-wallpaper")
+                .get()
+        //selecting all <link> elements
+        val linkElements = document.select("link")
+        val a = linkElements.filter {
+            it.attr("rel") == "shortcut icon" || it.attr("rel") == "icon"
+        }
+        println(a.first().attr("href"))
+    }
 
 }
 
