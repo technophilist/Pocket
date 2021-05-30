@@ -61,13 +61,7 @@ class ExampleInstrumentedTest {
         assertNotNull(a)
     }
 
-    @Test
-    fun imageLoadingTest() {
-        val favicon = runBlocking { downloadImage(testContext,"https://www.apple.com") }
-        val image = runBlocking { downloadImage(testContext,"https://www.theverge.com/2021/4/20/22394034/apple-new-imac-m1-chip-colors-design-specs-price-release-date") }
-        assertNotNull(favicon)
-        assertNotNull(image)
-    }
+   
 
 
 
