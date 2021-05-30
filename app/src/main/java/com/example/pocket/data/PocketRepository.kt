@@ -123,7 +123,7 @@ class PocketRepository(
         mRecentThumbnailDeleteJob = mCoroutineScope.launch {
             delay(mLongSnackbarDuration)
             urlItem.imageAbsolutePath?.let { File(it).delete() }
-            urlItem.thumbnailAbsolutePath?.let {
+            urlItem.faviconAbsolutePath?.let {
                 File(it).delete()
             }
         }
