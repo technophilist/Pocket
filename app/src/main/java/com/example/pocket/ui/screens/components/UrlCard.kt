@@ -1,6 +1,8 @@
 package com.example.pocket.ui.screens.components
 
+import android.graphics.Color
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -21,12 +23,20 @@ fun UrlCard(
     onCardSwiped: (UrlEntity) -> Unit = {},
     urlItem: UrlEntity,
 ) {
-    var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
+    var thumbnailBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
+    var faviconBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
     val dismissState = rememberDismissState {
         if (it == DismissValue.DismissedToEnd) {
             onCardSwiped(urlItem)
             true
         } else false
+    }
+    urlItem.imageAbsolutePath?.let {
+        LaunchedEffect(urlItem.id) { thumbnailBitmapState = onFetchImageBitmap(it) }
+    }
+
+    urlItem.faviconAbsolutePath?.let {
+        LaunchedEffect(urlItem.id) { faviconBitmapState = onFetchImageBitmap(it) }
     }
 
     SwipeToDismiss(
@@ -36,10 +46,8 @@ fun UrlCard(
     ) {
         Card(modifier = modifier) {
             Column(modifier = Modifier.fillMaxSize()) {
-                urlItem.imageAbsolutePath?.let {
-                    LaunchedEffect(urlItem.id) { imageBitmapState = onFetchImageBitmap(it) }
-                }
-                imageBitmapState?.let {
+
+                thumbnailBitmapState?.let {
                     Image(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -64,7 +72,7 @@ fun UrlCard(
                         .fillMaxWidth()
                         .weight(0.5f),
                     hostName = urlItem.host,
-                    thumbnailBitmapState = imageBitmapState
+                    thumbnailBitmapState = faviconBitmapState
                 )
             }
         }
