@@ -1,24 +1,14 @@
 package com.example.pocket
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.bumptech.glide.Glide
-import com.example.pocket.utils.downloadImage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-
 import org.junit.Test
 import org.junit.runner.RunWith
-
 import org.junit.Assert.*
 import org.junit.Before
-import java.io.IOException
-import java.net.URL
 
 /**
  * Instrumented test, which will execute on an Android device.
