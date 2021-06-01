@@ -3,9 +3,8 @@ package com.example.pocket.data.network
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.pocket.utils.getDownloadedResource
+import kotlinx.coroutines.*
 import org.jsoup.Jsoup
 import java.net.URL
 
@@ -13,7 +12,7 @@ import java.net.URL
 interface Network {
     suspend fun fetchWebsiteContentTitle(url: String): String
     suspend fun downloadImage(url: String): Drawable?
-    suspend fun downloadFavicon(urlString:String): Drawable?
+    suspend fun downloadFavicon(urlString: String): Drawable?
 }
 
 class PocketNetwork(
@@ -39,9 +38,9 @@ class PocketNetwork(
         withContext(mDefaultDispatcher) {
             getImageUrl(url)?.let {
                 Glide.with(mContext)
+                    .asDrawable()
                     .load(it)
-                    .submit()
-                    .get()
+                    .getDownloadedResource()
             }
         }
 
@@ -63,10 +62,8 @@ class PocketNetwork(
                 }
             }
         }
-
         imageUrl
     }
-
 
     /**
      * Tries to download the favicon of a web page.If the favicon is not found or
@@ -77,10 +74,10 @@ class PocketNetwork(
         withContext(mDefaultDispatcher) {
             val url = URL(urlString)
             try {
+                // TODO Catch clause does not execute
                 Glide.with(mContext)
                     .load("${url.protocol}://${url.host}/favicon.ico")
-                    .submit()
-                    .get()
+                    .getDownloadedResource()
             } catch (exception: Exception) {
                 null
             }
