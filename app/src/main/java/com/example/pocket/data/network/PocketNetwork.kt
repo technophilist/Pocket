@@ -28,9 +28,8 @@ class PocketNetwork(
         withContext(mDefaultDispatcher) { Jsoup.connect(url).get().title() }
 
     /**
-     * Tries to download the image from the 'og:image' open graph  and uses glide to get the \
+     * Tries to download the image from the 'og:image' open graph and uses glide to get the
      * drawable.
-     * @param context the context
      * @param url the complete url of the website
      * @return null if some error occurred while downloading
      */
