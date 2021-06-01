@@ -4,7 +4,11 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
 import com.example.pocket.utils.getDownloadedResource
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import org.jsoup.Connection
 import org.jsoup.Jsoup
 import java.net.URL
 
@@ -51,17 +55,18 @@ class PocketNetwork(
      */
     private suspend fun getImageUrl(url: String): String? = withContext(mDefaultDispatcher) {
         val document = Jsoup.connect(url).get()
+
+        //selecting all the meta elements
         val metaElements = document.select("meta")
+
+        //selecting all meta graph tags
         val openGraphElements = metaElements.filter { it.attr("property").contains("og:") }
-        var imageUrl: String? = null
-        openGraphElements.forEach {
-            when (it.attr("property")) {
-                "og:image" -> {
-                    imageUrl = it.attr("content")
-                }
-            }
-        }
-        imageUrl
+
+        //selecting the 'og:image' tag
+        val ogImageTag = openGraphElements.find { it.attr("property") == "og:image" }
+
+        //returning the value of the 'content' property which contains the url of the image
+        ogImageTag?.attr("content")
     }
 
     /**
@@ -81,4 +86,5 @@ class PocketNetwork(
                 null
             }
         }
+
 }
