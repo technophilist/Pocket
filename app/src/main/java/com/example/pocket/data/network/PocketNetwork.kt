@@ -6,9 +6,7 @@ import com.bumptech.glide.Glide
 import com.example.pocket.utils.getDownloadedResource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import org.jsoup.Connection
 import org.jsoup.Jsoup
 import java.net.URL
 
@@ -38,14 +36,13 @@ class PocketNetwork(
      * @return null if some error occurred while downloading
      */
     override suspend fun downloadImage(url: String): Drawable? =
-        withContext(mDefaultDispatcher) {
-            getImageUrl(url)?.let {
-                Glide.with(mContext)
-                    .asDrawable()
-                    .load(it)
-                    .getDownloadedResource()
-            }
+        getImageUrl(url)?.let {
+            Glide.with(mContext)
+                .asDrawable()
+                .load(it)
+                .getDownloadedResource()
         }
+
 
     /**
      * Tries to get the url of the main image from the open graph meta tags in the html
