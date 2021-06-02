@@ -18,7 +18,7 @@ import java.net.URL
 interface Repository {
     val savedUrls: LiveData<List<UrlEntity>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
-    suspend fun saveUrl(urlString: String)
+    suspend fun saveUrl(url:URL)
     fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     fun deleteUrl(urlItem: UrlEntity): UrlEntity
     fun insertUrl(urlItem: UrlEntity)
@@ -55,29 +55,28 @@ class PocketRepository(
      * only if the url doesn't already exist in the database.Url,absolute
      * path will be stored in the database.Whereas,the thumbnail image will be
      * stored to the internal storage of the device.
-     * @param urlString string representing the complete url
+     * @param url the complete url of the website
      */
-    override suspend fun saveUrl(urlString: String) {
-        if (!urlExists(urlString)) {
-            val url = URL(urlString)
-            val urlContentTitle = mNetwork.fetchWebsiteContentTitle(urlString)
+    override suspend fun saveUrl(url:URL) {
+        if (!urlExists(url)) {
+            val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
             val imageAbsolutePath = runCatching {
                 saveImageToInternalStorage(
-                    mNetwork.downloadImage(urlString),
+                    mNetwork.downloadImage(url),
                     url.host + urlContentTitle
                 )
             }.getOrNull()
 
             val faviconPath = runCatching {
                 saveImageToInternalStorage(
-                    mNetwork.downloadFavicon(urlString),
+                    mNetwork.downloadFavicon(url),
                     url.host + urlContentTitle + "favicon"
                 )
             }.getOrNull()
 
             mDao.insertUrl(
                 UrlEntity(
-                    urlString,
+                    url.toString(),
                     urlContentTitle,
                     imageAbsolutePath,
                     faviconPath
@@ -88,11 +87,11 @@ class PocketRepository(
 
     /**
      * Check whether the url already exists in the database or not.
-     * @param urlString string representing the complete url
+     * @param url the complete url of the website
      * @return true if exists else false
      */
-    private suspend fun urlExists(urlString: String) =
-        when (withContext(mDefaultDispatcher) { mDao.checkIfUrlExists(urlString) }) {
+    private suspend fun urlExists(url:URL) =
+        when (withContext(mDefaultDispatcher) { mDao.checkIfUrlExists(url.toString()) }) {
             0 -> false
             else -> true
         }
