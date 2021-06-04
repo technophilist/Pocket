@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import java.net.URL
+import java.util.*
 
 
 interface Network {
@@ -45,7 +46,6 @@ class PocketNetwork(
             }.getOrNull()
         }
 
-
     /**
      * Tries to get the url of the main image from the open graph meta tags in the html
      * document.If it cannot find the tag,it returns null.
@@ -76,11 +76,63 @@ class PocketNetwork(
     override suspend fun downloadFavicon(url: URL): Drawable? =
         withContext(mDefaultDispatcher) {
             runCatching {
+                //try getting the image using /favicon.ico convention used in the web
                 Glide.with(mContext)
                     .asDrawable()
                     .load("${url.protocol}://${url.host}/favicon.ico")
                     .getDownloadedResource()
-            }.getOrNull()
+            }.getOrElse {
+
+                //if it throws an error,try getting the favicon from the tags
+                getFaviconUrlFromTags(url)?.let { urlString ->
+
+                    /*
+                    we are not using a try/catch block because the
+                    [getFaviconUrlFromTags] returns a url string only if
+                    it can find a valid url to the favicon
+                     */
+                    Glide.with(mContext)
+                        .asDrawable()
+                        .load(urlString)
+                        .getDownloadedResource()
+                }
+
+                //return null if we are not able to find a tag with the favicon
+            }
         }
+
+    /**
+     * Tries to get the favicon of the website using the "shortcut icon" or "icon"
+     * attribute of the 'link' elements embedded in the webpage.
+     * @param url the complete url of the website
+     * @return returns null if it is not possible to find a link to the favicon
+     * or the url string of the favicon if it is possible to get the link.
+     */
+    private suspend fun getFaviconUrlFromTags(url: URL): String? {
+        return withContext(mDefaultDispatcher) {
+            val document = Jsoup
+                .connect(url.toString())
+                .get()
+
+            //selecting all <link> elements
+            val linkElements = document.select("link")
+
+            //filtering all the link elements that have icon/shortcut icon as their attribute
+            val shortcutElements = linkElements.filter {
+                it.attr("rel") == "shortcut icon" || it.attr("rel") == "icon"
+            }
+
+            try {
+                //selecting the first element and getting the url of the favicon
+                shortcutElements.first().attr("href")
+
+            } catch (exception: NoSuchElementException) {
+
+                //if it throws a NoSuchElementException , it means that the list is empty
+                //returning null since the list is empty
+                null
+            }
+        }
+    }
 
 }
