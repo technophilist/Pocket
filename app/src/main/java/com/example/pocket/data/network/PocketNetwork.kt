@@ -3,7 +3,7 @@ package com.example.pocket.data.network
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
-import com.example.pocket.data.database.UrlEntity
+import com.bumptech.glide.load.engine.GlideException
 import com.example.pocket.utils.getDownloadedResource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +13,7 @@ import java.net.URL
 
 
 interface Network {
-    suspend fun fetchWebsiteContentTitle(url:URL): String
+    suspend fun fetchWebsiteContentTitle(url: URL): String
     suspend fun downloadImage(url: URL): Drawable?
     suspend fun downloadFavicon(url: URL): Drawable?
 }
@@ -27,7 +27,7 @@ class PocketNetwork(
      * @param url the complete url of the website
      * @return The content of the title tag of the website.
      */
-    override suspend fun fetchWebsiteContentTitle(url:URL): String =
+    override suspend fun fetchWebsiteContentTitle(url: URL): String =
         withContext(mDefaultDispatcher) { Jsoup.connect(url.toString()).get().title() }
 
     /**
@@ -38,10 +38,14 @@ class PocketNetwork(
      */
     override suspend fun downloadImage(url: URL): Drawable? =
         getImageUrl(url)?.let {
-            Glide.with(mContext)
-                .asDrawable()
-                .load(it)
-                .getDownloadedResource()
+            try {
+                Glide.with(mContext)
+                    .asDrawable()
+                    .load(it)
+                    .getDownloadedResource()
+            } catch (exception: GlideException) {
+                null
+            }
         }
 
 
@@ -75,11 +79,11 @@ class PocketNetwork(
     override suspend fun downloadFavicon(url: URL): Drawable? =
         withContext(mDefaultDispatcher) {
             try {
-                // TODO Catch clause does not execute
                 Glide.with(mContext)
+                    .asDrawable()
                     .load("${url.protocol}://${url.host}/favicon.ico")
                     .getDownloadedResource()
-            } catch (exception: Exception) {
+            } catch (exception: GlideException) {
                 null
             }
         }
