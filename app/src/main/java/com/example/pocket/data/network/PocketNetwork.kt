@@ -3,7 +3,6 @@ package com.example.pocket.data.network
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.GlideException
 import com.example.pocket.utils.getDownloadedResource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -38,14 +37,12 @@ class PocketNetwork(
      */
     override suspend fun downloadImage(url: URL): Drawable? =
         getImageUrl(url)?.let {
-            try {
+            runCatching {
                 Glide.with(mContext)
                     .asDrawable()
                     .load(it)
                     .getDownloadedResource()
-            } catch (exception: GlideException) {
-                null
-            }
+            }.getOrNull()
         }
 
 
@@ -78,14 +75,12 @@ class PocketNetwork(
      */
     override suspend fun downloadFavicon(url: URL): Drawable? =
         withContext(mDefaultDispatcher) {
-            try {
+            runCatching {
                 Glide.with(mContext)
                     .asDrawable()
                     .load("${url.protocol}://${url.host}/favicon.ico")
                     .getDownloadedResource()
-            } catch (exception: GlideException) {
-                null
-            }
+            }.getOrNull()
         }
 
 }
