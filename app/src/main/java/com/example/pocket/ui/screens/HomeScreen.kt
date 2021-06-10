@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.ui.screens.components.SearchBar
-import com.example.pocket.ui.screens.components.UrlCard
+import com.example.pocket.ui.screens.components.SwipeToDismissUrlCard
 import com.example.pocket.ui.screens.components.rememberSearchBarState
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.launch
@@ -192,7 +192,7 @@ private fun UrlList(
             items = urlItems,
             key = { it.id }
         ) { urlItem ->
-            UrlCard(
+            SwipeToDismissUrlCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(310.dp)
