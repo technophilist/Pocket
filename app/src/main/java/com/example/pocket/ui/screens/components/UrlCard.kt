@@ -17,7 +17,7 @@ import com.example.pocket.data.database.UrlEntity
 
 @ExperimentalMaterialApi
 @Composable
-fun UrlCard(
+fun SwipeToDismissUrlCard(
     modifier: Modifier = Modifier,
     onFetchImageBitmap: suspend (String) -> ImageBitmap,
     onCardSwiped: (UrlEntity) -> Unit = {},
@@ -44,44 +44,61 @@ fun UrlCard(
         background = {},
         directions = setOf(DismissDirection.StartToEnd)
     ) {
-        Card(modifier = modifier) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                if (thumbnailBitmapState == null) {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(3f)
-                            .background(Color.Gray),
-                    )
+        UrlCard(
+            modifier = modifier,
+            contentTitle = urlItem.contentTitle,
+            hostName = urlItem.host,
+            favicon = faviconBitmapState,
+            thumbnail = thumbnailBitmapState
+        )
+    }
+}
 
-                } else {
-                    Image(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(3f),
-                        bitmap = thumbnailBitmapState!!,
-                        contentDescription = "Thumbnail",
-                        contentScale = ContentScale.Crop
-                    )
-                }
-
-                Text(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .weight(0.5f),
-                    text = urlItem.contentTitle,
-                    style = MaterialTheme.typography.h1,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                UrlCardFooter(
+@Composable
+fun UrlCard(
+    modifier: Modifier = Modifier,
+    thumbnail: ImageBitmap? = null,
+    favicon: ImageBitmap? = null,
+    contentTitle: String,
+    hostName: String
+) {
+    Card(modifier = modifier) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            if (thumbnail == null) {
+                Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(0.5f),
-                    hostName = urlItem.host,
-                    thumbnailBitmapState = faviconBitmapState
+                        .weight(3f)
+                        .background(Color.Gray),
+                )
+
+            } else {
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(3f),
+                    bitmap = thumbnail,
+                    contentDescription = "Thumbnail",
+                    contentScale = ContentScale.Crop
                 )
             }
+
+            Text(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.5f),
+                text = contentTitle,
+                style = MaterialTheme.typography.h1,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            UrlCardFooter(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f),
+                hostName = hostName,
+                thumbnailBitmapState = favicon
+            )
         }
     }
 }
