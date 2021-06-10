@@ -19,7 +19,7 @@ import java.util.*
 interface Repository {
     val savedUrls: LiveData<List<UrlEntity>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
-    suspend fun saveUrl(url:URL)
+    suspend fun saveUrl(url: URL)
     fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     fun deleteUrl(urlItem: UrlEntity): UrlEntity
     fun insertUrl(urlItem: UrlEntity)
@@ -58,7 +58,7 @@ class PocketRepository(
      * stored to the internal storage of the device.
      * @param url the complete url of the website
      */
-    override suspend fun saveUrl(url:URL) {
+    override suspend fun saveUrl(url: URL) {
         if (!urlExists(url)) {
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
             val imageAbsolutePath = runCatching {
@@ -93,7 +93,7 @@ class PocketRepository(
      * @param url the complete url of the website
      * @return true if exists else false
      */
-    private suspend fun urlExists(url:URL) =
+    private suspend fun urlExists(url: URL) =
         when (withContext(mDefaultDispatcher) { mDao.checkIfUrlExists(url.toString()) }) {
             0 -> false
             else -> true
@@ -138,22 +138,33 @@ class PocketRepository(
     }
 
     /**
-     * Saves the [resource] as a jpg file to internal storage
-     * @param resource the type of image resource that is to be stored
-     * @param fileName the name that will be used to save the file
+     * Saves the [resource] to the internal storage.
+     *
+     * @param resource The resource that is to be stored.
+     * @param fileName The name that will be used to save the file.
+     * @param filetype Used to specify the type that the file should be saved as.
      * @return If saved successfully,the absolute path of the saved image.Else,
      *         null.
      */
     private suspend fun <T> saveImageToInternalStorage(
         resource: T,
         fileName: String,
-        filetype:Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
+        filetype: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
     ): String? {
         val thumbnailsDirectory = File("$mFilesDirectory/thumbnails")
         if (!thumbnailsDirectory.exists()) thumbnailsDirectory.mkdir()
-
         val bitmapImage = (resource as BitmapDrawable).bitmap
-        val imageFile = File("${thumbnailsDirectory.absolutePath}/" + fileName + ".${filetype.name.toLowerCase()}")
+
+        /*
+        * toLowerCase() without any args uses Locale.getDefault() implicitly,which means that it is not locale agnostic
+        * this may cause un-expected lowercase conversions
+        */
+        val imageFile = File(
+            "${thumbnailsDirectory.absolutePath}/" + fileName + ".${
+                filetype.name.toLowerCase(Locale.ROOT)
+            }"
+        )
+
         var savedImagePath: String? = null
 
         return withContext(mDefaultDispatcher) {
