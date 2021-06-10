@@ -14,6 +14,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import java.io.File
 import java.net.URL
+import java.util.*
 
 interface Repository {
     val savedUrls: LiveData<List<UrlEntity>>
@@ -68,9 +69,11 @@ class PocketRepository(
             }.getOrNull()
 
             val faviconPath = runCatching {
+                //save the image in png format to preserve the transparent background
                 saveImageToInternalStorage(
                     mNetwork.downloadFavicon(url),
-                    url.host + urlContentTitle + "favicon"
+                    url.host + urlContentTitle + "favicon",
+                    Bitmap.CompressFormat.PNG
                 )
             }.getOrNull()
 
@@ -143,13 +146,14 @@ class PocketRepository(
      */
     private suspend fun <T> saveImageToInternalStorage(
         resource: T,
-        fileName: String
+        fileName: String,
+        filetype:Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
     ): String? {
         val thumbnailsDirectory = File("$mFilesDirectory/thumbnails")
         if (!thumbnailsDirectory.exists()) thumbnailsDirectory.mkdir()
 
         val bitmapImage = (resource as BitmapDrawable).bitmap
-        val imageFile = File("${thumbnailsDirectory.absolutePath}/" + fileName + ".jpeg")
+        val imageFile = File("${thumbnailsDirectory.absolutePath}/" + fileName + ".${filetype.name.toLowerCase()}")
         var savedImagePath: String? = null
 
         return withContext(mDefaultDispatcher) {
@@ -158,7 +162,7 @@ class PocketRepository(
 
                 //writing the image to the file using FileOutputStream
                 imageFile.outputStream().use {
-                    bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, it)
+                    bitmapImage.compress(filetype, 100, it)
                     savedImagePath = imageFile.absolutePath
                 }
 
