@@ -54,6 +54,16 @@ fun SwipeToDismissUrlCard(
     }
 }
 
+ /**
+  * This composable represents a url card.If the thumbnail is null
+  * then a placeholder with a grey background will be displayed.
+  *
+  * @param modifier The modifier to be applied to the card.
+  * @param thumbnail The image to be displayed as the thumbnail.
+  * @param favicon The favicon image of the webpage.
+  * @param contentTitle The title of the webpage.
+  * @param hostName The name of the host of the webpage.
+  * */
 @Composable
 fun UrlCard(
     modifier: Modifier = Modifier,
@@ -65,6 +75,7 @@ fun UrlCard(
     Card(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (thumbnail == null) {
+                //if the thumbnail is null,display a grey placeholder
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -102,6 +113,7 @@ fun UrlCard(
         }
     }
 }
+
 
 @Composable
 private fun UrlCardFooter(
