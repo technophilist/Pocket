@@ -108,7 +108,7 @@ fun UrlCard(
                     .fillMaxWidth()
                     .weight(0.5f),
                 hostName = hostName,
-                thumbnailBitmapState = favicon
+                favicon = favicon
             )
         }
     }
@@ -118,11 +118,11 @@ fun UrlCard(
 @Composable
 private fun UrlCardFooter(
     modifier: Modifier = Modifier,
-    thumbnailBitmapState: ImageBitmap? = null,
+    favicon: ImageBitmap? = null,
     hostName: String
 ) {
     Row(modifier = modifier) {
-        thumbnailBitmapState?.let {
+        favicon?.let {
             Image(
                 modifier = Modifier
                     .padding(start = 8.dp)
