@@ -93,7 +93,7 @@ fun HomeScreen(
                 ListEmptyMessage(modifier = Modifier.fillMaxSize())
             } else {
                 UrlList(
-                    onFetchImageBitmap = { urlString ->
+                    fetchImageBitmap = { urlString ->
                         viewModel.getBitmap(urlString).asImageBitmap()
                     },
                     urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
@@ -109,31 +109,6 @@ fun HomeScreen(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun ListEmptyMessage(modifier: Modifier = Modifier) {
-    val message = """
-        It's easy to add items to Pocket.
-        Use the share button of any browser 
-        and tap on the Pocket icon to add
-        an item.
-         """.trimIndent()
-
-    Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 0.dp),
-            text = "Your list is empty",
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = message,
-            textAlign = TextAlign.Center
-        )
     }
 }
 
@@ -171,13 +146,38 @@ fun PocketAppBar(
     }
 }
 
+@Composable
+private fun ListEmptyMessage(modifier: Modifier = Modifier) {
+    val message = """
+        It's easy to add items to Pocket.
+        Use the share button of any browser 
+        and tap on the Pocket icon to add
+        an item.
+         """.trimIndent()
+
+    Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 0.dp),
+            text = "Your list is empty",
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = message,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
 @ExperimentalMaterialApi
 @Composable
 private fun UrlList(
     urlItems: List<UrlEntity>,
     onClickItem: (UrlEntity) -> Unit,
     onItemSwiped: (UrlEntity) -> Unit = {},
-    onFetchImageBitmap: suspend (String) -> ImageBitmap,
+    fetchImageBitmap: suspend (String) -> ImageBitmap,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -196,7 +196,7 @@ private fun UrlList(
                     .fillMaxWidth()
                     .height(310.dp)
                     .clickable { onClickItem(urlItem) },
-                onFetchImageBitmap = onFetchImageBitmap,
+                fetchImageBitmap = fetchImageBitmap,
                 onCardSwiped = onItemSwiped,
                 urlItem = urlItem
             )
@@ -206,9 +206,9 @@ private fun UrlList(
 
 @ExperimentalMaterialApi
 @Composable
-fun SwipeToDismissUrlCard(
+private fun SwipeToDismissUrlCard(
     modifier: Modifier = Modifier,
-    onFetchImageBitmap: suspend (String) -> ImageBitmap,
+    fetchImageBitmap: suspend (String) -> ImageBitmap,
     onCardSwiped: (UrlEntity) -> Unit = {},
     urlItem: UrlEntity,
 ) {
@@ -221,11 +221,11 @@ fun SwipeToDismissUrlCard(
         } else false
     }
     urlItem.imageAbsolutePath?.let {
-        LaunchedEffect(urlItem.id) { thumbnailBitmapState = onFetchImageBitmap(it) }
+        LaunchedEffect(urlItem.id) { thumbnailBitmapState = fetchImageBitmap(it) }
     }
 
     urlItem.faviconAbsolutePath?.let {
-        LaunchedEffect(urlItem.id) { faviconBitmapState = onFetchImageBitmap(it) }
+        LaunchedEffect(urlItem.id) { faviconBitmapState = fetchImageBitmap(it) }
     }
 
     SwipeToDismiss(
