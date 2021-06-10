@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.ui.screens.components.SearchBar
-import com.example.pocket.ui.screens.components.SwipeToDismissUrlCard
+import com.example.pocket.ui.screens.components.UrlCard
 import com.example.pocket.ui.screens.components.rememberSearchBarState
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.launch
@@ -49,7 +49,6 @@ fun HomeScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         if (!searchBarExpanded) {
-
             PocketAppBar(
                 isDarkModeSupported = isDarkModeSupported,
                 onDarkModeIconClicked = onDarkModeIconClicked,
@@ -202,6 +201,45 @@ private fun UrlList(
                 urlItem = urlItem
             )
         }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun SwipeToDismissUrlCard(
+    modifier: Modifier = Modifier,
+    onFetchImageBitmap: suspend (String) -> ImageBitmap,
+    onCardSwiped: (UrlEntity) -> Unit = {},
+    urlItem: UrlEntity,
+) {
+    var thumbnailBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
+    var faviconBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
+    val dismissState = rememberDismissState {
+        if (it == DismissValue.DismissedToEnd) {
+            onCardSwiped(urlItem)
+            true
+        } else false
+    }
+    urlItem.imageAbsolutePath?.let {
+        LaunchedEffect(urlItem.id) { thumbnailBitmapState = onFetchImageBitmap(it) }
+    }
+
+    urlItem.faviconAbsolutePath?.let {
+        LaunchedEffect(urlItem.id) { faviconBitmapState = onFetchImageBitmap(it) }
+    }
+
+    SwipeToDismiss(
+        state = dismissState,
+        background = {},
+        directions = setOf(DismissDirection.StartToEnd)
+    ) {
+        UrlCard(
+            modifier = modifier,
+            contentTitle = urlItem.contentTitle,
+            hostName = urlItem.host,
+            favicon = faviconBitmapState,
+            thumbnail = thumbnailBitmapState
+        )
     }
 }
 

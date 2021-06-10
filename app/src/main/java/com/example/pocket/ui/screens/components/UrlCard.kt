@@ -15,44 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 
-@ExperimentalMaterialApi
-@Composable
-fun SwipeToDismissUrlCard(
-    modifier: Modifier = Modifier,
-    onFetchImageBitmap: suspend (String) -> ImageBitmap,
-    onCardSwiped: (UrlEntity) -> Unit = {},
-    urlItem: UrlEntity,
-) {
-    var thumbnailBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
-    var faviconBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
-    val dismissState = rememberDismissState {
-        if (it == DismissValue.DismissedToEnd) {
-            onCardSwiped(urlItem)
-            true
-        } else false
-    }
-    urlItem.imageAbsolutePath?.let {
-        LaunchedEffect(urlItem.id) { thumbnailBitmapState = onFetchImageBitmap(it) }
-    }
 
-    urlItem.faviconAbsolutePath?.let {
-        LaunchedEffect(urlItem.id) { faviconBitmapState = onFetchImageBitmap(it) }
-    }
-
-    SwipeToDismiss(
-        state = dismissState,
-        background = {},
-        directions = setOf(DismissDirection.StartToEnd)
-    ) {
-        UrlCard(
-            modifier = modifier,
-            contentTitle = urlItem.contentTitle,
-            hostName = urlItem.host,
-            favicon = faviconBitmapState,
-            thumbnail = thumbnailBitmapState
-        )
-    }
-}
 
  /**
   * This composable represents a url card.If the thumbnail is null
