@@ -138,13 +138,13 @@ class PocketRepository(
     }
 
     /**
-     * Saves the [resource] to the internal storage.
+     * Saves the [resource] to the internal storage in the specified [filetype] using
+     * the [fileName] provided.
      *
      * @param resource The resource that is to be stored.
      * @param fileName The name that will be used to save the file.
      * @param filetype Used to specify the type that the file should be saved as.
-     * @return If saved successfully,the absolute path of the saved image.Else,
-     *         null.
+     * @return If saved successfully,the absolute path of the saved image.Else,null.
      */
     private suspend fun <T> saveImageToInternalStorage(
         resource: T,
