@@ -64,7 +64,8 @@ class PocketRepository(
             val imageAbsolutePath = runCatching {
                 saveImageToInternalStorage(
                     mNetwork.downloadImage(url),
-                    url.host + urlContentTitle
+                    url.host + urlContentTitle,
+                    directoryName = "thumbnails"
                 )
             }.getOrNull()
 
@@ -73,7 +74,8 @@ class PocketRepository(
                 saveImageToInternalStorage(
                     mNetwork.downloadFavicon(url),
                     url.host + urlContentTitle + "favicon",
-                    Bitmap.CompressFormat.PNG
+                    Bitmap.CompressFormat.PNG,
+                    "favicons"
                 )
             }.getOrNull()
 
@@ -138,8 +140,8 @@ class PocketRepository(
     }
 
     /**
-     * Saves the [resource] to the internal storage in the specified [filetype] using
-     * the [fileName] provided.
+     * Saves the [resource] to the specified directory in the internal storage,
+     * in the specified [filetype] using the [fileName] provided.
      *
      * @param resource The resource that is to be stored.
      * @param fileName The name that will be used to save the file.
@@ -149,9 +151,10 @@ class PocketRepository(
     private suspend fun <T> saveImageToInternalStorage(
         resource: T,
         fileName: String,
-        filetype: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
+        filetype: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
+        directoryName:String
     ): String? {
-        val thumbnailsDirectory = File("$mFilesDirectory/thumbnails")
+        val thumbnailsDirectory = File("$mFilesDirectory/$directoryName")
         if (!thumbnailsDirectory.exists()) thumbnailsDirectory.mkdir()
         val bitmapImage = (resource as BitmapDrawable).bitmap
 
