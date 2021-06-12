@@ -136,7 +136,6 @@ class PocketRepository(
 
     override fun updateThemePreference(appTheme: PocketPreferences.AppTheme) {
         mCoroutineScope.launch { mPocketPreferencesManger.updateThemePreference(appTheme) }
-
     }
 
     /**
@@ -152,40 +151,47 @@ class PocketRepository(
         resource: T,
         fileName: String,
         filetype: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-        directoryName:String
-    ): String? {
-        val thumbnailsDirectory = File("$mFilesDirectory/$directoryName")
-        if (!thumbnailsDirectory.exists()) thumbnailsDirectory.mkdir()
-        val bitmapImage = (resource as BitmapDrawable).bitmap
+        directoryName: String
+    ): String? = withContext(mDefaultDispatcher) {
+        runCatching {
 
-        /*
-        * toLowerCase() without any args uses Locale.getDefault() implicitly,which means that it is not locale agnostic
-        * this may cause un-expected lowercase conversions
-        */
-        val imageFile = File(
-            "${thumbnailsDirectory.absolutePath}/" + fileName + ".${
-                filetype.name.toLowerCase(Locale.ROOT)
-            }"
-        )
+            val bitmapImage = (resource as BitmapDrawable).bitmap
 
-        var savedImagePath: String? = null
+            //creating a file instance with the specified path
+            val directory = File("$mFilesDirectory/$directoryName")
 
-        return withContext(mDefaultDispatcher) {
-            try {
-                imageFile.createNewFile()
+            //create the directory only if it doesn't already exist
+            if (!directory.exists()) directory.mkdir()
 
-                //writing the image to the file using FileOutputStream
-                imageFile.outputStream().use {
-                    bitmapImage.compress(filetype, 100, it)
-                    savedImagePath = imageFile.absolutePath
-                }
+            //string representing the path of the saved resource
+            var savedPath: String?
 
-            } catch (exception: Exception) {
-                exception.printStackTrace()
+            /*
+             * toLowerCase() without any args uses Locale.getDefault() implicitly,which means that it is not locale agnostic
+             * this may cause un-expected lowercase conversions
+             */
+            val fileExtension = filetype.name.toLowerCase(Locale.ROOT)
+            val imageFile = File("${directory.absolutePath}/" + fileName + ".$fileExtension")
+
+            //create a new image file
+            imageFile.createNewFile()
+
+            //writing the image to the file using FileOutputStream
+            imageFile.outputStream().use {
+                bitmapImage.compress(filetype, 100, it)
+                savedPath = imageFile.absolutePath
             }
-            savedImagePath
+
+            //return the path of the created file
+            savedPath
+
+        }.getOrElse {
+
+            //if any exception occurs,return null
+            null
         }
     }
+
 
     override fun insertUrl(urlItem: UrlEntity) {
         mCoroutineScope.launch { mDao.insertUrl(urlItem) }
