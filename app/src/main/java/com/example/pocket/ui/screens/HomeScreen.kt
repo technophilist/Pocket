@@ -243,8 +243,8 @@ private fun SwipeToDismissUrlCard(
             hostName = urlItem.host,
             favicon = faviconBitmapState,
         ) {
-            if (thumbnailBitmapState == null) {
-                //if the thumbnail is null,display the host with primary background
+            if (urlItem.imageAbsolutePath == null) {
+                //if the image path is null,display the host with primary background
                 Box(
                     modifier = Modifier
                         .background(MaterialTheme.colors.primary)
@@ -262,14 +262,16 @@ private fun SwipeToDismissUrlCard(
                 }
 
             } else {
-                Image(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(3f),
-                    bitmap = thumbnailBitmapState!!,
-                    contentDescription = "Thumbnail",
-                    contentScale = ContentScale.Crop
-                )
+                thumbnailBitmapState?.let {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(3f),
+                        bitmap = it,
+                        contentDescription = "Thumbnail",
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
         }
     }
