@@ -1,5 +1,7 @@
 package com.example.pocket.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -15,8 +17,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,7 +30,6 @@ import com.example.pocket.ui.screens.components.UrlCard
 import com.example.pocket.ui.screens.components.rememberSearchBarState
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.launch
-
 
 
 @ExperimentalMaterialApi
@@ -233,13 +236,33 @@ private fun SwipeToDismissUrlCard(
         background = {},
         directions = setOf(DismissDirection.StartToEnd)
     ) {
+
         UrlCard(
             modifier = modifier,
             contentTitle = urlItem.contentTitle,
             hostName = urlItem.host,
             favicon = faviconBitmapState,
-            thumbnail = thumbnailBitmapState
-        )
+        ) {
+            if (thumbnailBitmapState == null) {
+                //if the thumbnail is null,display a grey placeholder
+                Spacer(
+                    modifier = Modifier
+                        .background(Color.Gray)
+                        .fillMaxWidth()
+                        .weight(3f)
+                )
+
+            } else {
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(3f),
+                    bitmap = thumbnailBitmapState!!,
+                    contentDescription = "Thumbnail",
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
     }
 }
 
