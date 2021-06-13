@@ -17,12 +17,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.ui.screens.components.SearchBar
@@ -244,13 +244,22 @@ private fun SwipeToDismissUrlCard(
             favicon = faviconBitmapState,
         ) {
             if (thumbnailBitmapState == null) {
-                //if the thumbnail is null,display a grey placeholder
-                Spacer(
+                //if the thumbnail is null,display the host with primary background
+                Box(
                     modifier = Modifier
-                        .background(Color.Gray)
+                        .background(MaterialTheme.colors.primary)
                         .fillMaxWidth()
-                        .weight(3f)
-                )
+                        .weight(3f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = urlItem.host,
+                        style = MaterialTheme.typography.h3,
+                        color = MaterialTheme.colors.onPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
             } else {
                 Image(
