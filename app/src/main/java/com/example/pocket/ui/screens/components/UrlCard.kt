@@ -17,8 +17,7 @@ import androidx.compose.ui.unit.dp
 
 
 /**
- * This composable represents a url card.If the thumbnail is null
- * then a placeholder with a grey background will be displayed.
+ * This composable represents a url card.
  *
  * @param modifier The modifier to be applied to the card.
  * @param favicon The favicon image of the webpage.
