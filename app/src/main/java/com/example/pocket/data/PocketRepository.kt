@@ -61,40 +61,32 @@ class PocketRepository(
      */
     override suspend fun saveUrl(url: URL) {
         if (!urlExists(url)) {
+
+            //get the content title of the webpage
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
-            val imageAbsolutePath: String? = runCatching {
-                /* If downloadImage() doesn't return null, save the drawable and return the absolute path as a string.
-                 * Else,return null
-                 */
-                mNetwork.downloadImage(url)?.let { thumbnailDrawable ->
-                    /* If saveImageToInternalStorage() is successful, return a string
-                     * representing the absolute path of the file.If not,return null
-                     */
-                    saveImageToInternalStorage(
-                        resource = thumbnailDrawable,
-                        fileName = url.host + urlContentTitle,
-                        directoryName = "thumbnails"
-                    )
-                }
-            }.getOrNull()
 
-            val faviconPath: String? = runCatching {
-                /* If downloadImage() doesn't return null, save the drawable and return the absolute path as a string.
-                 * Else,return null
-                 */
-                mNetwork.downloadFavicon(url)?.let { faviconDrawable ->
-                    /* If saveImageToInternalStorage() is successful, return a string
-                     * representing the absolute path of the file.If not,return null
-                     */
-                    saveImageToInternalStorage(
-                        resource = faviconDrawable,
-                        fileName = url.host + urlContentTitle + "favicon",
-                        filetype = Bitmap.CompressFormat.PNG,
-                        directoryName = "favicons"
-                    )
-                }
-            }.getOrNull()
+            /* Download the image that will be used as the thumbnail,save to the internal storage and get the path
+             * to the location where the image was downloaded
+             */
+            val imageAbsolutePath: String? = mNetwork.downloadImage(url)?.let { thumbnailDrawable ->
+                saveImageToInternalStorage(
+                    resource = thumbnailDrawable,
+                    fileName = url.host + urlContentTitle,
+                    directoryName = "thumbnails"
+                )
+            }
 
+            //download the favicon,save to the internal storage and get the path to the location where the image was downloaded
+            val faviconPath: String? = mNetwork.downloadFavicon(url)?.let { faviconDrawable ->
+                saveImageToInternalStorage(
+                    resource = faviconDrawable,
+                    fileName = url.host + urlContentTitle + "favicon",
+                    filetype = Bitmap.CompressFormat.PNG,
+                    directoryName = "favicons"
+                )
+            }
+
+            //save it to the database
             mDao.insertUrl(
                 UrlEntity(
                     url.toString(),
