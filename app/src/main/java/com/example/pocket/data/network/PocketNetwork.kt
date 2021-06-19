@@ -22,19 +22,18 @@ class PocketNetwork(
     private val mContext: Context,
     private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : Network {
+
     /**
-     * Gets the content of the title tag of the [url]
-     * @param url the complete url of the website
-     * @return The content of the title tag of the website.
+     * Gets the content title of the webpage using the [url].
      */
     override suspend fun fetchWebsiteContentTitle(url: URL): String =
         withContext(mDefaultDispatcher) { Jsoup.connect(url.toString()).get().title() }
 
     /**
-     * Tries to download the image from the 'og:image' open graph and uses glide to get the
-     * drawable.
-     * @param url the complete url of the website
-     * @return null if some error occurred while downloading
+     * Used to download the 'hero' image of the webpage as a drawable,
+     * using the 'og:image' open graph tag with the help of glide.If any
+     * exception is thrown,it will return null.
+     * @param url The url of the web page
      */
     override suspend fun downloadImage(url: URL): Drawable? =
         getImageUrl(url)?.let {
@@ -47,8 +46,9 @@ class PocketNetwork(
         }
 
     /**
-     * Tries to get the url of the main image from the open graph meta tags in the html
-     * document.If it cannot find the tag,it returns null.
+     * Tries to get the url of the 'hero image' from the 'og:image'
+     * open graph meta tags in the html document.If it cannot find the tag,
+     * it will return null.
      * @param url the complete url of the page
      * @return the url of the image
      */
@@ -69,9 +69,8 @@ class PocketNetwork(
     }
 
     /**
-     * Tries to download the favicon of a web page.If the favicon is not found or
-     * glide throws an error , it will return null.
-     * @param url the complete url of the web page
+     * Tries to download the favicon of a web page using the [url].If the favicon is
+     * not found or glide throws an error , it will return null.
      */
     override suspend fun downloadFavicon(url: URL): Drawable? =
         withContext(mDefaultDispatcher) {
@@ -83,9 +82,12 @@ class PocketNetwork(
                     .getDownloadedResource()
             }.getOrElse {
 
-                //if it throws an error,try getting the favicon from the tags
+                /*
+                 * If it throws an error,try getting the favicon from the tags.
+                 * If it is still not possible to get the favicon using the tags,
+                 * return null.
+                 */
                 getFaviconUrlFromTags(url)?.let { urlString ->
-
                     /*
                     we are not using a try/catch block because the
                     [getFaviconUrlFromTags] returns a url string only if
@@ -96,17 +98,14 @@ class PocketNetwork(
                         .load(urlString)
                         .getDownloadedResource()
                 }
-
-                //return null if we are not able to find a tag with the favicon
             }
         }
 
     /**
      * Tries to get the favicon of the website using the "shortcut icon" or "icon"
-     * attribute of the 'link' elements embedded in the webpage.
-     * @param url the complete url of the website
-     * @return returns null if it is not possible to find a link to the favicon
-     * or the url string of the favicon if it is possible to get the link.
+     * attribute of the 'link' elements embedded in the webpage using the [url].If it
+     * is not possible to find a link to the favicon, it returns null else it returns
+     * the string representing the url of the favicon.
      */
     private suspend fun getFaviconUrlFromTags(url: URL): String? {
         return withContext(mDefaultDispatcher) {
