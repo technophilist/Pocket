@@ -3,6 +3,7 @@ package com.example.pocket.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.pocket.data.database.Dao
@@ -61,22 +62,37 @@ class PocketRepository(
     override suspend fun saveUrl(url: URL) {
         if (!urlExists(url)) {
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
-            val imageAbsolutePath = runCatching {
-                saveImageToInternalStorage(
-                    mNetwork.downloadImage(url),
-                    url.host + urlContentTitle,
-                    directoryName = "thumbnails"
-                )
+            val imageAbsolutePath: String? = runCatching {
+                /* If downloadImage() doesn't return null, save the drawable and return the absolute path as a string.
+                 * Else,return null
+                 */
+                mNetwork.downloadImage(url)?.let { thumbnailDrawable ->
+                    /* If saveImageToInternalStorage() is successful, return a string
+                     * representing the absolute path of the file.If not,return null
+                     */
+                    saveImageToInternalStorage(
+                        resource = thumbnailDrawable,
+                        fileName = url.host + urlContentTitle,
+                        directoryName = "thumbnails"
+                    )
+                }
             }.getOrNull()
 
-            val faviconPath = runCatching {
-                //save the image in png format to preserve the transparent background
-                saveImageToInternalStorage(
-                    mNetwork.downloadFavicon(url),
-                    url.host + urlContentTitle + "favicon",
-                    Bitmap.CompressFormat.PNG,
-                    "favicons"
-                )
+            val faviconPath: String? = runCatching {
+                /* If downloadImage() doesn't return null, save the drawable and return the absolute path as a string.
+                 * Else,return null
+                 */
+                mNetwork.downloadFavicon(url)?.let { faviconDrawable ->
+                    /* If saveImageToInternalStorage() is successful, return a string
+                     * representing the absolute path of the file.If not,return null
+                     */
+                    saveImageToInternalStorage(
+                        resource = faviconDrawable,
+                        fileName = url.host + urlContentTitle + "favicon",
+                        filetype = Bitmap.CompressFormat.PNG,
+                        directoryName = "favicons"
+                    )
+                }
             }.getOrNull()
 
             mDao.insertUrl(
@@ -147,7 +163,7 @@ class PocketRepository(
      * @param filetype Used to specify the type that the file should be saved as.
      * @return If saved successfully,the absolute path of the saved image.Else,null.
      */
-    private suspend fun <T> saveImageToInternalStorage(
+    private suspend fun <T : Drawable> saveImageToInternalStorage(
         resource: T,
         fileName: String,
         filetype: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
