@@ -155,8 +155,8 @@ class PocketRepository(
     }
 
     /**
-     * Saves the [resource] to the specified directory in the internal storage,
-     * in the specified [filetype] using the [fileName] provided.
+     * Saves the [resource] as a bitmap to the specified directory in the internal
+     * storage,in the specified [filetype] using the [fileName] provided.
      *
      * @param resource The resource that is to be stored.
      * @param fileName The name that will be used to save the file.
