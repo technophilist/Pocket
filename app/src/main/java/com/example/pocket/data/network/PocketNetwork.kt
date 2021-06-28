@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
 import com.example.pocket.utils.getDownloadedResource
+import com.example.pocket.utils.getDocument
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,7 +28,10 @@ class PocketNetwork(
      * Gets the content title of the webpage using the [url].
      */
     override suspend fun fetchWebsiteContentTitle(url: URL): String =
-        withContext(mDefaultDispatcher) { Jsoup.connect(url.toString()).get().title() }
+        withContext(mDefaultDispatcher) {
+            //ERROR HANDLING!!!
+            Jsoup.connect(url.toString()).getDocument().title()
+        }
 
     /**
      * Used to download the 'hero' image of the webpage as a drawable,
@@ -53,7 +57,7 @@ class PocketNetwork(
      * @return the url of the image
      */
     private suspend fun getImageUrl(url: URL): String? = withContext(mDefaultDispatcher) {
-        val document = Jsoup.connect(url.toString()).get()
+        val document = Jsoup.connect(url.toString()).getDocument()
 
         //selecting all the meta elements
         val metaElements = document.select("meta")
@@ -111,7 +115,7 @@ class PocketNetwork(
         return withContext(mDefaultDispatcher) {
             val document = Jsoup
                 .connect(url.toString())
-                .get()
+                .getDocument()
 
             //selecting all <link> elements
             val linkElements = document.select("link")
