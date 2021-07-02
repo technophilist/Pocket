@@ -134,7 +134,6 @@ fun SearchBar(
         value = searchText,
         onValueChange = { onSearchTextChange(it) },
         label = { Text(text = "Search...") },
-        leadingIcon = { if (state.isSearchIconVisible) Icon(Icons.Filled.Search, "Search Icon") },
         trailingIcon = trailingIcon,
         singleLine = true,
         keyboardActions = keyboardActions,
