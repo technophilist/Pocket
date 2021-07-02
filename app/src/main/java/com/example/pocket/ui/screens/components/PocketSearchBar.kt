@@ -101,7 +101,7 @@ fun SearchBar(
         state.focusManager.clearFocus()
     }),
     onFocusChanged: ((FocusState) -> Unit) = {
-        if (it == FocusState.Active) {
+        if (it.isFocused) {
             state.isSearchIconVisible = false
             state.isCloseIconVisible = true
         }
