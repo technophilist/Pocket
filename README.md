@@ -89,7 +89,7 @@ current system theme.
 
 #### Light Mode
 
-![Top bar](screenshots/api29_homeScreen_light_mode.png)
+![Top bar](screenshots/api26_topbar_light_mode.png)
 
 
 
