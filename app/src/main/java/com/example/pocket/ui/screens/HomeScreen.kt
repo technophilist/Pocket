@@ -46,56 +46,55 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val searchBarState = rememberSearchBarState(isCloseIconVisible = true)
-
     var searchText by rememberSaveable { mutableStateOf("") }
     var searchBarExpanded by rememberSaveable { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        if (!searchBarExpanded) {
-            PocketAppBar(
-                isDarkModeSupported = isDarkModeSupported,
-                onDarkModeIconClicked = onDarkModeIconClicked,
-                onSearchIconClicked = { searchBarExpanded = true },
-                isDarkModeEnabled = isDarkModeEnabled
-            )
-        } else {
-            SearchBar(
-                modifier = Modifier.fillMaxWidth(),
-                searchText = searchText,
-                onSearchTextChange = {
-                    searchText = it
-                    viewModel.onSearchTextValueChange(it)
-                },
-                onCloseIconClicked = {
-                    /*
-                    We are emptying the search text so that
-                    the UrlList() composable will list all the
-                    urls from viewModel.savedUrls instead of
-                    viewModel.filteredList.
-                    */
-                    searchText = ""
-                    searchBarExpanded = false
-                },
-                state = searchBarState
-            )
-            /*
-            Make the searchbar immediately focused when the user clicks on
-            the search icon.
-             */
-            SideEffect {
-                /*
-                We are using a side effect to ensure that we are requesting
-                focus only after the searchbar has composed.
-                */
-                searchBarState.focusRequester.requestFocus()
-            }
-        }
-
-        urlItems?.let {
-            if (it.isEmpty()) {
-                ListEmptyMessage(modifier = Modifier.fillMaxSize())
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            if (!searchBarExpanded) {
+                PocketAppBar(
+                    isDarkModeSupported = isDarkModeSupported,
+                    onDarkModeIconClicked = onDarkModeIconClicked,
+                    onSearchIconClicked = { searchBarExpanded = true },
+                    isDarkModeEnabled = isDarkModeEnabled
+                )
             } else {
+                SearchBar(
+                    modifier = Modifier.fillMaxWidth(),
+                    searchText = searchText,
+                    onSearchTextChange = {
+                        searchText = it
+                        viewModel.onSearchTextValueChange(it)
+                    },
+                    onCloseIconClicked = {
+                        /*
+                        We are emptying the search text so that
+                        the UrlList() composable will list all the
+                        urls from viewModel.savedUrls instead of
+                        viewModel.filteredList.
+                        */
+                        searchText = ""
+                        searchBarExpanded = false
+                    },
+                    state = searchBarState
+                )
+                /*
+                Make the searchbar immediately focused when the user clicks on
+                the search icon.
+                 */
+                SideEffect {
+                    /*
+                    We are using a side effect to ensure that we are requesting
+                    focus only after the searchbar has composed.
+                    */
+                    searchBarState.focusRequester.requestFocus()
+                }
+            }
+
+            urlItems?.let {
+                if (it.isEmpty()) ListEmptyMessage(modifier = Modifier.fillMaxSize())
                 UrlList(
+                    modifier = Modifier.fillMaxSize(),
                     fetchImageBitmap = { urlString ->
                         viewModel.getBitmap(urlString).asImageBitmap()
                     },
@@ -105,13 +104,18 @@ fun HomeScreen(
                         viewModel.deleteUrlItem(urlEntity)
                         coroutineScope.launch {
                             snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
-                            val snackBarResult = snackbarHostState.showSnackbar("Deleted", "Undo")
+                            val snackBarResult =
+                                snackbarHostState.showSnackbar("Item Deleted", "Undo")
                             if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
                         }
                     }
                 )
             }
         }
+        SnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            hostState = snackbarHostState
+        )
     }
 }
 
@@ -177,13 +181,14 @@ private fun ListEmptyMessage(modifier: Modifier = Modifier) {
 @ExperimentalMaterialApi
 @Composable
 private fun UrlList(
+    modifier: Modifier = Modifier,
     urlItems: List<UrlEntity>,
     onClickItem: (UrlEntity) -> Unit,
     onItemSwiped: (UrlEntity) -> Unit = {},
     fetchImageBitmap: suspend (String) -> ImageBitmap,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         contentPadding = PaddingValues(
             vertical = 8.dp,
             horizontal = 8.dp
