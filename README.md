@@ -1,6 +1,4 @@
 # Pocket
-
----
 This app is mimics the functionality of the popular
 app [Pocket](https://play.google.com/store/apps/details?id=com.ideashower.readitlater.pro&hl=en_IN&gl=US)
 which is available to download in the play store. <br>
@@ -9,18 +7,12 @@ To try out this app you need to use the latest version of
 [Android Studio Arctic Fox](https://developer.android.com/studio/preview).
 
 ## Table of contents
-
----
-
 1. [Tech Stack](#tech-stack)
 2. [Features](#features)
 3. [Source code and architecture](#source-code-and-architecture)
 4. [Screenshots](#screenshots)
 
 ## Tech Stack
-
----
-
 - Entirely written in [Kotlin](https://kotlinlang.org/).
 - Manual dependency injection.
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) for building the UI.
@@ -36,9 +28,6 @@ To try out this app you need to use the latest version of
   for background tasks.
 
 ## Features
-
----
-
 - Save URL's from any web browser using the share menu.
 - Dark and light mode support.
 - The app's theme matches the current system theme for all devices above API level 29 (Android 10).
@@ -47,9 +36,6 @@ To try out this app you need to use the latest version of
   API level < 29).
 
 ## Source code and architecture
-
----
-
 - [Architecture components](https://developer.android.com/topic/libraries/architecture/) such as
   Room,Lifecycle and ViewModels are used.
 - [MVVM](https://developer.android.com/jetpack/guide?gclid=EAIaIQobChMI-_GIsejG8QIVzNaWCh0NXQANEAAYASAAEgKZ2fD_BwE&gclsrc=aw.ds)
@@ -64,8 +50,6 @@ To try out this app you need to use the latest version of
   for commit messages._(Note:Some early commits do not follow this convention.)_
 
 ## Screenshots
-
----
 
 ### Home Screen
 
