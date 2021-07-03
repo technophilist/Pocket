@@ -1,5 +1,5 @@
 # Pocket
-This app is mimics the functionality of the popular
+This app mimics the functionality of the popular
 app [Pocket](https://play.google.com/store/apps/details?id=com.ideashower.readitlater.pro&hl=en_IN&gl=US)
 which is available to download in the play store. <br>
 
@@ -7,10 +7,27 @@ To try out this app you need to use the latest version of
 [Android Studio Arctic Fox](https://developer.android.com/studio/preview).
 
 ## Table of contents
-1. [Tech Stack](#tech-stack)
-2. [Features](#features)
-3. [Source code and architecture](#source-code-and-architecture)
-4. [Screenshots](#screenshots)
+1. [Screenshots](#screenshots)
+2. [Tech Stack](#tech-stack)
+3. [Features](#features)
+4. [Source code and architecture](#source-code-and-architecture)
+
+## Screenshots
+
+### Home Screen (Dark/Light mode)
+<img src = "screenshots/api29_homeScreen_dark_mode.png" height = "720" width="360" alt = "Home Screen - Dark Mode - API 29"> <img src = "screenshots/api29_homeScreen_light_mode.png" height = "720" width="360" alt = "Home Screen - Light Mode - API 29"> 
+
+### Top bar (API < 29)
+The top bar will display the option to change the theme if, and only if, the device' current android
+version doesn't support dark mode.If it supports dark mode, then the theme of the app will match the
+current system theme.
+
+#### Dark Mode
+<img src = "screenshots/api26_topbar_dark_mode.png" width="538" height="119" alt = "">
+
+#### Light Mode
+<img src = "screenshots/api26_topbar_light_mode.png" width="538" height="119" alt = "">
+
 
 ## Tech Stack
 - Entirely written in [Kotlin](https://kotlinlang.org/).
@@ -26,6 +43,8 @@ To try out this app you need to use the latest version of
 - [Jsoup](https://jsoup.org/) for parsing the website.
 - [Work Manager](https://developer.android.com/topic/libraries/architecture/workmanager?gclid=EAIaIQobChMIwJy33ufG8QIVGcEWBR31Mwa-EAAYASAAEgIF3vD_BwE&gclsrc=aw.ds)
   for background tasks.
+  
+
 
 ## Features
 - Save URL's from any web browser using the share menu.
@@ -49,31 +68,8 @@ To try out this app you need to use the latest version of
   the [Angular specification](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines)
   for commit messages._(Note:Some early commits do not follow this convention.)_
 
-## Screenshots
 
-### Home Screen
 
-#### Light Mode
-
-![Home Screen - Light Mode - Api 21](screenshots/api29_homeScreen_light_mode.png)
-
-#### Dark Mode
-
-![Home Screen - Dark Mode - Api 21](screenshots/api29_homeScreen_dark_mode.png)
-
-### Top bar (API < 29)
-
-The top bar will display the option to change the theme if, and only if, the device' current android
-version doesn't support dark mode.If it supports dark mode, then the theme of the app will match the
-current system theme.
-
-#### Dark Mode
-
-![Top bar](screenshots/api26_topbar_dark_mode.png)
-
-#### Light Mode
-
-![Top bar](screenshots/api26_topbar_light_mode.png)
 
 
 
