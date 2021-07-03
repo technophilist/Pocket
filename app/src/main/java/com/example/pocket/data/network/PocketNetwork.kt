@@ -3,8 +3,8 @@ package com.example.pocket.data.network
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
-import com.example.pocket.utils.getDownloadedResource
 import com.example.pocket.utils.getDocument
+import com.example.pocket.utils.getDownloadedResource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -25,12 +25,17 @@ class PocketNetwork(
 ) : Network {
 
     /**
-     * Gets the content title of the webpage using the [url].
+     * Used to get the content title of the webpage using the [url].
+     * If it is not possible to get the title,it returns an empty
+     * string.
      */
     override suspend fun fetchWebsiteContentTitle(url: URL): String =
         withContext(mDefaultDispatcher) {
-            //ERROR HANDLING!!!
-            Jsoup.connect(url.toString()).getDocument().title()
+            runCatching {
+                Jsoup.connect(url.toString())
+                    .getDocument()
+                    .title()
+            }.getOrElse { "" }
         }
 
     /**
