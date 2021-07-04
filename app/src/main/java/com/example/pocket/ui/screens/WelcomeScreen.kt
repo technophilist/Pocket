@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,46 +20,49 @@ import com.example.pocket.ui.theme.PocketAppTheme
 @Composable
 fun WelcomeScreen(isDarkMode: Boolean = false) {
     PocketAppTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-        ) {
-
-            Text(
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(8.dp),
-                text = "Welcome To Pocket",
-                fontWeight = FontWeight.ExtraBold,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h1,
-            )
+            ) {
 
-            VectorArt(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.8f)
-            )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    text = "Welcome To Pocket",
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.h1,
+                )
 
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                onClick = { /*TODO*/ },
-                content = { Text(text = "Create account") }
-            )
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 32.dp)
-                    .clickable { TODO() },
-                text = "Log in",
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colors.primary
-            )
+                VectorArt(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.8f)
+                )
 
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    onClick = { /*TODO*/ },
+                    content = { Text(text = "Create account") }
+                )
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 32.dp)
+                        .clickable { TODO() },
+                    text = "Log in",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colors.primary
+                )
+
+            }
         }
+
     }
 }
 
