@@ -74,41 +74,45 @@ fun WelcomeScreen(isDarkMode: Boolean = false) {
 
 @ExperimentalPagerApi
 @Composable
-private fun VectorArtCarousel(modifier: Modifier = Modifier) {
+fun VectorArtCarousel(modifier: Modifier = Modifier) {
 
-    val pagerState = rememberPagerState(pageCount = 3)
+    val pagerState = rememberPagerState(
+        pageCount = 3,
+        infiniteLoop = true,
+        initialOffscreenLimit = 2,
+    )
 
     val page1 = getVectorArtPage(
         painter = painterResource(id = R.drawable.welcome_screen_save_files),
         title = "Save what really interests you",
-        description = "Save articles,videos or any online content you like." +
+        description = "Save articles,videos or any online content you like. " +
                 "Add them to Pocket and read them when you have time.",
         imageDescription = ""
     )
 
+
     val page2 = getVectorArtPage(
-        painter = painterResource(id = R.drawable.welcome_screen_save_files),
-        title = "Save what really interests you",
-        description = "Save articles,videos or any online content you like." +
-                "Add them to Pocket and read them when you have time.",
+        painter = painterResource(id = R.drawable.welcome_screen_read_peacefully_vector_art),
+        title = "Your quiet corner of the internet",
+        description = "Pocket saves articles in a clean layout designed for reading-" +
+                "no interruptions, no popups-so you can sidestep the internet's noise.",
         imageDescription = ""
     )
 
     val page3 = getVectorArtPage(
-        painter = painterResource(id = R.drawable.welcome_screen_save_files),
-        title = "Save what really interests you",
-        description = "Save articles,videos or any online content you like." +
-                "Add them to Pocket and read them when you have time.",
+        painter = painterResource(id = R.drawable.welcome_screen_dark_mode_vector_art),
+        title = "Reduce eye strain with dark mode",
+        description = "Want to dim the lights? Don't let a bright screen mess with your eyes or sleep. " +
+                "Turn on dark mode and continue your reading.",
         imageDescription = ""
     )
-
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
 
         HorizontalPager(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             state = pagerState,
-        ) {
-            when (this.currentPage) {
+        ) { page ->
+            when (page) {
                 0 -> page1()
                 1 -> page2()
                 2 -> page3()
@@ -118,8 +122,8 @@ private fun VectorArtCarousel(modifier: Modifier = Modifier) {
 
         HorizontalPagerIndicator(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(40.dp),
+                .padding(top = 40.dp)
+                .align(Alignment.CenterHorizontally),
             pagerState = pagerState
         )
 
@@ -137,7 +141,8 @@ private fun getVectorArtPage(
 ): @Composable () -> Unit = @Composable {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Image(painter = painter, contentDescription = imageDescription)
@@ -161,6 +166,9 @@ private fun getVectorArtPage(
 
     }
 }
+
+
+
 
 
 
