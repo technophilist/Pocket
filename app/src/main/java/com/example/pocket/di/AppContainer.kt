@@ -7,7 +7,7 @@ import androidx.room.Room
 import com.example.pocket.data.PocketRepository
 import com.example.pocket.data.database.UrlDatabase
 import com.example.pocket.data.network.PocketNetwork
-import com.example.pocket.data.preferences.PocketPreferencesManger
+import com.example.pocket.data.preferences.PocketPreferencesManager
 import kotlinx.coroutines.Dispatchers
 
 
@@ -35,7 +35,7 @@ class AppContainer(application: Application) {
     private val datastore = PreferenceDataStoreFactory.create {
         applicationContext.preferencesDataStoreFile(PREFERENCES_NAME)
     }
-    private val preferencesManager = PocketPreferencesManger(datastore)
+    private val preferencesManager = PocketPreferencesManager(datastore)
 
     //dependencies
     val pocketRepository = PocketRepository(
