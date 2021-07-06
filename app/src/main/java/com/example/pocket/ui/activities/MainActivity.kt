@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
             startDestination = NavigationDestinations.WELCOME_SCREEN.navigationString
         ) {
             composable(NavigationDestinations.WELCOME_SCREEN.navigationString) {
-                WelcomeScreen()
+                WelcomeScreen(navController = navController)
             }
 
             composable(NavigationDestinations.LOGIN_SCREEN.navigationString) {
