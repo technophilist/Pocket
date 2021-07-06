@@ -14,7 +14,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.pocket.R
+import com.example.pocket.ui.navigation.NavigationDestinations
+import com.example.pocket.ui.navigation.navigate
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -29,7 +32,7 @@ private data class VectorArtCard(
 
 @ExperimentalPagerApi
 @Composable
-fun WelcomeScreen() {
+fun WelcomeScreen(navController: NavController) {
     val vectorArtCards = listOf(
         VectorArtCard(
             R.drawable.welcome_screen_save_files,
@@ -80,14 +83,14 @@ fun WelcomeScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
-            onClick = { /*TODO*/ },
+            onClick = { navController.navigate(NavigationDestinations.SIGNUP_SCREEN) },
             content = { Text(text = "Create account") }
         )
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 32.dp)
-                .clickable { TODO() },
+                .clickable { navController.navigate(NavigationDestinations.LOGIN_SCREEN) },
             text = "Log in",
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colors.primary
