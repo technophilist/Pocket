@@ -4,13 +4,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.pocket.data.preferences.PocketPreferencesManger.PreferenceKeys.DEVICE_THEME
+import com.example.pocket.data.preferences.PocketPreferencesManager.PreferenceKeys.DEVICE_THEME
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 
-class PocketPreferencesManger(
+class PocketPreferencesManager(
     private val mDataStore: DataStore<Preferences>
 ) : PreferencesManager {
 
