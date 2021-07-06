@@ -4,6 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Marsh/AndroidStudioProjects/Pocket/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.12222222222222222" />
+        <entry key="..\:/Users/Marsh/AndroidStudioProjects/Pocket/app/src/main/res/drawable/welcome_screen_dark_mode_vector_art.xml" value="0.28055555555555556" />
+        <entry key="..\:/Users/Marsh/AndroidStudioProjects/Pocket/app/src/main/res/drawable/welcome_screen_read_peacefully_vector_art.xml" value="0.12222222222222222" />
+        <entry key="..\:/Users/Marsh/AndroidStudioProjects/Pocket/app/src/main/res/drawable/welcome_screen_save_files.xml" value="0.30648148148148147" />
         <entry key="..\:/Users/Marsh/AndroidStudioProjects/Pocket/app/src/main/res/layout/activity_handle_url.xml" value="0.1" />
         <entry key="..\:/Users/Marsh/AndroidStudioProjects/Pocket/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.12222222222222222" />
       </map>
