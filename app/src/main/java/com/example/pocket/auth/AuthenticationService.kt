@@ -1,11 +1,14 @@
 package com.example.pocket.auth
 
+import android.net.Uri
+
 interface AuthenticationService {
     suspend fun signIn(email: String, password: String):AuthenticationResult
     suspend fun createAccount(
         username:String,
         email: String,
         password: String,
+        profilePhotoUri: Uri?
     ):AuthenticationResult
 }
 
