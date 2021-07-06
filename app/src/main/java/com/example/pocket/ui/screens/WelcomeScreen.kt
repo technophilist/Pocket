@@ -6,18 +6,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.pocket.R
-import com.example.pocket.ui.theme.PocketAppTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -56,51 +53,45 @@ fun WelcomeScreen() {
             imageDescription = ""
         )
     )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+    ) {
 
-    PocketAppTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-            ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            text = "Welcome To Pocket",
+            fontWeight = FontWeight.ExtraBold,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h1,
+        )
 
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    text = "Welcome To Pocket",
-                    fontWeight = FontWeight.ExtraBold,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h1,
-                )
+        VectorArtCarousel(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.8f),
+            vectorArtCards = vectorArtCards
+        )
 
-                VectorArtCarousel(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.8f),
-                    vectorArtCards = vectorArtCards
-                )
-
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    onClick = { /*TODO*/ },
-                    content = { Text(text = "Create account") }
-                )
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 32.dp)
-                        .clickable { TODO() },
-                    text = "Log in",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colors.primary
-                )
-
-            }
-        }
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            onClick = { /*TODO*/ },
+            content = { Text(text = "Create account") }
+        )
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 32.dp)
+                .clickable { TODO() },
+            text = "Log in",
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colors.primary
+        )
 
     }
 }
