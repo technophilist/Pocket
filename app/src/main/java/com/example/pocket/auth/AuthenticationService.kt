@@ -9,7 +9,7 @@ interface AuthenticationService {
         username: String,
         email: String,
         password: String,
-        profilePhotoUri: Uri?
+        profilePhotoUri: Uri? = null
     ): AuthenticationResult
     suspend fun signOut()
 }
