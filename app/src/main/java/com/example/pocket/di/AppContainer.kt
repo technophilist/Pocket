@@ -45,4 +45,7 @@ class AppContainer(application: Application) {
         defaultRepositoryDispatcher,
         applicationContext
     )
+
+    //login container will be null if the user is not in the login flow
+    val loginContainer: LoginContainer? = null
 }
