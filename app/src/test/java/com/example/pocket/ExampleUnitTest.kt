@@ -1,5 +1,11 @@
 package com.example.pocket
 
+import android.util.Patterns
+import com.example.pocket.auth.FirebaseAuthenticationService
+import com.example.pocket.utils.containsDigit
+import com.example.pocket.utils.containsLowercase
+import com.example.pocket.utils.containsUppercase
+import com.example.pocket.viewmodels.LoginViewModelImpl
 import kotlinx.coroutines.*
 import org.jsoup.Jsoup
 import org.junit.Assert.*
@@ -20,11 +26,11 @@ class ExampleUnitTest {
 
     @Test
     fun runCatchingTest() {
-        val a = kotlin.runCatching { "test" }.getOrNull()
-        println(a)
-        assertNotNull(a)
-        val b = kotlin.runCatching { 2/0 }.getOrNull()
-        assertNotNull(b)
+//        val a = kotlin.runCatching { "test" }.getOrNull()
+//        println(a)
+//        assertNotNull(a)
+//        val b = kotlin.runCatching { 2/0 }.getOrNull()
+//        assertNotNull(b)
     }
 
     @Test
@@ -47,6 +53,42 @@ class ExampleUnitTest {
 
     }
 
+    @Test
+    fun firebaseTest(){
+        val authService = FirebaseAuthenticationService()
+        runBlocking {
+            authService.signIn("test@test.com","testpassword")
+        }
+
+    }
+
+    @Test
+    fun stringUtilsTest(){
+        val testString1 = "paSsword"
+        val testSting2 = "PASSwORD"
+        val testString3 = "Pa3sword"
+
+        assertTrue(testString1.containsUppercase())
+        assertTrue(testSting2.containsLowercase())
+        assertTrue(testString3.containsDigit())
+
+        assertFalse(!testString1.containsUppercase())
+        assertFalse(!testString1.containsUppercase())
+        assertFalse(!testString1.containsDigit())
+
+    }
+
+    @Test
+    fun emailValidationTest(){
+        val testEmails = listOf("test@test.com","test@t"," ","","t",".com","www.google.com")
+        testEmails.forEach{
+            assertFalse(it.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(it).matches())
+        }
+        val trueEmail = "test@test.com"
+
+        assertTrue(trueEmail.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(trueEmail).matches())
+
+    }
 
 
 }
