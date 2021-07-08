@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pocket.R
 import com.example.pocket.ui.navigation.NavigationDestinations
-import com.example.pocket.ui.navigation.navigate
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -83,14 +82,14 @@ fun WelcomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
-            onClick = { navController.navigate(NavigationDestinations.SIGNUP_SCREEN) },
+            onClick = { navController.navigate(NavigationDestinations.SIGNUP_SCREEN.navigationString) },
             content = { Text(text = "Create account") }
         )
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 32.dp)
-                .clickable { navController.navigate(NavigationDestinations.LOGIN_SCREEN) },
+                .clickable { navController.navigate(NavigationDestinations.LOGIN_SCREEN.navigationString) },
             text = "Log in",
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colors.primary
