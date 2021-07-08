@@ -34,6 +34,7 @@ fun LoginScreen(
     val authenticationResult = viewmodel.authenticationResult.observeAsState()
     var emailAddressText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
+    var isPasswordVisible by remember { mutableStateOf(false)}
 
     /*
      * Initially these values will be true in order to not display
@@ -113,8 +114,16 @@ fun LoginScreen(
             onValueChange = { passwordText = it },
             placeholder = { Text(text = "Password") },
             textStyle = MaterialTheme.typography.body1,
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             isError = !isCredentialsValid,
+            trailingIcon = {
+                Icon(
+                    modifier = Modifier.clickable { isPasswordVisible = !isPasswordVisible },
+                    imageVector = if (isPasswordVisible) Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff,
+                    contentDescription = ""
+                )
+            }
         )
 
         if (!isCredentialsValid) {
@@ -141,9 +150,7 @@ fun LoginScreen(
             modifier = Modifier
                 .height(48.dp)
                 .fillMaxWidth(),
-            onClick = {
-                viewmodel.authenticate(emailAddressText, passwordText)
-            },
+            onClick = { viewmodel.authenticate(emailAddressText, passwordText) },
             shape = MaterialTheme.shapes.medium,
             content = { Text(text = "Log in", fontWeight = FontWeight.Bold) }
         )
