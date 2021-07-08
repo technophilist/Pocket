@@ -34,7 +34,7 @@ fun LoginScreen(
     val authenticationResult = viewmodel.authenticationResult.observeAsState()
     var emailAddressText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false)}
+    var isPasswordVisible by remember { mutableStateOf(false) }
 
     /*
      * Initially these values will be true in order to not display
@@ -43,22 +43,26 @@ fun LoginScreen(
      */
     var isCredentialsValid by remember { mutableStateOf(true) }
 
-    when (val result = authenticationResult.value) {
-        is AuthenticationResult.Success -> {
-            navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString) {
-                //if successfully logged in, pop the backstack
-                popUpTo(NavigationDestinations.WELCOME_SCREEN.navigationString) { inclusive = true }
+    SideEffect {
+        when (val result = authenticationResult.value) {
+            is AuthenticationResult.Success -> {
+                navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString) {
+                    //if successfully logged in, pop the backstack
+                    popUpTo(NavigationDestinations.WELCOME_SCREEN.navigationString) {
+                        inclusive = true
+                    }
+                }
             }
-        }
-        is AuthenticationResult.Failure -> {
-            /*
-             * if the credentials are invalid or if the user is not found set
-             * isCredentialsValid to false.
-             */
-            if (
-                result.exception is FirebaseAuthInvalidCredentialsException ||
-                result.exception is FirebaseAuthInvalidUserException
-            ) isCredentialsValid = false
+            is AuthenticationResult.Failure -> {
+                /*
+                 * if the credentials are invalid or if the user is not found set
+                 * isCredentialsValid to false.
+                 */
+                if (
+                    result.exception is FirebaseAuthInvalidCredentialsException ||
+                    result.exception is FirebaseAuthInvalidUserException
+                ) isCredentialsValid = false
+            }
         }
     }
 
