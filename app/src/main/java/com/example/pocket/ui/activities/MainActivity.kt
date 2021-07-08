@@ -19,7 +19,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pocket.auth.FirebaseAuthenticationService
 import com.example.pocket.data.preferences.PocketPreferences
+import com.example.pocket.di.AppContainer
+import com.example.pocket.di.LoginContainer
 import com.example.pocket.di.PocketApplication
 import com.example.pocket.ui.navigation.NavigationDestinations
 import com.example.pocket.ui.screens.HomeScreen
@@ -30,23 +33,24 @@ import com.example.pocket.ui.theme.PocketAppTheme
 import com.example.pocket.utils.HomeScreenViewModelFactory
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import com.example.pocket.viewmodels.HomeScreenViewModelImpl
+import com.example.pocket.viewmodels.LoginViewModelImpl
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 class MainActivity : AppCompatActivity() {
     private val isDarkModeSupported =
         android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
     private lateinit var mViewModel: HomeScreenViewModel
+    private lateinit var appContainer: AppContainer
 
     @ExperimentalPagerApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val appContainer = (application as PocketApplication).appContainer
+        appContainer = (application as PocketApplication).appContainer
         mViewModel = ViewModelProvider(
             this,
             HomeScreenViewModelFactory(application, appContainer.pocketRepository)
         ).get(HomeScreenViewModelImpl::class.java)
-
 
         /*
          if dark mode is not supported , then the app theme will not automatically
@@ -87,7 +91,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             composable(NavigationDestinations.LOGIN_SCREEN.navigationString) {
-                LoginScreen(navController = navController)
+                //start login flow
+                appContainer.loginContainer = LoginContainer()
+
+                val loginContainer = appContainer.loginContainer!!
+                val loginViewModel = loginContainer.loginViewModel.create(LoginViewModelImpl::class.java)
+
+                LoginScreen(loginViewModel,navController)
             }
 
             composable(NavigationDestinations.SIGNUP_SCREEN.navigationString) {

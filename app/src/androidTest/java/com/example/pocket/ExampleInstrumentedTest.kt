@@ -1,14 +1,18 @@
 package com.example.pocket
 
 import android.content.Context
-import androidx.test.platform.app.InstrumentationRegistry
+import android.util.Patterns
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.bumptech.glide.Glide
+import com.example.pocket.auth.AuthenticationResult
+import com.example.pocket.auth.FirebaseAuthenticationService
+import kotlinx.coroutines.runBlocking
 import org.jsoup.Jsoup
-import org.junit.Test
-import org.junit.runner.RunWith
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -34,7 +38,9 @@ class ExampleInstrumentedTest {
 
     @Test
     fun imageFetchTest() {
-        val document = Jsoup.connect("https://www.theverge.com/platform/amp/2021/4/15/22386533/ios-app-scam-jungle-runner-magical-forest-apple-kosta").get()
+        val document =
+            Jsoup.connect("https://www.theverge.com/platform/amp/2021/4/15/22386533/ios-app-scam-jungle-runner-magical-forest-apple-kosta")
+                .get()
         //use either img or amp-img
         val elements = document.getElementsByTag("amp-img")
         println(elements[0].attr("src"))
@@ -63,6 +69,43 @@ class ExampleInstrumentedTest {
             it.attr("rel") == "shortcut icon" || it.attr("rel") == "icon"
         }
         println(a.first().attr("href"))
+    }
+
+    @Test
+    fun firebaseTest() {
+        val authService = FirebaseAuthenticationService()
+
+        //signing in
+        runBlocking {
+            when (val authSer = authService.createAccount("t","1", "testtest")) {
+                is AuthenticationResult.Failure -> println(authSer.exception)
+                is AuthenticationResult.Success -> println(authSer.user)
+            }
+        }
+
+        //test whether the user is logged in after a successful log-in method call
+        assertTrue(authService.isLoggedIn)
+
+        //sign out
+        runBlocking {
+            authService.signOut()
+        }
+
+        //est whether the user is logged in after a successful log-out method call
+        assertFalse(authService.isLoggedIn)
+
+    }
+
+    @Test
+    fun emailValidationTest(){
+        val testEmails = listOf("test@t"," ","","t",".com","www.google.com")
+        testEmails.forEach{
+            assertFalse(it.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(it).matches())
+        }
+        val trueEmail = "test@test.com"
+
+        assertTrue(trueEmail.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(trueEmail).matches())
+
     }
 
 }
