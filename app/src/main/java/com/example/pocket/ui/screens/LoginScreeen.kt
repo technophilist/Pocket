@@ -34,7 +34,7 @@ fun LoginScreen(
     val authenticationResult = viewmodel.authenticationResult.observeAsState()
     var emailAddressText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false)}
+    var isPasswordVisible by remember { mutableStateOf(false) }
 
     /*
      * Initially these values will be true in order to not display
@@ -43,23 +43,33 @@ fun LoginScreen(
      */
     var isCredentialsValid by remember { mutableStateOf(true) }
 
-    when (val result = authenticationResult.value) {
-        is AuthenticationResult.Success -> {
-            navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString) {
-                //if successfully logged in, pop the backstack
-                popUpTo(NavigationDestinations.WELCOME_SCREEN.navigationString) { inclusive = true }
+    DisposableEffect(authenticationResult.value) {
+        /*
+         * This block will get executed only when authenticationResult.value changes.
+         * This prevents side effects and makes sure that this block of code doesn't get
+         * executed on every re-composition.
+         */
+        when (val result = authenticationResult.value) {
+            is AuthenticationResult.Success -> {
+                navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString) {
+                    //if successfully logged in, pop the backstack
+                    popUpTo(NavigationDestinations.WELCOME_SCREEN.navigationString) {
+                        inclusive = true
+                    }
+                }
+            }
+            is AuthenticationResult.Failure -> {
+                /*
+                 * if the credentials are invalid or if the user is not found set
+                 * isCredentialsValid to false.
+                 */
+                if (
+                    result.exception is FirebaseAuthInvalidCredentialsException ||
+                    result.exception is FirebaseAuthInvalidUserException
+                ) isCredentialsValid = false
             }
         }
-        is AuthenticationResult.Failure -> {
-            /*
-             * if the credentials are invalid or if the user is not found set
-             * isCredentialsValid to false.
-             */
-            if (
-                result.exception is FirebaseAuthInvalidCredentialsException ||
-                result.exception is FirebaseAuthInvalidUserException
-            ) isCredentialsValid = false
-        }
+        onDispose {}
     }
 
     val termsAndConditionText = buildAnnotatedString {
@@ -150,7 +160,10 @@ fun LoginScreen(
             modifier = Modifier
                 .height(48.dp)
                 .fillMaxWidth(),
-            onClick = { viewmodel.authenticate(emailAddressText, passwordText) },
+            onClick = {
+                viewmodel.authenticate(emailAddressText, passwordText)
+
+            },
             shape = MaterialTheme.shapes.medium,
             content = { Text(text = "Log in", fontWeight = FontWeight.Bold) }
         )
