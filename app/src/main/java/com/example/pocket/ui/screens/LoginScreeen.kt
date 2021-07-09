@@ -37,13 +37,8 @@ fun LoginScreen(
     var passwordText by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
-
-    /*
-     * Initially these values will be true in order to not display
-     * the error message. It also prevents the text fields from
-     * being highlighted in red.
-     */
-    var isCredentialsValid by remember { mutableStateOf(true) }
+    var isCredentialsValid by remember { mutableStateOf(false) }
+    var isErrorMessageVisible by remember { mutableStateOf(false) }
 
     DisposableEffect(authenticationResult.value) {
         /*
@@ -71,7 +66,10 @@ fun LoginScreen(
                     result.exception is FirebaseAuthInvalidCredentialsException ||
                     result.exception is FirebaseAuthInvalidUserException ||
                     result.exception is IllegalArgumentException
-                ) isCredentialsValid = false
+                ) {
+                    isCredentialsValid = false
+                    isErrorMessageVisible = true
+                }
             }
         }
         onDispose {
@@ -115,10 +113,22 @@ fun LoginScreen(
                     .height(56.dp)
                     .fillMaxWidth(),
                 value = emailAddressText,
-                onValueChange = { emailAddressText = it },
+                onValueChange = {
+                    /*
+                     * if isErrorMessageVisible is set to true then it indicates
+                     * a failed login attempt.Remove the error message when the user
+                     * is making an edit to the email address text.The prevents the
+                     * error message from being displayed when the user is re-typing.
+                     */
+                    if (isErrorMessageVisible) {
+                        isErrorMessageVisible = false
+                    }
+                    emailAddressText = it
+
+                },
                 placeholder = { Text(text = "Email Address") },
                 textStyle = MaterialTheme.typography.body1,
-                isError = !isCredentialsValid,
+                isError = isErrorMessageVisible,
                 singleLine = true
             )
 
@@ -129,11 +139,22 @@ fun LoginScreen(
                     .height(56.dp)
                     .fillMaxWidth(),
                 value = passwordText,
-                onValueChange = { passwordText = it },
+                onValueChange = {
+                    /*
+                     * if isErrorMessageVisible is set to true then it indicates
+                     * a failed login attempt.Remove the error message when the user
+                     * is making an edit to the password text.The prevents the
+                     * error message from being displayed when the user is re-typing.
+                     */
+                    if (isErrorMessageVisible) {
+                        isErrorMessageVisible = false
+                    }
+                    passwordText = it
+                },
                 placeholder = { Text(text = "Password") },
                 textStyle = MaterialTheme.typography.body1,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                isError = !isCredentialsValid,
+                isError = isErrorMessageVisible,
                 trailingIcon = {
                     Icon(
                         modifier = Modifier.clickable { isPasswordVisible = !isPasswordVisible },
@@ -145,7 +166,7 @@ fun LoginScreen(
                 singleLine = true,
             )
 
-            if (!isCredentialsValid) {
+            if (isErrorMessageVisible && !isCredentialsValid) {
                 Text(
                     modifier = Modifier.align(Alignment.Start),
                     text = "The email address or password that you've entered is incorrect. Please check the credentials.",
