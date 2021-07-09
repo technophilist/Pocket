@@ -119,7 +119,7 @@ fun LoginScreen(
                 placeholder = { Text(text = "Email Address") },
                 textStyle = MaterialTheme.typography.body1,
                 isError = !isCredentialsValid,
-                maxLines = 1
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -141,7 +141,8 @@ fun LoginScreen(
                         else Icons.Filled.VisibilityOff,
                         contentDescription = ""
                     )
-                }
+                },
+                singleLine = true,
             )
 
             if (!isCredentialsValid) {
