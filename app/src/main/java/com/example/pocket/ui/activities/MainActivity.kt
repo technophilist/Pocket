@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             composable(NavigationDestinations.SIGNUP_SCREEN.navigationString) {
-                SignUpScreen(navController = navController)
+                SignUpScreen(appContainer,navController)
             }
 
             composable(NavigationDestinations.HOME_SCREEN.navigationString) {
