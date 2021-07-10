@@ -91,13 +91,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             composable(NavigationDestinations.LOGIN_SCREEN.navigationString) {
-                //start login flow
-                appContainer.loginContainer = LoginContainer()
-
-                val loginContainer = appContainer.loginContainer!!
-                val loginViewModel = loginContainer.loginViewModel.create(LoginViewModelImpl::class.java)
-
-                LoginScreen(loginViewModel,navController)
+                LoginScreen(appContainer,navController)
             }
 
             composable(NavigationDestinations.SIGNUP_SCREEN.navigationString) {
