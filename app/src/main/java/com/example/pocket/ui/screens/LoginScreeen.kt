@@ -39,6 +39,9 @@ fun LoginScreen(
     var isLoading by remember { mutableStateOf(false) }
     var isCredentialsValid by remember { mutableStateOf(false) }
     var isErrorMessageVisible by remember { mutableStateOf(false) }
+    val isLoginButtonEnabled by remember(emailAddressText, passwordText) {
+        derivedStateOf { emailAddressText.isNotBlank() && passwordText.isNotEmpty() }
+    }
 
     DisposableEffect(authenticationResult.value) {
         /*
@@ -195,7 +198,8 @@ fun LoginScreen(
                     viewmodel.authenticate(emailAddressText, passwordText)
                 },
                 shape = MaterialTheme.shapes.medium,
-                content = { Text(text = "Log in", fontWeight = FontWeight.Bold) }
+                content = { Text(text = "Log in", fontWeight = FontWeight.Bold) },
+                enabled = isLoginButtonEnabled
             )
         }
 
