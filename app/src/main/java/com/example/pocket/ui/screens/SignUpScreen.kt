@@ -17,9 +17,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.pocket.di.AppContainer
 
 @Composable
-fun SignUpScreen(navController: NavController) {
+fun SignUpScreen(
+    appContainer:AppContainer,
+    navController: NavController
+) {
 
     var emailAddressText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
