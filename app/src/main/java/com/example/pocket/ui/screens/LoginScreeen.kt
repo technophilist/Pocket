@@ -38,7 +38,7 @@ fun LoginScreen(
     val viewmodel = remember {
         // start login flow
         appContainer.loginContainer = LoginContainer()
-        appContainer.loginContainer!!.loginViewModel.create(LoginViewModelImpl::class.java)
+        appContainer.loginContainer!!.loginViewModelFactory.create(LoginViewModelImpl::class.java)
     }
     val authenticationResult = viewmodel.authenticationResult.observeAsState()
     var emailAddressText by remember { mutableStateOf("") }
