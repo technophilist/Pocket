@@ -10,6 +10,7 @@ import com.example.pocket.auth.AuthenticationService
 import com.example.pocket.utils.containsDigit
 import com.example.pocket.utils.containsLowercase
 import com.example.pocket.utils.containsUppercase
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 
 class InvalidEmailException(message: String? = null) : Exception(message)
 class InvalidPasswordException(message: String? = null) : Exception(message)
+class UserAlreadyExistsException(message: String? = null) : Exception(message)
 
 interface SignUpViewModel {
     val accountCreationResult: LiveData<AuthenticationResult>
@@ -32,7 +34,7 @@ interface SignUpViewModel {
 class SignUpViewModelImpl(
     private val authenticationService: AuthenticationService,
     private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : ViewModel(),SignUpViewModel {
+) : ViewModel(), SignUpViewModel {
 
     private val _accountCreationResult = MutableLiveData<AuthenticationResult>()
     override val accountCreationResult = _accountCreationResult as LiveData<AuthenticationResult>
@@ -51,7 +53,8 @@ class SignUpViewModelImpl(
      */
     private fun isValidPassword(
         password: String
-    ) = password.length == 8 && password.containsUppercase() && password.containsLowercase() && password.containsDigit()
+    ) =
+        password.length == 8 && password.containsUppercase() && password.containsLowercase() && password.containsDigit()
 
     override fun createNewAccount(
         name: String,
@@ -64,13 +67,26 @@ class SignUpViewModelImpl(
         }
 
         if (!isValidPassword(password)) {
-            val exceptionMessage = "The password must be of length 8, and must contain atleast one uppercase and lowercase letter and atleast one digit."
-            _accountCreationResult.postValue(AuthenticationResult.Failure(InvalidPasswordException(exceptionMessage)))
+            val exceptionMessage =
+                "The password must be of length 8, and must contain atleast one uppercase and lowercase letter and atleast one digit."
+            _accountCreationResult.postValue(
+                AuthenticationResult.Failure(
+                    InvalidPasswordException(
+                        exceptionMessage
+                    )
+                )
+            )
         }
 
         CoroutineScope(mDefaultDispatcher).launch {
             val authenticationResult = authenticationService.createAccount(name, email, password, profilePhotoUri)
-            _accountCreationResult.postValue(authenticationResult)
+
+            if (authenticationResult is AuthenticationResult.Failure && authenticationResult.exception is FirebaseAuthUserCollisionException) {
+                val exception = UserAlreadyExistsException(authenticationResult.exception.message)
+                _accountCreationResult.postValue(AuthenticationResult.Failure(exception))
+            } else {
+                _accountCreationResult.postValue(authenticationResult)
+            }
         }
     }
 
