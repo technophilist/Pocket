@@ -7,5 +7,5 @@ import kotlinx.coroutines.Dispatchers
 class LoginContainer {
     private val authenticationService = FirebaseAuthenticationService()
     private val defaultDispatcher = Dispatchers.IO
-    val loginViewModel = LoginViewModelFactory(authenticationService, defaultDispatcher)
+    val loginViewModelFactory = LoginViewModelFactory(authenticationService, defaultDispatcher)
 }
