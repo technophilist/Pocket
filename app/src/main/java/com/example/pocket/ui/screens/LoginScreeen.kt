@@ -26,8 +26,7 @@ import com.example.pocket.di.AppContainer
 import com.example.pocket.di.LoginContainer
 import com.example.pocket.ui.navigation.NavigationDestinations
 import com.example.pocket.viewmodels.LoginViewModelImpl
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import timber.log.Timber
 
 @Composable
 fun LoginScreen(
@@ -77,18 +76,8 @@ fun LoginScreen(
             }
             is AuthenticationResult.Failure -> {
                 isLoading = false
-                /*
-                 * if the credentials are invalid or if the user is not found set
-                 * isCredentialsValid to false.
-                 */
-                if (
-                    result.exception is FirebaseAuthInvalidCredentialsException ||
-                    result.exception is FirebaseAuthInvalidUserException ||
-                    result.exception is IllegalArgumentException
-                ) {
-                    isCredentialsValid = false
-                    isErrorMessageVisible = true
-                }
+                isCredentialsValid = false
+                isErrorMessageVisible = true
             }
         }
         onDispose {
