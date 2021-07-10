@@ -48,4 +48,7 @@ class AppContainer(application: Application) {
 
     //login container will be null if the user is not in the login flow
     var loginContainer: LoginContainer? = null
+
+    //sign-up container will be null if the user is not in the sign-up flow
+    var signUpContainer: SignUpContainer? = null
 }
