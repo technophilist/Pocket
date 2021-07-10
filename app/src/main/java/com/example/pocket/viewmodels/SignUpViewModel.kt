@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.auth.AuthenticationService
 import com.example.pocket.utils.containsDigit
@@ -31,7 +32,7 @@ interface SignUpViewModel {
 class SignUpViewModelImpl(
     private val authenticationService: AuthenticationService,
     private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : SignUpViewModel {
+) : ViewModel(),SignUpViewModel {
 
     private val _accountCreationResult = MutableLiveData<AuthenticationResult>()
     override val accountCreationResult = _accountCreationResult as LiveData<AuthenticationResult>
