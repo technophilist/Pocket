@@ -1,5 +1,6 @@
 package com.example.pocket.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -21,17 +22,24 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pocket.auth.AuthenticationResult
+import com.example.pocket.di.AppContainer
+import com.example.pocket.di.LoginContainer
 import com.example.pocket.ui.navigation.NavigationDestinations
-import com.example.pocket.viewmodels.LoginViewModel
+import com.example.pocket.viewmodels.LoginViewModelImpl
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 
 @Composable
 fun LoginScreen(
-    viewmodel: LoginViewModel,
+    appContainer: AppContainer,
     navController: NavController
 ) {
 
+    val viewmodel = remember {
+        // start login flow
+        appContainer.loginContainer = LoginContainer()
+        appContainer.loginContainer!!.loginViewModel.create(LoginViewModelImpl::class.java)
+    }
     val authenticationResult = viewmodel.authenticationResult.observeAsState()
     var emailAddressText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
@@ -43,6 +51,12 @@ fun LoginScreen(
         derivedStateOf { emailAddressText.isNotBlank() && passwordText.isNotEmpty() }
     }
 
+    BackHandler {
+        // end login flow
+        appContainer.loginContainer = null
+        navController.navigateUp()
+    }
+
     DisposableEffect(authenticationResult.value) {
         /*
          * This block will get executed only when authenticationResult.value changes.
@@ -52,6 +66,8 @@ fun LoginScreen(
         when (val result = authenticationResult.value) {
             is AuthenticationResult.Success -> {
                 isLoading = false
+                // end login flow
+                appContainer.loginContainer = null
                 navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString) {
                     //if successfully logged in, pop the backstack
                     popUpTo(NavigationDestinations.WELCOME_SCREEN.navigationString) {
