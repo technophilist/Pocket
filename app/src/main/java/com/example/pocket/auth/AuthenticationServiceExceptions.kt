@@ -5,6 +5,16 @@ sealed class AuthenticationServiceException(
     cause: Throwable? = null
 ) : Exception(message, cause)
 
+class AuthServiceInvalidEmailException(
+    message: String? = "Invalid Email",
+    cause: Throwable? = null
+):AuthenticationServiceException(message, cause)
+
+class AuthServiceInvalidPasswordException(
+    message: String? = "Invalid password",
+    cause: Throwable? = null
+):AuthenticationServiceException(message, cause)
+
 class AuthServiceInvalidCredentialsException(
     message: String? = "Invalid Credentials",
     cause: Throwable? = null
