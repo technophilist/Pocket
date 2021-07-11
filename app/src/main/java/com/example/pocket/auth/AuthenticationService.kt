@@ -19,4 +19,15 @@ sealed class AuthenticationResult {
     data class Failure(val exception: Exception) : AuthenticationResult()
 }
 
+enum class AuthenticationServiceException(
+    val errorMessage: String? = null,
+    val cause: Throwable? = null
+) {
+    AuthServiceInvalidCredentialsException("Invalid Credentials"),
+    AuthServiceUserCollisionException("A user with the same credentials already exists"),
+    AuthServiceAccountCreationException(),
+    AuthServiceInvalidUserException("This user doesn't exist"),
+    AuthServiceWeakPasswordException("Weak Password")
+}
+
 
