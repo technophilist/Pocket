@@ -64,6 +64,8 @@ fun SignUpScreen(
     DisposableEffect(result.value) {
         when(result.value){
             is AuthenticationResult.Success->{
+                //end sign-up flow
+                appContainer.signUpContainer = null
                 navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString){
                     popUpTo(NavigationDestinations.WELCOME_SCREEN.navigationString){
                         inclusive = true
