@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.example.pocket.auth.AuthenticationResult
+import com.example.pocket.auth.*
 import com.example.pocket.di.AppContainer
 import com.example.pocket.di.SignUpContainer
 import com.example.pocket.ui.navigation.NavigationDestinations
@@ -38,6 +38,12 @@ fun SignUpScreen(
         appContainer.signUpContainer!!.signUpViewModelFactory.create(SignUpViewModelImpl::class.java)
     }
     val result = viewmodel.accountCreationResult.observeAsState()
+    var isErrorMessageVisible by remember{
+        mutableStateOf(false)
+    }
+    var errorMessage by remember{
+        mutableStateOf("")
+    }
     var emailAddressText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
     var firstNameText by remember { mutableStateOf("") }
@@ -62,8 +68,9 @@ fun SignUpScreen(
     }
 
     DisposableEffect(result.value) {
-        when(result.value){
+        when(val authResult = result.value){
             is AuthenticationResult.Success->{
+                isErrorMessageVisible = false
                 //end sign-up flow
                 appContainer.signUpContainer = null
                 navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString){
@@ -72,10 +79,20 @@ fun SignUpScreen(
                     }
                 }
             }
-            is AuthenticationResult.Failure -> { }
+            is AuthenticationResult.Failure -> {
+               errorMessage =  when(authResult.authServiceException){
+                    is AuthServiceInvalidEmailException -> "Please enter a valid email."
+                    is AuthServiceInvalidPasswordException -> "The password must be of length 8, and must contain atleast one uppercase and lowercase letter and atleast one digit."
+                    is AuthServiceUserCollisionException -> "A user with the same email already exists."
+                    else -> "Please enter a valid email and password"
+                }
+                isErrorMessageVisible = true
+            }
         }
 
-        onDispose {  }
+        onDispose {
+            isErrorMessageVisible = false
+        }
     }
 
     Column(
@@ -150,6 +167,13 @@ fun SignUpScreen(
                 )
             }
         )
+
+        if(isErrorMessageVisible){
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colors.error
+            )
+        }
 
         Text(
             modifier = Modifier
