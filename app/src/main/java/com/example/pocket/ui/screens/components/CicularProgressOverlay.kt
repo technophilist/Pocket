@@ -31,7 +31,9 @@ fun CircularLoadingProgressOverlay(
         content()
         if (isOverlayVisible) {
             Surface(
-                modifier = modifier.alpha(0.5f),
+                modifier = modifier
+                    .fillMaxSize()
+                    .alpha(0.5f),
                 color = overlayColor
             ) {
                 Box {
