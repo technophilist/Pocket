@@ -128,7 +128,8 @@ fun SignUpScreen(
                     value = firstNameText,
                     onValueChange = { firstNameText = it },
                     placeholder = { Text(text = "First Name") },
-                    textStyle = MaterialTheme.typography.body1
+                    textStyle = MaterialTheme.typography.body1,
+                    singleLine = true
                 )
 
                 Spacer(modifier = Modifier.padding(8.dp))
@@ -138,7 +139,8 @@ fun SignUpScreen(
                     value = lastNameText,
                     onValueChange = { lastNameText = it },
                     placeholder = { Text(text = "Last Name") },
-                    textStyle = MaterialTheme.typography.body1
+                    textStyle = MaterialTheme.typography.body1,
+                    singleLine = true
                 )
 
             }
@@ -152,7 +154,8 @@ fun SignUpScreen(
                 value = emailAddressText,
                 onValueChange = { emailAddressText = it },
                 placeholder = { Text(text = "Email Address") },
-                textStyle = MaterialTheme.typography.body1
+                textStyle = MaterialTheme.typography.body1,
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -173,7 +176,8 @@ fun SignUpScreen(
                         else Icons.Filled.VisibilityOff,
                         contentDescription = ""
                     )
-                }
+                },
+                singleLine = true
             )
 
             if (isErrorMessageVisible) {
