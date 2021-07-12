@@ -67,17 +67,15 @@ class SignUpViewModelImpl(
         if (!isValidEmail(email)) {
             val exception = AuthServiceInvalidEmailException("Invalid email")
             _accountCreationResult.postValue(AuthenticationResult.Failure(exception))
-        }
-
-        if (!isValidPassword(password)) {
+        }else if (!isValidPassword(password)) {
             val exceptionMessage = "The password must be of length 8, and must contain atleast one uppercase and lowercase letter and atleast one digit."
             val exception = AuthServiceInvalidEmailException(exceptionMessage)
             _accountCreationResult.postValue(AuthenticationResult.Failure(exception))
-        }
-
-        CoroutineScope(mDefaultDispatcher).launch {
-            val authenticationResult = authenticationService.createAccount(name, email, password, profilePhotoUri)
-            _accountCreationResult.postValue(authenticationResult)
+        }else{
+            CoroutineScope(mDefaultDispatcher).launch {
+                val authenticationResult = authenticationService.createAccount(name, email, password, profilePhotoUri)
+                _accountCreationResult.postValue(authenticationResult)
+            }
         }
     }
 }
