@@ -5,6 +5,8 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.pocket.auth.AuthServiceInvalidEmailException
+import com.example.pocket.auth.AuthServiceInvalidPasswordException
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.auth.AuthenticationService
 import com.example.pocket.utils.containsDigit
@@ -63,31 +65,19 @@ class SignUpViewModelImpl(
         profilePhotoUri: Uri?
     ) {
         if (!isValidEmail(email)) {
-            _accountCreationResult.postValue(AuthenticationResult.Failure(InvalidEmailException("Invalid email")))
+            val exception = AuthServiceInvalidEmailException("Invalid email")
+            _accountCreationResult.postValue(AuthenticationResult.Failure(exception))
         }
 
         if (!isValidPassword(password)) {
-            val exceptionMessage =
-                "The password must be of length 8, and must contain atleast one uppercase and lowercase letter and atleast one digit."
-            _accountCreationResult.postValue(
-                AuthenticationResult.Failure(
-                    InvalidPasswordException(
-                        exceptionMessage
-                    )
-                )
-            )
+            val exceptionMessage = "The password must be of length 8, and must contain atleast one uppercase and lowercase letter and atleast one digit."
+            val exception = AuthServiceInvalidEmailException(exceptionMessage)
+            _accountCreationResult.postValue(AuthenticationResult.Failure(exception))
         }
 
         CoroutineScope(mDefaultDispatcher).launch {
             val authenticationResult = authenticationService.createAccount(name, email, password, profilePhotoUri)
-
-            if (authenticationResult is AuthenticationResult.Failure && authenticationResult.exception is FirebaseAuthUserCollisionException) {
-                val exception = UserAlreadyExistsException(authenticationResult.exception.message)
-                _accountCreationResult.postValue(AuthenticationResult.Failure(exception))
-            } else {
-                _accountCreationResult.postValue(authenticationResult)
-            }
+            _accountCreationResult.postValue(authenticationResult)
         }
     }
-
 }

@@ -18,7 +18,7 @@ class FirebaseAuthenticationService : AuthenticationService {
     /**
      * This method is used for signing-in a registered user with the provided [email] and [password].
      * It uses [suspendCancellableCoroutine] and resumes with an instance of the [FirebaseUser] if sign-in
-     * was successful.Else,it resumes with an [Exception].
+     * was successful.Else,it resumes with an [AuthServiceSignInException].
      */
     private suspend fun signInToFirebase(
         email: String,
@@ -28,7 +28,10 @@ class FirebaseAuthenticationService : AuthenticationService {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) cancellableContinuation.resume(mAuth.currentUser!!)
                 else cancellableContinuation.resumeWithException(
-                    task.exception ?: Exception("An exception occurred when signing in")
+                    AuthServiceSignInException(
+                        message = "An exception occurred when signing in",
+                        cause = task.exception
+                    )
                 )
             }
     }
@@ -44,7 +47,9 @@ class FirebaseAuthenticationService : AuthenticationService {
     ): AuthenticationResult = runCatching {
         val user = signInToFirebase(email, password).toPocketUser()
         AuthenticationResult.Success(user)
-    }.getOrElse { AuthenticationResult.Failure(it as Exception) }
+    }.getOrElse {
+        AuthenticationResult.Failure(it as AuthenticationServiceException)
+    }
 
     /**
      * This method is used for creating a user with the provided [username],[email],[password] and an optional
@@ -60,7 +65,9 @@ class FirebaseAuthenticationService : AuthenticationService {
     ): AuthenticationResult = runCatching {
         val firebaseUser = mAuth.createUser(username, email, password, profilePhotoUri)
         AuthenticationResult.Success(firebaseUser.toPocketUser())
-    }.getOrElse { AuthenticationResult.Failure(it as Exception) }
+    }.getOrElse {
+        AuthenticationResult.Failure(it as AuthenticationServiceException)
+    }
 
     /**
      * This method is used for signing-out the current signed-in user.
