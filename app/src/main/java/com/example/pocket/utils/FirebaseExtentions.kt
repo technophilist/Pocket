@@ -2,6 +2,7 @@ package com.example.pocket.utils
 
 import android.net.Uri
 import com.example.pocket.auth.AuthServiceAccountCreationException
+import com.example.pocket.auth.AuthServiceInvalidCredentialsException
 import com.example.pocket.auth.AuthServiceUserCollisionException
 import com.example.pocket.auth.AuthServiceWeakPasswordException
 import com.google.firebase.auth.*
@@ -56,6 +57,13 @@ suspend fun FirebaseAuth.createUser(
                         AuthServiceWeakPasswordException(
                             message = createUserTask.exception?.message ?: "Weak Password",
                             cause = createUserTask.exception
+                        )
+                    }
+
+                    is FirebaseAuthInvalidCredentialsException -> {
+                        AuthServiceInvalidCredentialsException(
+                            message = createUserTask.exception?.message ,
+                            cause = createUserTask.exception?.cause,
                         )
                     }
                     else -> {
