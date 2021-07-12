@@ -3,8 +3,8 @@ package com.example.pocket.utils
 import android.net.Uri
 import com.example.pocket.auth.AuthServiceAccountCreationException
 import com.example.pocket.auth.AuthServiceInvalidCredentialsException
+import com.example.pocket.auth.AuthServiceInvalidPasswordException
 import com.example.pocket.auth.AuthServiceUserCollisionException
-import com.example.pocket.auth.AuthServiceWeakPasswordException
 import com.google.firebase.auth.*
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -54,7 +54,7 @@ suspend fun FirebaseAuth.createUser(
                         AuthServiceUserCollisionException(cause = createUserTask.exception)
                     }
                     is FirebaseAuthWeakPasswordException->{
-                        AuthServiceWeakPasswordException(
+                        AuthServiceInvalidPasswordException(
                             message = createUserTask.exception?.message ?: "Weak Password",
                             cause = createUserTask.exception
                         )
