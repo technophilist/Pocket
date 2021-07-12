@@ -1,5 +1,6 @@
 package com.example.pocket.ui.screens
 
+import android.hardware.biometrics.BiometricPrompt
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
@@ -17,7 +19,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.di.AppContainer
+import com.example.pocket.di.SignUpContainer
+import com.example.pocket.ui.navigation.NavigationDestinations
+import com.example.pocket.viewmodels.SignUpViewModelImpl
 
 @Composable
 fun SignUpScreen(
@@ -25,6 +32,12 @@ fun SignUpScreen(
     navController: NavController
 ) {
 
+    val viewmodel = remember{
+        //start sign-up flow
+        appContainer.signUpContainer = SignUpContainer()
+        appContainer.signUpContainer!!.signUpViewModelFactory.create(SignUpViewModelImpl::class.java)
+    }
+    val result = viewmodel.accountCreationResult.observeAsState()
     var emailAddressText by remember { mutableStateOf("") }
     var passwordText by remember { mutableStateOf("") }
     var firstNameText by remember { mutableStateOf("") }
@@ -46,6 +59,21 @@ fun SignUpScreen(
         append("Privacy Policy.")
         pop()
 
+    }
+
+    DisposableEffect(result.value) {
+        when(result.value){
+            is AuthenticationResult.Success->{
+                navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString){
+                    popUpTo(NavigationDestinations.WELCOME_SCREEN.navigationString){
+                        inclusive = true
+                    }
+                }
+            }
+            is AuthenticationResult.Failure -> { }
+        }
+
+        onDispose {  }
     }
 
     Column(
@@ -135,7 +163,9 @@ fun SignUpScreen(
             modifier = Modifier
                 .height(48.dp)
                 .fillMaxWidth(),
-            onClick = { },
+            onClick = {
+                viewmodel.createNewAccount("$firstNameText $lastNameText",emailAddressText,passwordText)
+            },
             shape = MaterialTheme.shapes.medium,
             content = { Text(text = "Sign Up", fontWeight = FontWeight.Bold) }
         )
