@@ -19,7 +19,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.navArgument
 import com.example.pocket.auth.AuthServiceInvalidEmailException
 import com.example.pocket.auth.AuthServiceInvalidPasswordException
 import com.example.pocket.auth.AuthServiceUserCollisionException
@@ -57,6 +56,16 @@ fun SignUpScreen(
     var lastNameText by remember { mutableStateOf("") }
     var isPasswordVisible by remember {
         mutableStateOf(false)
+    }
+    val isSignUpButtonEnabled by remember(
+        firstNameText,
+        lastNameText,
+        emailAddressText,
+        passwordText
+    ) {
+        derivedStateOf {
+            firstNameText.isNotBlank() && lastNameText.isNotBlank() && emailAddressText.isNotBlank() && passwordText.isNotEmpty()
+        }
     }
 
     val termsAndConditionText = buildAnnotatedString {
@@ -218,9 +227,9 @@ fun SignUpScreen(
                     )
                 },
                 shape = MaterialTheme.shapes.medium,
-                content = { Text(text = "Sign Up", fontWeight = FontWeight.Bold) }
+                content = { Text(text = "Sign Up", fontWeight = FontWeight.Bold) },
+                enabled = isSignUpButtonEnabled
             )
-
         }
     }
 }
