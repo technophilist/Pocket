@@ -56,7 +56,7 @@ class SignUpViewModelImpl(
     private fun isValidPassword(
         password: String
     ) =
-        password.length == 8 && password.containsUppercase() && password.containsLowercase() && password.containsDigit()
+        password.length >= 8 && password.containsUppercase() && password.containsLowercase() && password.containsDigit()
 
     override fun createNewAccount(
         name: String,
