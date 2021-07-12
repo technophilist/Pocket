@@ -47,11 +47,6 @@ class AuthServiceInvalidUserException(
     cause: Throwable? = null
 ) : AuthenticationServiceException(message, cause)
 
-class AuthServiceWeakPasswordException(
-    message: String? = "Weak Password",
-    cause: Throwable? = null
-) : AuthenticationServiceException(message, cause)
-
 class AuthServiceSignInException(
     message: String? = "Unable to sign in",
     cause: Throwable? = null
