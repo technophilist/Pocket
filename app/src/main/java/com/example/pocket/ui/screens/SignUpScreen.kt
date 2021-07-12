@@ -1,5 +1,6 @@
 package com.example.pocket.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.navArgument
 import com.example.pocket.auth.AuthServiceInvalidEmailException
 import com.example.pocket.auth.AuthServiceInvalidPasswordException
 import com.example.pocket.auth.AuthServiceUserCollisionException
@@ -70,6 +72,12 @@ fun SignUpScreen(
         append("Privacy Policy.")
         pop()
 
+    }
+
+    BackHandler {
+        //end login flow
+        appContainer.signUpContainer = null
+        navController.navigateUp()
     }
 
     DisposableEffect(result.value) {
