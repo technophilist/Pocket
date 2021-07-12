@@ -7,7 +7,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.bumptech.glide.Glide
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.auth.FirebaseAuthenticationService
-import com.example.pocket.auth.PocketUser
 import com.example.pocket.di.PocketApplication
 import com.example.pocket.di.SignUpContainer
 import com.example.pocket.viewmodels.SignUpViewModelImpl
@@ -82,7 +81,7 @@ class ExampleInstrumentedTest {
         //signing in
         runBlocking {
             when (val authSer = authService.createAccount("t","1", "testtest")) {
-                is AuthenticationResult.Failure -> println(authSer.exception)
+                is AuthenticationResult.Failure -> println(authSer.authServiceException)
                 is AuthenticationResult.Success -> println(authSer.user)
             }
         }

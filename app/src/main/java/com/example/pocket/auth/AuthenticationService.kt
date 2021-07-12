@@ -11,12 +11,11 @@ interface AuthenticationService {
         password: String,
         profilePhotoUri: Uri? = null
     ): AuthenticationResult
+
     suspend fun signOut()
 }
 
 sealed class AuthenticationResult {
     data class Success(val user: PocketUser) : AuthenticationResult()
-    data class Failure(val exception: Exception) : AuthenticationResult()
+    data class Failure(val authServiceException: AuthenticationServiceException) : AuthenticationResult()
 }
-
-
