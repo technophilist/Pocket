@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mViewModel: HomeScreenViewModel
     private lateinit var appContainer: AppContainer
 
+    @ExperimentalComposeUiApi
     @ExperimentalPagerApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +78,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @ExperimentalComposeUiApi
     @ExperimentalPagerApi
     @ExperimentalMaterialApi
     @Composable
