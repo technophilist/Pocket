@@ -29,7 +29,7 @@ import com.example.pocket.auth.AuthServiceUserCollisionException
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.di.AppContainer
 import com.example.pocket.di.SignUpContainer
-import com.example.pocket.ui.navigation.NavigationDestinations
+import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.ui.screens.components.CircularLoadingProgressOverlay
 import com.example.pocket.viewmodels.SignUpViewModelImpl
 
@@ -116,8 +116,8 @@ fun SignUpScreen(
                 isErrorMessageVisible = false
                 //end sign-up flow
                 appContainer.signUpContainer = null
-                navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString) {
-                    popUpTo(NavigationDestinations.WELCOME_SCREEN.navigationString) {
+                navController.navigate(PocketNavigationDestinations.HOME_SCREEN) {
+                    popUpTo(PocketNavigationDestinations.WELCOME_SCREEN) {
                         inclusive = true
                     }
                 }

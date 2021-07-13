@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -20,7 +19,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -29,9 +27,8 @@ import androidx.navigation.NavController
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.di.AppContainer
 import com.example.pocket.di.LoginContainer
-import com.example.pocket.ui.navigation.NavigationDestinations
+import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.LoginViewModelImpl
-import timber.log.Timber
 
 @ExperimentalComposeUiApi
 @Composable
@@ -83,9 +80,9 @@ fun LoginScreen(
                 isLoading = false
                 // end login flow
                 appContainer.loginContainer = null
-                navController.navigate(NavigationDestinations.HOME_SCREEN.navigationString) {
+                navController.navigate(PocketNavigationDestinations.HOME_SCREEN) {
                     //if successfully logged in, pop the backstack
-                    popUpTo(NavigationDestinations.WELCOME_SCREEN.navigationString) {
+                    popUpTo(PocketNavigationDestinations.WELCOME_SCREEN) {
                         inclusive = true
                     }
                 }

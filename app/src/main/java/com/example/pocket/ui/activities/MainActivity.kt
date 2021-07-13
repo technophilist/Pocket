@@ -20,12 +20,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pocket.auth.FirebaseAuthenticationService
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.di.AppContainer
-import com.example.pocket.di.LoginContainer
 import com.example.pocket.di.PocketApplication
-import com.example.pocket.ui.navigation.NavigationDestinations
+import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.ui.screens.HomeScreen
 import com.example.pocket.ui.screens.LoginScreen
 import com.example.pocket.ui.screens.SignUpScreen
@@ -34,7 +32,6 @@ import com.example.pocket.ui.theme.PocketAppTheme
 import com.example.pocket.utils.HomeScreenViewModelFactory
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import com.example.pocket.viewmodels.HomeScreenViewModelImpl
-import com.example.pocket.viewmodels.LoginViewModelImpl
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 class MainActivity : AppCompatActivity() {
@@ -87,21 +84,21 @@ class MainActivity : AppCompatActivity() {
 
         NavHost(
             navController = navController,
-            startDestination = NavigationDestinations.WELCOME_SCREEN.navigationString
+            startDestination = PocketNavigationDestinations.WELCOME_SCREEN
         ) {
-            composable(NavigationDestinations.WELCOME_SCREEN.navigationString) {
+            composable(PocketNavigationDestinations.WELCOME_SCREEN) {
                 WelcomeScreen(navController = navController)
             }
 
-            composable(NavigationDestinations.LOGIN_SCREEN.navigationString) {
+            composable(PocketNavigationDestinations.LOGIN_SCREEN) {
                 LoginScreen(appContainer,navController)
             }
 
-            composable(NavigationDestinations.SIGNUP_SCREEN.navigationString) {
+            composable(PocketNavigationDestinations.SIGNUP_SCREEN) {
                 SignUpScreen(appContainer,navController)
             }
 
-            composable(NavigationDestinations.HOME_SCREEN.navigationString) {
+            composable(PocketNavigationDestinations.HOME_SCREEN) {
                 val isDarkModeSupported = remember { isDarkModeSupported }
                 val appTheme by mViewModel.currentAppTheme.observeAsState()
                 val isDarkModeEnabled = if (isDarkModeSupported) {

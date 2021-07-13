@@ -1,8 +1,8 @@
 package com.example.pocket.ui.navigation
 
-enum class NavigationDestinations(val navigationString: String) {
-    WELCOME_SCREEN("destination_welcome_screen"),
-    LOGIN_SCREEN("destination_login_"),
-    SIGNUP_SCREEN("destination_signup_screen"),
-    HOME_SCREEN("destination_home_screen")
+object PocketNavigationDestinations{
+    const val WELCOME_SCREEN = "navigation_destination_welcome_screen"
+    const val LOGIN_SCREEN = "navigation_destination_login"
+    const val SIGNUP_SCREEN = "navigation_destination_sign_up_screen"
+    const val HOME_SCREEN = "navigation_destination_home_screen"
 }
