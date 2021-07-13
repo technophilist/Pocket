@@ -42,7 +42,7 @@ fun LoginScreen(
 
     val viewmodel = remember {
         // start login flow
-        appContainer.loginContainer = LoginContainer()
+        appContainer.loginContainer = LoginContainer(appContainer.authenticationService)
         appContainer.loginContainer!!.loginViewModelFactory.create(LoginViewModelImpl::class.java)
     }
     val authenticationResult = viewmodel.authenticationResult.observeAsState()
