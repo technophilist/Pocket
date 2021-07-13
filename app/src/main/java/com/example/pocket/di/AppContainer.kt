@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
+import com.example.pocket.auth.AuthenticationService
+import com.example.pocket.auth.FirebaseAuthenticationService
 import com.example.pocket.data.PocketRepository
 import com.example.pocket.data.database.UrlDatabase
 import com.example.pocket.data.network.PocketNetwork
@@ -46,9 +48,12 @@ class AppContainer(application: Application) {
         applicationContext
     )
 
+    val authenticationService = FirebaseAuthenticationService()
+
     //login container will be null if the user is not in the login flow
     var loginContainer: LoginContainer? = null
 
     //sign-up container will be null if the user is not in the sign-up flow
     var signUpContainer: SignUpContainer? = null
+
 }

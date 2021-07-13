@@ -42,7 +42,7 @@ fun SignUpScreen(
 
     val viewmodel = remember {
         //start sign-up flow
-        appContainer.signUpContainer = SignUpContainer()
+        appContainer.signUpContainer = SignUpContainer(appContainer.authenticationService)
         appContainer.signUpContainer!!.signUpViewModelFactory.create(SignUpViewModelImpl::class.java)
     }
     val result = viewmodel.accountCreationResult.observeAsState()
