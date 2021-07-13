@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "387945795848",
+    "project_id": "readitlater-393b2",
+    "storage_bucket": "readitlater-393b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387945795848:android:f2d7497739243fbca65cbd",
+        "android_client_info": {
+          "package_name": "com.example.pocket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387945795848-ka36dha11ocao3c651dqk5h57e3hph8n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpUHdqHvvhpQFGPFv6zGWcvYPkgUeTzwo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387945795848-ka36dha11ocao3c651dqk5h57e3hph8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
