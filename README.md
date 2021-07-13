@@ -17,6 +17,9 @@ To try out this app you need to use the latest version of
 ### Home Screen (Dark/Light mode)
 <img src = "screenshots/api29_homeScreen_dark_mode.png" height = "720" width="360" alt = "Home Screen - Dark Mode - API 29"> <img src = "screenshots/api29_homeScreen_light_mode.png" height = "720" width="360" alt = "Home Screen - Light Mode - API 29"> 
 
+### Welcome Screen(Dark/Light mode)
+<img src = "screenshots/welcome screen/welcome_carousel_light.png" height="720" width="360" alt = "Welcome Screen - Light Mode"> <img src = 
+"screenshots/welcome screen/welcome_carousel_dark.png" height = "720" width = "360" alt = "Welcome Screen - Dark Mode">
 ### Top bar (API < 29)
 The top bar will display the option to change the theme if, and only if, the device' current android
 version doesn't support dark mode.If it supports dark mode, then the theme of the app will match the
