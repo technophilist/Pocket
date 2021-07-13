@@ -20,6 +20,11 @@ To try out this app you need to use the latest version of
 ### Welcome Screen(Dark/Light mode)
 <img src = "screenshots/welcome screen/welcome_carousel_light.png" height="720" width="360" alt = "Welcome Screen - Light Mode"> <img src = 
 "screenshots/welcome screen/welcome_carousel_dark.png" height = "720" width = "360" alt = "Welcome Screen - Dark Mode">
+
+### Login Screen(Dark/Light mode)
+<img src = "screenshots/login screen/login_light.png" height="720" width="360" alt = "Login Screen - Light Mode"> <img src = 
+"screenshots/login screen/login_dark.png" height = "720" width = "360" alt = "Login Screen - Dark Mode">
+
 ### Top bar (API < 29)
 The top bar will display the option to change the theme if, and only if, the device' current android
 version doesn't support dark mode.If it supports dark mode, then the theme of the app will match the
