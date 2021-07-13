@@ -3,6 +3,8 @@ package com.example.pocket.ui.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -10,7 +12,9 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +33,7 @@ import com.example.pocket.ui.navigation.NavigationDestinations
 import com.example.pocket.ui.screens.components.CircularLoadingProgressOverlay
 import com.example.pocket.viewmodels.SignUpViewModelImpl
 
+@ExperimentalComposeUiApi
 @Composable
 fun SignUpScreen(
     appContainer: AppContainer,
@@ -67,6 +72,21 @@ fun SignUpScreen(
             firstNameText.isNotBlank() && lastNameText.isNotBlank() && emailAddressText.isNotBlank() && passwordText.isNotEmpty()
         }
     }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    //keyboard action object that is common to all text fields
+    val keyboardActions = KeyboardActions(onDone={
+        if(firstNameText.isNotBlank() && lastNameText.isNotBlank() && emailAddressText.isNotBlank() && passwordText.isNotEmpty()){
+            keyboardController?.hide()
+            isLoading = true
+            viewmodel.createNewAccount(
+                "$firstNameText $lastNameText",
+                emailAddressText,
+                passwordText
+            )
+        }
+    })
+
 
     val termsAndConditionText = buildAnnotatedString {
         append("By clicking below you agree to our ")
@@ -146,7 +166,8 @@ fun SignUpScreen(
                     onValueChange = { firstNameText = it },
                     placeholder = { Text(text = "First Name") },
                     textStyle = MaterialTheme.typography.body1,
-                    singleLine = true
+                    singleLine = true,
+                    keyboardActions = keyboardActions
                 )
 
                 Spacer(modifier = Modifier.padding(8.dp))
@@ -157,7 +178,8 @@ fun SignUpScreen(
                     onValueChange = { lastNameText = it },
                     placeholder = { Text(text = "Last Name") },
                     textStyle = MaterialTheme.typography.body1,
-                    singleLine = true
+                    singleLine = true,
+                    keyboardActions = keyboardActions
                 )
 
             }
@@ -172,7 +194,8 @@ fun SignUpScreen(
                 onValueChange = { emailAddressText = it },
                 placeholder = { Text(text = "Email Address") },
                 textStyle = MaterialTheme.typography.body1,
-                singleLine = true
+                singleLine = true,
+                keyboardActions = keyboardActions
             )
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -194,7 +217,8 @@ fun SignUpScreen(
                         contentDescription = ""
                     )
                 },
-                singleLine = true
+                singleLine = true,
+                keyboardActions = keyboardActions
             )
 
             if (isErrorMessageVisible) {
