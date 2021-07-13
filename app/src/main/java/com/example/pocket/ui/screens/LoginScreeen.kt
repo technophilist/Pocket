@@ -3,6 +3,8 @@ package com.example.pocket.ui.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -10,12 +12,15 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -28,6 +33,7 @@ import com.example.pocket.ui.navigation.NavigationDestinations
 import com.example.pocket.viewmodels.LoginViewModelImpl
 import timber.log.Timber
 
+@ExperimentalComposeUiApi
 @Composable
 fun LoginScreen(
     appContainer: AppContainer,
@@ -49,6 +55,16 @@ fun LoginScreen(
     val isLoginButtonEnabled by remember(emailAddressText, passwordText) {
         derivedStateOf { emailAddressText.isNotBlank() && passwordText.isNotEmpty() }
     }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    //keyboard actions for the text fields
+    val keyboardActions = KeyboardActions(onDone = {
+        if (emailAddressText.isNotBlank() && passwordText.isNotEmpty()){
+            keyboardController?.hide()
+            isLoading = true
+            viewmodel.authenticate(emailAddressText,passwordText)
+        }
+    })
+
 
     BackHandler {
         // end login flow
@@ -62,7 +78,7 @@ fun LoginScreen(
          * This prevents side effects and makes sure that this block of code doesn't get
          * executed on every re-composition.
          */
-        when (val result = authenticationResult.value) {
+        when (authenticationResult.value) {
             is AuthenticationResult.Success -> {
                 isLoading = false
                 // end login flow
@@ -137,7 +153,8 @@ fun LoginScreen(
                 placeholder = { Text(text = "Email Address") },
                 textStyle = MaterialTheme.typography.body1,
                 isError = isErrorMessageVisible,
-                singleLine = true
+                singleLine = true,
+                keyboardActions = keyboardActions
             )
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -172,6 +189,7 @@ fun LoginScreen(
                     )
                 },
                 singleLine = true,
+                keyboardActions = keyboardActions
             )
 
             if (isErrorMessageVisible && !isCredentialsValid) {
