@@ -55,9 +55,8 @@ current system theme.
 - [Jsoup](https://jsoup.org/) for parsing the website.
 - [Work Manager](https://developer.android.com/topic/libraries/architecture/workmanager?gclid=EAIaIQobChMIwJy33ufG8QIVGcEWBR31Mwa-EAAYASAAEgIF3vD_BwE&gclsrc=aw.ds)
   for background tasks.
+- [Firebase Authentication](https://firebase.google.com/docs/auth) for user account creation and authentication.
   
-
-
 ## Features
 - Save URL's from any web browser using the share menu.
 - Dark and light mode support.
