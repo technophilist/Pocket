@@ -25,6 +25,10 @@ To try out this app you need to use the latest version of
 <img src = "screenshots/login screen/login_light.png" height="720" width="360" alt = "Login Screen - Light Mode"> <img src = 
 "screenshots/login screen/login_dark.png" height = "720" width = "360" alt = "Login Screen - Dark Mode">
 
+### Signup Screen(Dark/Light mode)
+<img src = "screenshots/signup screen/signup_light.png" height="720" width="360" alt = "Signup Screen - Light Mode"> <img src = 
+"screenshots/signup screen/signup_dark.png" height = "720" width = "360" alt = "Signup Screen - Dark Mode">
+
 ### Top bar (API < 29)
 The top bar will display the option to change the theme if, and only if, the device' current android
 version doesn't support dark mode.If it supports dark mode, then the theme of the app will match the
