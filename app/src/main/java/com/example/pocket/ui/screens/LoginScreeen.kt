@@ -115,9 +115,7 @@ fun LoginScreen(
                 isErrorMessageVisible = true
             }
         }
-        onDispose {
-            isLoading = true
-        }
+        onDispose {}
     }
 
     val termsAndConditionText = buildAnnotatedString {
