@@ -54,8 +54,8 @@ fun LoginScreen(
     var passwordText by rememberSaveable { mutableStateOf("") }
 
     // states for validation
-    var isPasswordVisible by remember { mutableStateOf(false) }
     var isLoading by rememberSaveable { mutableStateOf(false) }
+    var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
     var isCredentialsValid by remember { mutableStateOf(false) }
     var isErrorMessageVisible by remember { mutableStateOf(false) }
     val isLoginButtonEnabled by remember(emailAddressText, passwordText) {
