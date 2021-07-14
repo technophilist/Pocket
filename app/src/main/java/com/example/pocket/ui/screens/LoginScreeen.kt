@@ -24,11 +24,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.di.AppContainer
 import com.example.pocket.di.LoginContainer
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
+import com.example.pocket.viewmodels.LoginViewModel
 import com.example.pocket.viewmodels.LoginViewModelImpl
 
 @ExperimentalComposeUiApi
@@ -39,11 +41,12 @@ fun LoginScreen(
 ) {
 
     // viewmodel and livedata
-    val viewmodel = remember {
+    val viewmodelFactory = remember {
         // start login flow
         appContainer.loginContainer = LoginContainer(appContainer.authenticationService)
-        appContainer.loginContainer!!.loginViewModelFactory.create(LoginViewModelImpl::class.java)
+        appContainer.loginContainer!!.loginViewModelFactory
     }
+    val viewmodel:LoginViewModel = viewModel(factory = viewmodelFactory)
     val authenticationResult = viewmodel.authenticationResult.observeAsState()
 
     // states for text fields
@@ -52,7 +55,7 @@ fun LoginScreen(
 
     // states for validation
     var isPasswordVisible by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
+    var isLoading by rememberSaveable { mutableStateOf(false) }
     var isCredentialsValid by remember { mutableStateOf(false) }
     var isErrorMessageVisible by remember { mutableStateOf(false) }
     val isLoginButtonEnabled by remember(emailAddressText, passwordText) {
