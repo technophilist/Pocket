@@ -85,6 +85,21 @@ fun LoginScreen(
         }
     })
 
+    val termsAndConditionText = buildAnnotatedString {
+        append("By clicking below you agree to our ")
+
+        pushStyle(SpanStyle(textDecoration = TextDecoration.Underline))
+        append("Terms of Use ")
+        pop()
+
+        append("and consent to our ")
+
+        pushStyle(SpanStyle(textDecoration = TextDecoration.Underline))
+        append("Privacy Policy.")
+        pop()
+
+    }
+    
     BackHandler {
         // end login flow
         appContainer.loginContainer = null
@@ -116,21 +131,6 @@ fun LoginScreen(
             }
         }
         onDispose {}
-    }
-
-    val termsAndConditionText = buildAnnotatedString {
-        append("By clicking below you agree to our ")
-
-        pushStyle(SpanStyle(textDecoration = TextDecoration.Underline))
-        append("Terms of Use ")
-        pop()
-
-        append("and consent to our ")
-
-        pushStyle(SpanStyle(textDecoration = TextDecoration.Underline))
-        append("Privacy Policy.")
-        pop()
-
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
