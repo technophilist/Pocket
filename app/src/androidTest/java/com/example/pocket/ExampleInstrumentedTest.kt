@@ -1,15 +1,11 @@
 package com.example.pocket
 
 import android.content.Context
-import android.util.Patterns
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.bumptech.glide.Glide
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.auth.FirebaseAuthenticationService
-import com.example.pocket.di.PocketApplication
-import com.example.pocket.di.SignUpContainer
-import com.example.pocket.viewmodels.SignUpViewModelImpl
 import kotlinx.coroutines.runBlocking
 import org.jsoup.Jsoup
 import org.junit.Assert.*
@@ -99,27 +95,6 @@ class ExampleInstrumentedTest {
 
     }
 
-    @Test
-    fun emailValidationTest(){
-        val testEmails = listOf("test@t"," ","","t",".com","www.google.com")
-        testEmails.forEach{
-            assertFalse(it.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(it).matches())
-        }
-        val trueEmail = "test@test.com"
-
-        assertTrue(trueEmail.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(trueEmail).matches())
-
-    }
-
-    @Test
-    fun accountCreationTest(){
-        val appContainer = (testContext.applicationContext as PocketApplication).appContainer
-        appContainer.signUpContainer = SignUpContainer()
-
-        val viewModel = appContainer.signUpContainer!!.signUpViewModelFactory.create(SignUpViewModelImpl::class.java)
-        viewModel.createNewAccount("FirstName Second Name","email@email.com","1234567890")
-
-    }
 
 }
 
