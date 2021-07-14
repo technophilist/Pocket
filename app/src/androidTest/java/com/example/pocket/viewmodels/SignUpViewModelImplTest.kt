@@ -48,7 +48,7 @@ class SignUpViewModelImplTest{
     }
 
     /**
-     * Tests whether the viewmodel correctly identifies a list of invalid emails
+     * Tests whether the viewmodel correctly identifies a list of invalid passwords
      * as invalid.
      */
     @Test
