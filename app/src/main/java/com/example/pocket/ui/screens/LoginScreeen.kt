@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -37,14 +38,19 @@ fun LoginScreen(
     navController: NavController
 ) {
 
+    // viewmodel and livedata
     val viewmodel = remember {
         // start login flow
         appContainer.loginContainer = LoginContainer(appContainer.authenticationService)
         appContainer.loginContainer!!.loginViewModelFactory.create(LoginViewModelImpl::class.java)
     }
     val authenticationResult = viewmodel.authenticationResult.observeAsState()
-    var emailAddressText by remember { mutableStateOf("") }
-    var passwordText by remember { mutableStateOf("") }
+
+    // states for text fields
+    var emailAddressText by rememberSaveable { mutableStateOf("") }
+    var passwordText by rememberSaveable { mutableStateOf("") }
+
+    // states for validation
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var isCredentialsValid by remember { mutableStateOf(false) }
@@ -52,8 +58,11 @@ fun LoginScreen(
     val isLoginButtonEnabled by remember(emailAddressText, passwordText) {
         derivedStateOf { emailAddressText.isNotBlank() && passwordText.isNotEmpty() }
     }
+
+    // state for keyboard
     val keyboardController = LocalSoftwareKeyboardController.current
-    //keyboard actions for the text fields
+
+    // keyboard actions for the text fields
     val keyboardActions = KeyboardActions(onDone = {
         if (emailAddressText.isNotBlank() && passwordText.isNotEmpty()){
             keyboardController?.hide()
@@ -61,7 +70,6 @@ fun LoginScreen(
             viewmodel.authenticate(emailAddressText,passwordText)
         }
     })
-
 
     BackHandler {
         // end login flow
