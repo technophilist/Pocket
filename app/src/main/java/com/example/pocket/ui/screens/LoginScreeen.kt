@@ -56,8 +56,19 @@ fun LoginScreen(
     // states for validation
     var isLoading by rememberSaveable { mutableStateOf(false) }
     var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
+    /*
+     * isCredentialsValid & isErrorMessageVisible need not be wrapped in
+     * rememberSaveable because their state will be controlled by the
+     * disposable effect, which will be restarted after a config change.
+     */
     var isCredentialsValid by remember { mutableStateOf(false) }
     var isErrorMessageVisible by remember { mutableStateOf(false) }
+    /*
+    * isLoginButtonEnabled state need not be wrapped in rememberSaveable
+    * because this state will be computed only when its keys change.
+    * Since the keys use remember saveable, and this state is not,
+    * it will automatically be recomputed after a config change.
+    */
     val isLoginButtonEnabled by remember(emailAddressText, passwordText) {
         derivedStateOf { emailAddressText.isNotBlank() && passwordText.isNotEmpty() }
     }
