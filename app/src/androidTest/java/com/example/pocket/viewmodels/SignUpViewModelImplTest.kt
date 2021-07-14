@@ -69,7 +69,7 @@ class SignUpViewModelImplTest{
         }
         // observe livedata
         viewmodel.accountCreationResult.observeForever(observer)
-        invalidPasswords.forEach { viewmodel.createNewAccount("test", "test@test,com", it) }
+        invalidPasswords.forEach { viewmodel.createNewAccount("test", "test@test.com", it) }
         // remove observers
         viewmodel.accountCreationResult.removeObserver(observer)
     }
