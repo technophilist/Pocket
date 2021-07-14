@@ -18,11 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
-class InvalidEmailException(message: String? = null) : Exception(message)
-class InvalidPasswordException(message: String? = null) : Exception(message)
-class UserAlreadyExistsException(message: String? = null) : Exception(message)
-
 interface SignUpViewModel {
     val accountCreationResult: LiveData<AuthenticationResult>
     fun createNewAccount(
