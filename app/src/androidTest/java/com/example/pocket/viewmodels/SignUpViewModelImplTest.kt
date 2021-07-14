@@ -33,7 +33,8 @@ class SignUpViewModelImplTest{
             ".com",
             "www.google.com",
             "test@Test@test.com",
-            " @test.com"
+            " @test.com",
+            "test     @test .com"
         )
 
         val observer = Observer<AuthenticationResult> {
