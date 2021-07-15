@@ -54,7 +54,7 @@ fun SignUpScreen(
     var passwordText by rememberSaveable { mutableStateOf("") }
     var firstNameText by rememberSaveable { mutableStateOf("") }
     var lastNameText by rememberSaveable { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
     // states for validation and error messages
     var isErrorMessageVisible by remember {
