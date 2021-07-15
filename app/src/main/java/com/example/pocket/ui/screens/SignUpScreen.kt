@@ -67,14 +67,24 @@ fun SignUpScreen(
     var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
     // states for validation and error messages
-    var isErrorMessageVisible by remember {
-        mutableStateOf(false)
-    }
-    var errorMessage by remember {
-        mutableStateOf("")
-    }
+    /*
+     * isErrorMessageVisible and errorMessage need not be wrapped in
+     * rememberSaveable because their state will be controlled by the
+     * disposable effect, which uses the value of a live data in the viewmodel.
+     * Since the viewmodel survives config changes, the disposable effect
+     * will restart with the appropriate value.
+     */
+    var isErrorMessageVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     // state for signup button
+    /*
+     * isSignUpButtonEnabled need not be wrapped in rememberSaveable
+     * because this state will be computed only when its keys change.
+     * Since the keys use remember saveable, and this state is not,
+     * it will automatically be recomputed to the correct value
+     * after a config change based on the keys.
+     */
     val isSignUpButtonEnabled by remember(
         firstNameText,
         lastNameText,
@@ -87,9 +97,7 @@ fun SignUpScreen(
     }
 
     // state for visibility of loading animation
-    var isLoading by remember {
-        mutableStateOf(false)
-    }
+    var isLoading by rememberSaveable { mutableStateOf(false) }
 
     // states for keyboard
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -128,9 +136,9 @@ fun SignUpScreen(
     }
 
     DisposableEffect(result.value) {
-        isLoading = false
         when (val authResult = result.value) {
             is AuthenticationResult.Success -> {
+                isLoading = false
                 isErrorMessageVisible = false
                 //end sign-up flow
                 appContainer.signUpContainer = null
@@ -141,6 +149,7 @@ fun SignUpScreen(
                 }
             }
             is AuthenticationResult.Failure -> {
+                isLoading = false
                 errorMessage = when (authResult.authServiceException) {
                     is AuthServiceInvalidEmailException -> "Please enter a valid email."
                     is AuthServiceInvalidPasswordException -> "The password must be of length 8, and must contain atleast one uppercase and lowercase letter and atleast one digit."
@@ -151,10 +160,7 @@ fun SignUpScreen(
             }
         }
 
-        onDispose {
-            isErrorMessageVisible = false
-            isLoading = true
-        }
+        onDispose { isErrorMessageVisible = false }
     }
 
     CircularLoadingProgressOverlay(isOverlayVisible = isLoading) {
