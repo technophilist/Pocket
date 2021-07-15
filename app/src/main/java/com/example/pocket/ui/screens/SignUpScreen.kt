@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -40,28 +41,30 @@ fun SignUpScreen(
     navController: NavController
 ) {
 
+    // viewmodel and livedata
     val viewmodel = remember {
         //start sign-up flow
         appContainer.signUpContainer = SignUpContainer(appContainer.authenticationService)
         appContainer.signUpContainer!!.signUpViewModelFactory.create(SignUpViewModelImpl::class.java)
     }
     val result = viewmodel.accountCreationResult.observeAsState()
+
+    // states for text fields
+    var emailAddressText by rememberSaveable { mutableStateOf("") }
+    var passwordText by rememberSaveable { mutableStateOf("") }
+    var firstNameText by rememberSaveable { mutableStateOf("") }
+    var lastNameText by rememberSaveable { mutableStateOf("") }
+    var isPasswordVisible by remember { mutableStateOf(false) }
+
+    // states for validation and error messages
     var isErrorMessageVisible by remember {
         mutableStateOf(false)
     }
     var errorMessage by remember {
         mutableStateOf("")
     }
-    var isLoading by remember {
-        mutableStateOf(false)
-    }
-    var emailAddressText by remember { mutableStateOf("") }
-    var passwordText by remember { mutableStateOf("") }
-    var firstNameText by remember { mutableStateOf("") }
-    var lastNameText by remember { mutableStateOf("") }
-    var isPasswordVisible by remember {
-        mutableStateOf(false)
-    }
+
+    // state for signup button
     val isSignUpButtonEnabled by remember(
         firstNameText,
         lastNameText,
@@ -73,6 +76,12 @@ fun SignUpScreen(
         }
     }
 
+    // state for visibility of loading animation
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
+
+    // states for keyboard
     val keyboardController = LocalSoftwareKeyboardController.current
     //keyboard action object that is common to all text fields
     val keyboardActions = KeyboardActions(onDone={
@@ -86,7 +95,6 @@ fun SignUpScreen(
             )
         }
     })
-
 
     val termsAndConditionText = buildAnnotatedString {
         append("By clicking below you agree to our ")
