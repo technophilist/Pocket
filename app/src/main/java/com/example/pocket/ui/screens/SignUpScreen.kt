@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pocket.auth.AuthServiceInvalidEmailException
 import com.example.pocket.auth.AuthServiceInvalidPasswordException
@@ -32,7 +32,7 @@ import com.example.pocket.di.AppContainer
 import com.example.pocket.di.SignUpContainer
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.ui.screens.components.CircularLoadingProgressOverlay
-import com.example.pocket.viewmodels.SignUpViewModelImpl
+import com.example.pocket.viewmodels.SignUpViewModel
 
 @ExperimentalComposeUiApi
 @Composable
@@ -42,11 +42,21 @@ fun SignUpScreen(
 ) {
 
     // viewmodel and livedata
-    val viewmodel = remember {
+    val viewmodelFactory = remember {
         //start sign-up flow
-        appContainer.signUpContainer = SignUpContainer(appContainer.authenticationService)
-        appContainer.signUpContainer!!.signUpViewModelFactory.create(SignUpViewModelImpl::class.java)
+        /*
+         * if the signup container is not null, it means that this composable
+         * was recalled because of a config change.SignUpContainer() can survive
+         * config changes because it is defined in the Application class.This check
+         * prevents a new instance of SignUpContainer being constructed on every
+         * config change.
+         */
+        if (appContainer.signUpContainer == null) {
+            appContainer.signUpContainer = SignUpContainer(appContainer.authenticationService)
+        }
+        appContainer.signUpContainer!!.signUpViewModelFactory
     }
+    val viewmodel: SignUpViewModel = viewModel(factory = viewmodelFactory)
     val result = viewmodel.accountCreationResult.observeAsState()
 
     // states for text fields
@@ -84,8 +94,8 @@ fun SignUpScreen(
     // states for keyboard
     val keyboardController = LocalSoftwareKeyboardController.current
     //keyboard action object that is common to all text fields
-    val keyboardActions = KeyboardActions(onDone={
-        if(firstNameText.isNotBlank() && lastNameText.isNotBlank() && emailAddressText.isNotBlank() && passwordText.isNotEmpty()){
+    val keyboardActions = KeyboardActions(onDone = {
+        if (firstNameText.isNotBlank() && lastNameText.isNotBlank() && emailAddressText.isNotBlank() && passwordText.isNotEmpty()) {
             keyboardController?.hide()
             isLoading = true
             viewmodel.createNewAccount(
@@ -112,7 +122,7 @@ fun SignUpScreen(
     }
 
     BackHandler {
-        //end login flow
+        //end signup flow
         appContainer.signUpContainer = null
         navController.navigateUp()
     }
