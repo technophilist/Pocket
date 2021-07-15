@@ -59,7 +59,9 @@ fun LoginScreen(
     /*
      * isCredentialsValid & isErrorMessageVisible need not be wrapped in
      * rememberSaveable because their state will be controlled by the
-     * disposable effect, which will be restarted after a config change.
+     * disposable effect, which uses the value of a live data in the viewmodel.
+     * Since the viewmodel survives config changes, the disposable effect
+     * will restart with the appropriate value.
      */
     var isCredentialsValid by remember { mutableStateOf(false) }
     var isErrorMessageVisible by remember { mutableStateOf(false) }
