@@ -31,7 +31,6 @@ import com.example.pocket.di.AppContainer
 import com.example.pocket.di.LoginContainer
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.LoginViewModel
-import com.example.pocket.viewmodels.LoginViewModelImpl
 
 @ExperimentalComposeUiApi
 @Composable
@@ -43,10 +42,19 @@ fun LoginScreen(
     // viewmodel and livedata
     val viewmodelFactory = remember {
         // start login flow
-        appContainer.loginContainer = LoginContainer(appContainer.authenticationService)
+        /*
+         * if the login container is not null, it means that this composable
+         * was recalled because of a config change.LoginContainer() can survive
+         * config changes because it is defined in the Application class.This check
+         * prevents a new instance of LoginContainer being constructed on every
+         * config change.
+         */
+        if (appContainer.loginContainer == null) {
+            appContainer.loginContainer = LoginContainer(appContainer.authenticationService)
+        }
         appContainer.loginContainer!!.loginViewModelFactory
     }
-    val viewmodel:LoginViewModel = viewModel(factory = viewmodelFactory)
+    val viewmodel: LoginViewModel = viewModel(factory = viewmodelFactory)
     val authenticationResult = viewmodel.authenticationResult.observeAsState()
 
     // states for text fields
@@ -80,10 +88,10 @@ fun LoginScreen(
 
     // keyboard actions for the text fields
     val keyboardActions = KeyboardActions(onDone = {
-        if (emailAddressText.isNotBlank() && passwordText.isNotEmpty()){
+        if (emailAddressText.isNotBlank() && passwordText.isNotEmpty()) {
             keyboardController?.hide()
             isLoading = true
-            viewmodel.authenticate(emailAddressText,passwordText)
+            viewmodel.authenticate(emailAddressText, passwordText)
         }
     })
 
@@ -101,7 +109,7 @@ fun LoginScreen(
         pop()
 
     }
-    
+
     BackHandler {
         // end login flow
         appContainer.loginContainer = null
