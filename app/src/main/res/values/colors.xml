@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name ="primaryColor">#FFDD0D3C</color>
+    <color name="primaryVariant">#FFC20029</color>
 </resources>
+
+
+
+
