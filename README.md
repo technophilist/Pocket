@@ -15,19 +15,13 @@ To try out this app you need to use the latest version of
 ## Screenshots
 
 ### Home Screen (Dark/Light mode)
-<img src = "screenshots/api29_homeScreen_dark_mode.png" height = "720" width="360" alt = "Home Screen - Dark Mode - API 29"> <img src = "screenshots/api29_homeScreen_light_mode.png" height = "720" width="360" alt = "Home Screen - Light Mode - API 29"> 
+<img src = "screenshots/api29_homeScreen_dark_mode.png" height="360" width="180" alt = "Home Screen - Dark Mode - API 29"> <img src = "screenshots/api29_homeScreen_light_mode.png" height="360" width="180" alt = "Home Screen - Light Mode - API 29"> 
 
-### Welcome Screen(Dark/Light mode)
-<img src = "screenshots/welcome screen/welcome_carousel_light.png" height="720" width="360" alt = "Welcome Screen - Light Mode"> <img src = 
-"screenshots/welcome screen/welcome_carousel_dark.png" height = "720" width = "360" alt = "Welcome Screen - Dark Mode">
+### Welcome,Login and Signup Screen (Light mode)
+<img src = "screenshots/welcome screen/welcome_carousel_light.png" height="360" width="180" alt = "Welcome Screen - Light Mode"> &nbsp; <img src = "screenshots/login screen/login_light.png" height="360" width="180" alt = "Login Screen - Light Mode"> &nbsp; <img src = "screenshots/signup screen/signup_light.png" height="360" width="180" alt = "Signup Screen - Light Mode">
 
-### Login Screen(Dark/Light mode)
-<img src = "screenshots/login screen/login_light.png" height="720" width="360" alt = "Login Screen - Light Mode"> <img src = 
-"screenshots/login screen/login_dark.png" height = "720" width = "360" alt = "Login Screen - Dark Mode">
-
-### Signup Screen(Dark/Light mode)
-<img src = "screenshots/signup screen/signup_light.png" height="720" width="360" alt = "Signup Screen - Light Mode"> <img src = 
-"screenshots/signup screen/signup_dark.png" height = "720" width = "360" alt = "Signup Screen - Dark Mode">
+### Welcome, Login and Signup Screen (Dark mode)
+<img src = "screenshots/welcome screen/welcome_carousel_dark.png" height="360" width="180" alt = "Welcome Screen - Dark Mode"> &nbsp; <img src = "screenshots/login screen/login_dark.png" height="360" width="180" alt = "Login Screen - Dark Mode"> &nbsp; <img src = "screenshots/signup screen/signup_dark.png" height="360" width="180" alt = "Signup Screen - Dark Mode">
 
 ### Top bar (API < 29)
 The top bar will display the option to change the theme if, and only if, the device' current android
@@ -39,7 +33,6 @@ current system theme.
 
 #### Light Mode
 <img src = "screenshots/api26_topbar_light_mode.png" width="538" height="119" alt = "">
-
 
 ## Tech Stack
 - Entirely written in [Kotlin](https://kotlinlang.org/).
