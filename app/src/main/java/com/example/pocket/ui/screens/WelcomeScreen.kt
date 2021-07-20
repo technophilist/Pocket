@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,23 +36,20 @@ fun WelcomeScreen(navController: NavController) {
     val vectorArtCards = listOf(
         VectorArtCard(
             R.drawable.welcome_screen_save_files,
-            title = "Save what really interests you",
-            description = "Save articles,videos or any online content you like. " +
-                    "Add them to Pocket and read them when you have time.",
+            title = stringResource(id = R.string.label_save_what_interests_you_title),
+            description = stringResource(id = R.string.label_save_what_interests_you_desc),
             imageDescription = ""
         ),
         VectorArtCard(
             id = R.drawable.welcome_screen_read_peacefully_vector_art,
-            title = "Your quiet corner of the internet",
-            description = "Pocket saves articles in a clean layout designed for reading-" +
-                    "no interruptions, no popups-so you can sidestep the internet's noise.",
+            title = stringResource(id = R.string.label_quiet_corner_of_the_internet_title),
+            description = stringResource(id = R.string.label_quiet_corner_of_the_internet_desc),
             imageDescription = ""
         ),
         VectorArtCard(
             id = R.drawable.welcome_screen_dark_mode_vector_art,
-            title = "Reduce eye strain with dark mode",
-            description = "Want to dim the lights? Don't let a bright screen mess with your eyes or sleep. " +
-                    "Turn on dark mode and continue your reading.",
+            title = stringResource(id = R.string.label_reduce_eye_strain_with_dark_mode_title),
+            description = stringResource(id = R.string.label_reduce_eye_strain_with_dark_mode_desc),
             imageDescription = ""
         )
     )
@@ -65,7 +63,7 @@ fun WelcomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-            text = "Welcome To Pocket",
+            text = "${stringResource(id = R.string.label_welcome_to)} ${stringResource(id = R.string.app_name)}",
             fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h1,
@@ -83,14 +81,14 @@ fun WelcomeScreen(navController: NavController) {
                 .fillMaxWidth()
                 .height(48.dp),
             onClick = { navController.navigate(PocketNavigationDestinations.SIGNUP_SCREEN) },
-            content = { Text(text = "Create account") }
+            content = { Text(text = stringResource(id = R.string.label_create_account)) }
         )
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 32.dp)
                 .clickable { navController.navigate(PocketNavigationDestinations.LOGIN_SCREEN) },
-            text = "Log in",
+            text = stringResource(id = R.string.text_login),
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colors.primary
         )
