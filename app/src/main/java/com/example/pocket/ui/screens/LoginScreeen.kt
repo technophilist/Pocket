@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.pocket.R
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.di.AppContainer
 import com.example.pocket.di.LoginContainer
@@ -153,7 +155,7 @@ fun LoginScreen(
             Text(
                 modifier = Modifier
                     .paddingFromBaseline(top = 184.dp),
-                text = "Log in with mail",
+                text = stringResource(id = R.string.label_login_with_email),
                 style = MaterialTheme.typography.h1
             )
 
@@ -177,7 +179,7 @@ fun LoginScreen(
                     emailAddressText = it
 
                 },
-                placeholder = { Text(text = "Email Address") },
+                placeholder = { Text(text = stringResource(id = R.string.placeholder_email_address)) },
                 textStyle = MaterialTheme.typography.body1,
                 isError = isErrorMessageVisible,
                 singleLine = true,
@@ -203,7 +205,7 @@ fun LoginScreen(
                     }
                     passwordText = it
                 },
-                placeholder = { Text(text = "Password") },
+                placeholder = { Text(text = stringResource(R.string.placeholder_password)) },
                 textStyle = MaterialTheme.typography.body1,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 isError = isErrorMessageVisible,
@@ -222,7 +224,7 @@ fun LoginScreen(
             if (isErrorMessageVisible && !isCredentialsValid) {
                 Text(
                     modifier = Modifier.align(Alignment.Start),
-                    text = "The email address or password that you've entered is incorrect. Please check the credentials.",
+                    text = stringResource(R.string.label_login_error_message),
                     color = MaterialTheme.colors.error
                 )
             }
@@ -248,7 +250,7 @@ fun LoginScreen(
                     viewmodel.authenticate(emailAddressText, passwordText)
                 },
                 shape = MaterialTheme.shapes.medium,
-                content = { Text(text = "Log in", fontWeight = FontWeight.Bold) },
+                content = { Text(text = stringResource(id = R.string.label_login), fontWeight = FontWeight.Bold) },
                 enabled = isLoginButtonEnabled
             )
         }

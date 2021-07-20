@@ -8,4 +8,11 @@
     <string name="label_item_deleted">Item Deleted</string>
     <string name="label_undo">Undo</string>
 
+    <!-- Login Screen -->
+    <string name="label_login_with_email">Log in with mail</string>
+    <string name="placeholder_email_address">Email Address</string>
+    <string name="placeholder_password">Password</string>
+    <string name="label_login">Log in</string>
+    <string name="label_login_error_message">The email address or password that you\'ve entered is incorrect. Please check the credentials.</string>
+
 </resources>
