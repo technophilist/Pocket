@@ -20,10 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.ui.screens.components.SearchBar
 import com.example.pocket.ui.screens.components.UrlCard
@@ -92,24 +95,29 @@ fun HomeScreen(
             }
 
             urlItems?.let {
-                if (it.isEmpty()) ListEmptyMessage(modifier = Modifier.fillMaxSize())
-                UrlList(
-                    modifier = Modifier.fillMaxSize(),
-                    fetchImageBitmap = { urlString ->
-                        viewModel.getBitmap(urlString).asImageBitmap()
-                    },
-                    urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
-                    onClickItem = onClickUrlItem,
-                    onItemSwiped = { urlEntity ->
-                        viewModel.deleteUrlItem(urlEntity)
-                        coroutineScope.launch {
-                            snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
-                            val snackBarResult =
-                                snackbarHostState.showSnackbar("Item Deleted", "Undo")
-                            if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
+                if (it.isEmpty()){
+                    ListEmptyMessage(modifier = Modifier.fillMaxSize())
+                }else{
+                    val snackbarMessage = stringResource(id = R.string.label_item_deleted)
+                    val snackbarActionLabel = stringResource(id = R.string.label_undo)
+                    UrlList(
+                        modifier = Modifier.fillMaxSize(),
+                        fetchImageBitmap = { urlString ->
+                            viewModel.getBitmap(urlString).asImageBitmap()
+                        },
+                        urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
+                        onClickItem = onClickUrlItem,
+                        onItemSwiped = { urlEntity ->
+                            viewModel.deleteUrlItem(urlEntity)
+                            coroutineScope.launch {
+                                snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
+                                val snackBarResult =
+                                    snackbarHostState.showSnackbar(snackbarMessage, snackbarActionLabel)
+                                if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
         SnackbarHost(
@@ -129,7 +137,7 @@ fun PocketAppBar(
     TopAppBar(contentPadding = PaddingValues(top = 8.dp, start = 8.dp)) {
         Text(
             modifier = Modifier.weight(1f),
-            text = "Pocket",
+            text = stringResource(id = R.string.app_name),
             style = MaterialTheme.typography.h1,
         )
         Column(modifier = Modifier.padding(8.dp)) {
@@ -155,24 +163,17 @@ fun PocketAppBar(
 
 @Composable
 private fun ListEmptyMessage(modifier: Modifier = Modifier) {
-    val message = """
-        It's easy to add items to Pocket.
-        Use the share button of any browser 
-        and tap on the Pocket icon to add
-        an item.
-         """.trimIndent()
-
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 0.dp),
-            text = "Your list is empty",
+            text = stringResource(id = R.string.label_list_empty_header),
             fontWeight = FontWeight.Bold
         )
         Text(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = message,
+            text = stringResource(id = R.string.label_list_empty_desc),
             textAlign = TextAlign.Center
         )
     }

@@ -1,3 +1,11 @@
 <resources>
+    <!-- App -->
     <string name="app_name">Pocket</string>
+
+    <!-- Home Screen -->
+    <string name="label_list_empty_header">Your list is empty</string>
+    <string name="label_list_empty_desc">It\'s easy to add items to Pocket.Use the share button of any browser and tap on the Pocket icon to add an item</string>
+    <string name="label_item_deleted">Item Deleted</string>
+    <string name="label_undo">Undo</string>
+
 </resources>
