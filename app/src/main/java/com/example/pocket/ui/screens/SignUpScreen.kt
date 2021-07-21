@@ -16,12 +16,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -33,7 +30,7 @@ import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.di.AppContainer
 import com.example.pocket.di.SignUpContainer
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
-import com.example.pocket.ui.screens.components.CircularLoadingProgressOverlay
+import com.example.pocket.ui.components.CircularLoadingProgressOverlay
 import com.example.pocket.viewmodels.SignUpViewModel
 
 @ExperimentalComposeUiApi

@@ -1,4 +1,4 @@
-package com.example.pocket.ui.screens.components
+package com.example.pocket.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*

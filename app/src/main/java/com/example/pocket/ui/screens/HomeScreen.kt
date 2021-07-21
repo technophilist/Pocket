@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,9 +27,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
-import com.example.pocket.ui.screens.components.SearchBar
-import com.example.pocket.ui.screens.components.UrlCard
-import com.example.pocket.ui.screens.components.rememberSearchBarState
+import com.example.pocket.ui.components.SearchBar
+import com.example.pocket.ui.components.UrlCard
+import com.example.pocket.ui.components.rememberSearchBarState
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import kotlinx.coroutines.launch
 
