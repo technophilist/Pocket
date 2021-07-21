@@ -8,6 +8,7 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.pocket.R
+import com.example.pocket.di.PocketApplication
 import com.example.pocket.workers.SaveUrlWorker
 
 
@@ -16,6 +17,24 @@ class HandleUrlActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_handle_url)
+        val appContainer = (applicationContext as PocketApplication).appContainer
+
+        // if the user is not logged in, don't save the url
+        if (!appContainer.authenticationService.isLoggedIn) {
+            Toast.makeText(
+                this,
+                "Please log into Pocket to save websites",
+                Toast.LENGTH_LONG
+            ).show()
+            finish()
+            /*
+             * An explicit return statement should be used because
+             * activity will not be immediately finished but only be
+             * planned to be 'finished'. Once the looper reaches the statement,
+             * it will begin the de-initialization sequence.
+             */
+            return
+        }
         if (intent.type == "text/plain") {
 
             //Building the data using data builder
@@ -38,6 +57,7 @@ class HandleUrlActivity : AppCompatActivity() {
             //Closing the activity
             finish()
         }
+
     }
 
     companion object {
