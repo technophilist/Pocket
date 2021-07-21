@@ -5,6 +5,7 @@
     <!-- Common -->
     <string name="placeholder_email_address">Email Address</string>
     <string name="placeholder_password">Password</string>
+    <string name="label_terms_and_conditions">By clicking below, you agree to our Terms of Use and consent to our Privacy Policy.</string>
 
     <!-- Welcome Screen -->
     <string name="label_welcome_to">Welcome to</string>

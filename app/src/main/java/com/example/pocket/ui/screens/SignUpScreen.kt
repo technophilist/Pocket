@@ -121,21 +121,6 @@ fun SignUpScreen(
     val invalidCredentialsErrorMessage = stringResource(id = R.string.label_enter_valid_email_and_password)
     val userAlreadyExistsErrorMessage = stringResource(id = R.string.label_user_already_exists)
 
-    val termsAndConditionText = buildAnnotatedString {
-        append("By clicking below you agree to our ")
-
-        pushStyle(SpanStyle(textDecoration = TextDecoration.Underline))
-        append("Terms of Use ")
-        pop()
-
-        append("and consent to our ")
-
-        pushStyle(SpanStyle(textDecoration = TextDecoration.Underline))
-        append("Privacy Policy.")
-        pop()
-
-    }
-
     BackHandler {
         //end signup flow
         appContainer.signUpContainer = null
@@ -263,7 +248,7 @@ fun SignUpScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .paddingFromBaseline(top = 24.dp),
-                text = termsAndConditionText,
+                text = stringResource(id = R.string.label_terms_and_conditions),
                 style = MaterialTheme.typography.body2
             )
 
