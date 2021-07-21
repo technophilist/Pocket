@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.pocket.R
 import com.example.pocket.auth.AuthServiceInvalidEmailException
 import com.example.pocket.auth.AuthServiceInvalidPasswordException
 import com.example.pocket.auth.AuthServiceUserCollisionException
@@ -114,6 +116,11 @@ fun SignUpScreen(
         }
     })
 
+    val invalidEmailErrorMessage = stringResource(id = R.string.label_invalid_email)
+    val invalidPasswordErrorMessage = stringResource(id = R.string.label_invalid_password)
+    val invalidCredentialsErrorMessage = stringResource(id = R.string.label_enter_valid_email_and_password)
+    val userAlreadyExistsErrorMessage = stringResource(id = R.string.label_user_already_exists)
+
     val termsAndConditionText = buildAnnotatedString {
         append("By clicking below you agree to our ")
 
@@ -151,10 +158,10 @@ fun SignUpScreen(
             is AuthenticationResult.Failure -> {
                 isLoading = false
                 errorMessage = when (authResult.authServiceException) {
-                    is AuthServiceInvalidEmailException -> "Please enter a valid email."
-                    is AuthServiceInvalidPasswordException -> "The password must be of length 8, and must contain atleast one uppercase and lowercase letter and atleast one digit."
-                    is AuthServiceUserCollisionException -> "A user with the same email already exists."
-                    else -> "Please enter a valid email and password"
+                    is AuthServiceInvalidEmailException -> invalidEmailErrorMessage
+                    is AuthServiceInvalidPasswordException -> invalidPasswordErrorMessage
+                    is AuthServiceUserCollisionException -> userAlreadyExistsErrorMessage
+                    else -> invalidCredentialsErrorMessage
                 }
                 isErrorMessageVisible = true
             }
@@ -174,7 +181,7 @@ fun SignUpScreen(
             Text(
                 modifier = Modifier
                     .paddingFromBaseline(top = 184.dp),
-                text = "Sign up for a new account",
+                text = stringResource(id = R.string.label_signup_for_new_account),
                 style = MaterialTheme.typography.h1
             )
 
@@ -188,7 +195,7 @@ fun SignUpScreen(
                         .fillMaxWidth(0.5f),
                     value = firstNameText,
                     onValueChange = { firstNameText = it },
-                    placeholder = { Text(text = "First Name") },
+                    placeholder = { Text(text = stringResource(id = R.string.placeholder_first_name)) },
                     textStyle = MaterialTheme.typography.body1,
                     singleLine = true,
                     keyboardActions = keyboardActions
@@ -200,7 +207,7 @@ fun SignUpScreen(
                     modifier = Modifier.height(56.dp),
                     value = lastNameText,
                     onValueChange = { lastNameText = it },
-                    placeholder = { Text(text = "Last Name") },
+                    placeholder = { Text(text = stringResource(id = R.string.placeholder_last_name)) },
                     textStyle = MaterialTheme.typography.body1,
                     singleLine = true,
                     keyboardActions = keyboardActions
@@ -216,7 +223,7 @@ fun SignUpScreen(
                     .fillMaxWidth(),
                 value = emailAddressText,
                 onValueChange = { emailAddressText = it },
-                placeholder = { Text(text = "Email Address") },
+                placeholder = { Text(text = stringResource(id = R.string.placeholder_email_address)) },
                 textStyle = MaterialTheme.typography.body1,
                 singleLine = true,
                 keyboardActions = keyboardActions
@@ -230,7 +237,7 @@ fun SignUpScreen(
                     .fillMaxWidth(),
                 value = passwordText,
                 onValueChange = { passwordText = it },
-                placeholder = { Text(text = "Password") },
+                placeholder = { Text(text = stringResource(id = R.string.placeholder_password)) },
                 textStyle = MaterialTheme.typography.body1,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -275,7 +282,7 @@ fun SignUpScreen(
                     )
                 },
                 shape = MaterialTheme.shapes.medium,
-                content = { Text(text = "Sign Up", fontWeight = FontWeight.Bold) },
+                content = { Text(text = stringResource(id = R.string.label_signup), fontWeight = FontWeight.Bold) },
                 enabled = isSignUpButtonEnabled
             )
         }
