@@ -15,13 +15,13 @@ To try out this app you need to use the latest version of
 ## Screenshots
 
 ### Home Screen (Dark/Light mode)
-<img src = "screenshots/api29_homeScreen_dark_mode.png" height="360" width="180" alt = "Home Screen - Dark Mode - API 29"> <img src = "screenshots/api29_homeScreen_light_mode.png" height="360" width="180" alt = "Home Screen - Light Mode - API 29"> 
-
-### Welcome,Login and Signup Screen (Light mode)
-<img src = "screenshots/welcome screen/welcome_carousel_light.png" height="360" width="180" alt = "Welcome Screen - Light Mode"> &nbsp; <img src = "screenshots/login screen/login_light.png" height="360" width="180" alt = "Login Screen - Light Mode"> &nbsp; <img src = "screenshots/signup screen/signup_light.png" height="360" width="180" alt = "Signup Screen - Light Mode">
+<img src = "screenshots/api29_homeScreen_dark_mode.png" height="360" width="180" alt = "Home Screen - Dark Mode - API 29"> <img src = "screenshots/api29_homeScreen_light_mode.png" height="360" width="180" alt = "Home Screen - Light Mode - API 29">
 
 ### Welcome, Login and Signup Screen (Dark mode)
 <img src = "screenshots/welcome screen/welcome_carousel_dark.png" height="360" width="180" alt = "Welcome Screen - Dark Mode"> &nbsp; <img src = "screenshots/login screen/login_dark.png" height="360" width="180" alt = "Login Screen - Dark Mode"> &nbsp; <img src = "screenshots/signup screen/signup_dark.png" height="360" width="180" alt = "Signup Screen - Dark Mode">
+
+### Welcome,Login and Signup Screen (Light mode)
+<img src = "screenshots/welcome screen/welcome_carousel_light.png" height="360" width="180" alt = "Welcome Screen - Light Mode"> &nbsp; <img src = "screenshots/login screen/login_light.png" height="360" width="180" alt = "Login Screen - Light Mode"> &nbsp; <img src = "screenshots/signup screen/signup_light.png" height="360" width="180" alt = "Signup Screen - Light Mode">
 
 ### Top bar (API < 29)
 The top bar will display the option to change the theme if, and only if, the device' current android
@@ -49,7 +49,7 @@ current system theme.
 - [Work Manager](https://developer.android.com/topic/libraries/architecture/workmanager?gclid=EAIaIQobChMIwJy33ufG8QIVGcEWBR31Mwa-EAAYASAAEgIF3vD_BwE&gclsrc=aw.ds)
   for background tasks.
 - [Firebase Authentication](https://firebase.google.com/docs/auth) for user account creation and authentication.
-  
+
 ## Features
 - Save URL's from any web browser using the share menu.
 - Dark and light mode support.
@@ -71,14 +71,3 @@ current system theme.
 - Commit messages follow
   the [Angular specification](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines)
   for commit messages._(Note:Some early commits do not follow this convention.)_
-
-
-
-
-
-
-
-
-
-
-
