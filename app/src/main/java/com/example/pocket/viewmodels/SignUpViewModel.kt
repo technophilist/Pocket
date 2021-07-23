@@ -68,7 +68,7 @@ class SignUpViewModelImpl(
             _accountCreationResult.postValue(AuthenticationResult.Failure(exception))
         }else{
             CoroutineScope(mDefaultDispatcher).launch {
-                val authenticationResult = authenticationService.createAccount(name, email, password, profilePhotoUri)
+                val authenticationResult = authenticationService.createAccount(name, email.trim(), password, profilePhotoUri)
                 _accountCreationResult.postValue(authenticationResult)
             }
         }
