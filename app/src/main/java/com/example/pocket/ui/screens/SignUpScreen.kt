@@ -29,8 +29,8 @@ import com.example.pocket.auth.AuthServiceUserCollisionException
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.di.AppContainer
 import com.example.pocket.di.SignUpContainer
-import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.ui.components.CircularLoadingProgressOverlay
+import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.SignUpViewModel
 
 @ExperimentalComposeUiApi
@@ -115,7 +115,8 @@ fun SignUpScreen(
 
     val invalidEmailErrorMessage = stringResource(id = R.string.label_invalid_email)
     val invalidPasswordErrorMessage = stringResource(id = R.string.label_invalid_password)
-    val invalidCredentialsErrorMessage = stringResource(id = R.string.label_enter_valid_email_and_password)
+    val invalidCredentialsErrorMessage =
+        stringResource(id = R.string.label_enter_valid_email_and_password)
     val userAlreadyExistsErrorMessage = stringResource(id = R.string.label_user_already_exists)
 
     BackHandler {
@@ -204,7 +205,18 @@ fun SignUpScreen(
                     .height(56.dp)
                     .fillMaxWidth(),
                 value = emailAddressText,
-                onValueChange = { emailAddressText = it },
+                onValueChange = {
+                    /*
+                     * if isErrorMessageVisible is set to true then it indicates
+                     * a failed login attempt.Remove the error message when the user
+                     * is making an edit to the email address text.The prevents the
+                     * error message from being displayed when the user is re-typing.
+                     */
+                    if (isErrorMessageVisible) {
+                        isErrorMessageVisible = false
+                    }
+                    emailAddressText = it
+                },
                 placeholder = { Text(text = stringResource(id = R.string.placeholder_email_address)) },
                 textStyle = MaterialTheme.typography.body1,
                 singleLine = true,
@@ -219,7 +231,18 @@ fun SignUpScreen(
                     .height(56.dp)
                     .fillMaxWidth(),
                 value = passwordText,
-                onValueChange = { passwordText = it },
+                onValueChange = {
+                    /*
+                     * if isErrorMessageVisible is set to true then it indicates
+                     * a failed login attempt.Remove the error message when the user
+                     * is making an edit to the password text.The prevents the
+                     * error message from being displayed when the user is re-typing.
+                     */
+                    if (isErrorMessageVisible) {
+                        isErrorMessageVisible = false
+                    }
+                    passwordText = it
+                },
                 placeholder = { Text(text = stringResource(id = R.string.placeholder_password)) },
                 textStyle = MaterialTheme.typography.body1,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -266,7 +289,12 @@ fun SignUpScreen(
                     )
                 },
                 shape = MaterialTheme.shapes.medium,
-                content = { Text(text = stringResource(id = R.string.label_signup), fontWeight = FontWeight.Bold) },
+                content = {
+                    Text(
+                        text = stringResource(id = R.string.label_signup),
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 enabled = isSignUpButtonEnabled
             )
         }
