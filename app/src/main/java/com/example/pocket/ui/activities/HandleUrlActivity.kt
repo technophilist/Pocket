@@ -23,7 +23,7 @@ class HandleUrlActivity : AppCompatActivity() {
         if (!appContainer.authenticationService.isLoggedIn) {
             Toast.makeText(
                 this,
-                "Please log into Pocket to save websites",
+                resources.getString(R.string.label_login_to_save_files),
                 Toast.LENGTH_LONG
             ).show()
             finish()
@@ -50,7 +50,7 @@ class HandleUrlActivity : AppCompatActivity() {
             //displaying toast
             Toast.makeText(
                 this,
-                "Added to Pocket",
+                resources.getString(R.string.label_added_to_pocket),
                 Toast.LENGTH_SHORT
             ).show()
 

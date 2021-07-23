@@ -39,4 +39,8 @@
     <string name="placeholder_last_name">Last Name</string>
     <string name="label_signup">Sign up</string>
 
+    <!-- HandleUrl Activity -->
+    <string name="label_login_to_save_files">Please log into Pocket to save websites</string>
+    <string name="label_added_to_pocket">Added to Pocket</string>
+
 </resources>
