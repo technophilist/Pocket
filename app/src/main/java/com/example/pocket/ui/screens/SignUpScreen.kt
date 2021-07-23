@@ -208,7 +208,8 @@ fun SignUpScreen(
                 placeholder = { Text(text = stringResource(id = R.string.placeholder_email_address)) },
                 textStyle = MaterialTheme.typography.body1,
                 singleLine = true,
-                keyboardActions = keyboardActions
+                keyboardActions = keyboardActions,
+                isError = isErrorMessageVisible
             )
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -231,7 +232,8 @@ fun SignUpScreen(
                     )
                 },
                 singleLine = true,
-                keyboardActions = keyboardActions
+                keyboardActions = keyboardActions,
+                isError = isErrorMessageVisible
             )
 
             if (isErrorMessageVisible) {
