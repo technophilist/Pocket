@@ -11,12 +11,14 @@ private val DarkColorPalette = darkColors(
     primary = Red300,
     primaryVariant = Red700,
     onPrimary = Color.White,
+    error = AmberA100
 )
 
 private val LightColorPalette = lightColors(
     primary = Red700,
     primaryVariant = Red900,
     onPrimary = Color.White,
+    error = Amber700
 )
 
 @Composable
