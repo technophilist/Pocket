@@ -41,7 +41,7 @@ class LoginViewModelImpl(
     override fun authenticate(emailAddress: String, password: String) {
       CoroutineScope(mDefaultDispatcher).launch {
             //if the email and password are valid, then try signing in the user with the authentication service.
-            _authenticationResult.postValue(mAuthenticationService.signIn(emailAddress, password))
+            _authenticationResult.postValue(mAuthenticationService.signIn(emailAddress.trim(), password))
         }
     }
 }
