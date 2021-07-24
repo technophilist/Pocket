@@ -17,7 +17,7 @@ import kotlin.coroutines.resumeWithException
  */
 private interface OnGetDocument {
     fun onSuccess(document: Document)
-    fun onFailure(exception: IOException)
+    fun onFailure(exception: Exception)
 }
 
 /**
@@ -42,7 +42,7 @@ private fun Connection.fetchDocument(
             // run the callback on the main thread
             resultHandler.post { callback.onSuccess(document) }
 
-        } catch (exception: IOException) {
+        } catch (exception: Exception) {
 
             // run callback on the main thread
             resultHandler.post { callback.onFailure(exception) }
@@ -75,7 +75,7 @@ suspend fun Connection.getDocument(): Document =
                 cancellableContinuation.resume(document)
             }
 
-            override fun onFailure(exception: IOException) {
+            override fun onFailure(exception: Exception) {
                 //resume with an exception when an exception occurs
                 cancellableContinuation.resumeWithException(exception)
             }
