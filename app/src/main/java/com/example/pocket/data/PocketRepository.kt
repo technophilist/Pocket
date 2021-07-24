@@ -68,7 +68,7 @@ class PocketRepository(
             /* Download the image that will be used as the thumbnail,save to the internal storage and get the path
              * to the location where the image was downloaded
              */
-            val imageAbsolutePath: String? = mNetwork.downloadImage(url)?.let { thumbnailDrawable ->
+            val imageAbsolutePath: String? = mNetwork.fetchImage(url)?.let { thumbnailDrawable ->
                 saveImageToInternalStorage(
                     resource = thumbnailDrawable,
                     fileName = url.host + urlContentTitle,
@@ -77,7 +77,7 @@ class PocketRepository(
             }
 
             //download the favicon,save to the internal storage and get the path to the location where the image was downloaded
-            val faviconPath: String? = mNetwork.downloadFavicon(url)?.let { faviconDrawable ->
+            val faviconPath: String? = mNetwork.fetchFavicon(url)?.let { faviconDrawable ->
                 saveImageToInternalStorage(
                     resource = faviconDrawable,
                     fileName = url.host + urlContentTitle + "favicon",

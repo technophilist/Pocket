@@ -15,8 +15,8 @@ import java.util.*
 
 interface Network {
     suspend fun fetchWebsiteContentTitle(url: URL): String
-    suspend fun downloadImage(url: URL): Drawable?
-    suspend fun downloadFavicon(url: URL): Drawable?
+    suspend fun fetchImage(url: URL): Drawable?
+    suspend fun fetchFavicon(url: URL): Drawable?
 }
 
 class PocketNetwork(
@@ -25,7 +25,7 @@ class PocketNetwork(
 ) : Network {
 
     /**
-     * Used to get the content title of the webpage using the [url].
+     * Used to fetch the content title of the webpage using the [url].
      * If it is not possible to get the title,it returns an empty
      * string.
      */
@@ -39,12 +39,12 @@ class PocketNetwork(
         }
 
     /**
-     * Used to download the 'hero' image of the webpage as a drawable,
+     * Used to fetch the 'hero' image of the webpage as a drawable,
      * using the 'og:image' open graph tag with the help of glide.If any
      * exception is thrown,it will return null.
      * @param url The url of the web page
      */
-    override suspend fun downloadImage(url: URL): Drawable? =
+    override suspend fun fetchImage(url: URL): Drawable? =
         getImageUrl(url)?.let {
             runCatching {
                 Glide.with(mContext)
@@ -78,10 +78,10 @@ class PocketNetwork(
     }
 
     /**
-     * Tries to download the favicon of a web page using the [url].If the favicon is
-     * not found or glide throws an error , it will return null.
+     * Tries to fetch the favicon of a web page as a Drawable using the [url].
+     * If the favicon is not found or glide throws an error , it will return null.
      */
-    override suspend fun downloadFavicon(url: URL): Drawable? =
+    override suspend fun fetchFavicon(url: URL): Drawable? =
         withContext(mDefaultDispatcher) {
             runCatching {
                 //try getting the image using /favicon.ico convention used in the web
