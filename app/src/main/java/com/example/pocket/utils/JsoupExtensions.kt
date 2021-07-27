@@ -58,7 +58,7 @@ private fun Connection.fetchDocument(
  * getting the document object.The default get() method blocks
  * the thread.This method provides a suspend implementation for
  * getting the document object from the connection.It will return
- * the document object fetched from the connection.If an [IOException]
+ * the document object fetched from the connection.If an [Exception]
  * occurs,it will throw the exception.
  * <p>
  * Usage :
