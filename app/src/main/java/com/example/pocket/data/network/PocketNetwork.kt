@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
-import timber.log.Timber
+import org.jsoup.nodes.Document
 import java.net.URL
 
 
@@ -25,6 +25,17 @@ class PocketNetwork(
 ) : Network {
 
     /**
+     * A hashmap that is used for memoizing the document object.
+     *
+     * Parsing an HTML document is resource intensive.By using
+     * this Hashmap, if the [Document] object already exists for
+     * a URL string(key of the map) in the map, then we can directly
+     * fetch it from the map instead of parsing the same HTML document
+     * again.
+     */
+    private val mDocumentHashMap = HashMap<String, Document>()
+
+    /**
      * Used to fetch the content title of the webpage using the [url].
      * If it is not possible to get the title,it returns an empty
      * string.
@@ -32,9 +43,10 @@ class PocketNetwork(
     override suspend fun fetchWebsiteContentTitle(url: URL): String =
         withContext(mDefaultDispatcher) {
             runCatching {
-                Jsoup.connect(url.toString())
-                    .getDocument()
-                    .title()
+                val document = mDocumentHashMap.getOrPut(url.toString()) {
+                    Jsoup.connect(url.toString()).getDocument()
+                }
+                document.title()
             }.getOrElse { "" }
         }
 
@@ -63,7 +75,9 @@ class PocketNetwork(
      */
     private suspend fun getImageUrl(url: URL): String? = withContext(mDefaultDispatcher) {
         runCatching {
-            val document = Jsoup.connect(url.toString()).getDocument()
+            val document = mDocumentHashMap.getOrPut(url.toString()) {
+                Jsoup.connect(url.toString()).getDocument()
+            }
 
             //selecting all the meta elements
             val metaElements = document.select("meta")
@@ -118,9 +132,9 @@ class PocketNetwork(
      */
     private suspend fun getFaviconUrlFromTags(url: URL): String? = withContext(mDefaultDispatcher) {
         runCatching {
-            val document = Jsoup
-                .connect(url.toString())
-                .getDocument()
+            val document = mDocumentHashMap.getOrPut(url.toString()){
+                Jsoup.connect(url.toString()).getDocument()
+            }
 
             //selecting all <link> elements
             val linkElements = document.select("link")
