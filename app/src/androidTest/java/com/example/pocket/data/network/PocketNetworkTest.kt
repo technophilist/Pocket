@@ -71,4 +71,23 @@ class PocketNetworkTest {
         }
     }
 
+    @Test
+    fun contentTitleFetchTest_validURLs_returnsNotNull() {
+        // given a list of valid URL's that have a content title
+        val urlList = listOf(
+            URL("https://www.theverge.com/2021/7/31/22603429/rick-astley-never-gonna-give-you-up-1-billion-youtube"),
+            URL("https://www.wsj.com/video/series/inside-tiktoks-highly-secretive-algorithm/investigation-how-tiktok-algorithm-figures-out-your-deepest-desires/6C0C2040-FF25-4827-8528-2BD6612E3796"),
+            URL("https://9to5mac.com/2021/07/31/apple-boots-tinder-for-anti-vaxxers-app-from-the-app-store-for-violating-covid-19-guidelines/"),
+            URL("https://www.apple.com/newsroom/2021/07/educators-in-australia-embrace-swift-to-forge-a-new-future/"),
+        )
+        urlList.forEach { url ->
+            val contentTitle = runBlocking {
+                // when calling fetchWebsiteContentTitle()
+                network.fetchWebsiteContentTitle(url)
+            }
+            // the content title must not be null
+            assertNotNull(contentTitle)
+        }
+    }
+
 }
