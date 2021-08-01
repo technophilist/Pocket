@@ -14,7 +14,7 @@ import java.net.URL
 
 
 interface Network {
-    suspend fun fetchWebsiteContentTitle(url: URL): String
+    suspend fun fetchWebsiteContentTitle(url: URL): String?
     suspend fun fetchImage(url: URL): Drawable?
     suspend fun fetchFavicon(url: URL): Drawable?
 }
@@ -40,14 +40,14 @@ class PocketNetwork(
      * If it is not possible to get the title,it returns an empty
      * string.
      */
-    override suspend fun fetchWebsiteContentTitle(url: URL): String =
+    override suspend fun fetchWebsiteContentTitle(url: URL): String? =
         withContext(mDefaultDispatcher) {
             runCatching {
                 val document = mDocumentHashMap.getOrPut(url.toString()) {
                     Jsoup.connect(url.toString()).getDocument()
                 }
                 document.title()
-            }.getOrElse { "" }
+            }.getOrNull()
         }
 
     /**

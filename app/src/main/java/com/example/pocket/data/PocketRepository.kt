@@ -52,49 +52,54 @@ class PocketRepository(
     }
 
     /**
-     * Used for saving the url,absolute path of the thumbnail and the
-     * thumbnail itself to the internal storage.It will save the url
-     * only if the url doesn't already exist in the database.Url,absolute
-     * path will be stored in the database.Whereas,the thumbnail image will be
-     * stored to the internal storage of the device.
-     * @param url the complete url of the website
+     * Used for saving the [url],and the associated favicon and thumbnail.
+     * It will save the url only if it doesn't already exist in the
+     * database and the content title is not null.The URL and the absolute
+     * paths of the favicon and the thumbnail will be stored in the database.
+     * Whereas,the thumbnail image and the favicon image will be stored in
+     * the internal storage of the device.
      */
     override suspend fun saveUrl(url: URL) {
+        // save the url only if it doesn't exist
         if (!urlExists(url)) {
-
-            //get the content title of the webpage
+            // get the content title of the webpage
             val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
 
-            /* Download the image that will be used as the thumbnail,save to the internal storage and get the path
-             * to the location where the image was downloaded
-             */
-            val imageAbsolutePath: String? = mNetwork.fetchImage(url)?.let { thumbnailDrawable ->
-                saveImageToInternalStorage(
-                    resource = thumbnailDrawable,
-                    fileName = url.host + urlContentTitle,
-                    directoryName = "thumbnails"
+            // save the url only if the urlContentTitle is not null
+            if (urlContentTitle != null) {
+
+                /* Download the image that will be used as the thumbnail,save to the internal storage and get the path
+                 * to the location where the image was downloaded
+                 */
+                val imageAbsolutePath: String? =
+                    mNetwork.fetchImage(url)?.let { thumbnailDrawable ->
+                        saveImageToInternalStorage(
+                            resource = thumbnailDrawable,
+                            fileName = url.host + urlContentTitle,
+                            directoryName = "thumbnails"
+                        )
+                    }
+
+                // download the favicon,save to the internal storage and get the path to the location where the image was downloaded
+                val faviconPath: String? = mNetwork.fetchFavicon(url)?.let { faviconDrawable ->
+                    saveImageToInternalStorage(
+                        resource = faviconDrawable,
+                        fileName = url.host + urlContentTitle + "favicon",
+                        filetype = Bitmap.CompressFormat.PNG,
+                        directoryName = "favicons"
+                    )
+                }
+
+                // save it to the database
+                mDao.insertUrl(
+                    UrlEntity(
+                        url.toString(),
+                        urlContentTitle,
+                        imageAbsolutePath,
+                        faviconPath
+                    )
                 )
             }
-
-            //download the favicon,save to the internal storage and get the path to the location where the image was downloaded
-            val faviconPath: String? = mNetwork.fetchFavicon(url)?.let { faviconDrawable ->
-                saveImageToInternalStorage(
-                    resource = faviconDrawable,
-                    fileName = url.host + urlContentTitle + "favicon",
-                    filetype = Bitmap.CompressFormat.PNG,
-                    directoryName = "favicons"
-                )
-            }
-
-            //save it to the database
-            mDao.insertUrl(
-                UrlEntity(
-                    url.toString(),
-                    urlContentTitle,
-                    imageAbsolutePath,
-                    faviconPath
-                )
-            )
         }
     }
 
