@@ -62,6 +62,7 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha05"
+    implementation "com.google.accompanist:accompanist-navigation-animation:0.16.0"
 
     //pager
     implementation "com.google.accompanist:accompanist-pager:0.13.0"
