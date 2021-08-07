@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel = mViewModel,
                     onClickUrlItem = { openUrl(it.url) },
                     isDarkModeSupported = isDarkModeSupported,
-                    onDarkModeIconClicked = {
+                    onDarkModeOptionClicked = {
                         mViewModel.changeAppTheme(
                             if (appTheme == PocketPreferences.AppTheme.LIGHT) PocketPreferences.AppTheme.DARK
                             else PocketPreferences.AppTheme.LIGHT

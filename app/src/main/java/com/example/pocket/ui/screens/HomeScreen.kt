@@ -9,10 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,7 +37,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     isDarkModeSupported: Boolean = false,
-    onDarkModeIconClicked: (() -> Unit) = {},
+    onDarkModeOptionClicked: (() -> Unit) = {},
     viewModel: HomeScreenViewModel,
     onClickUrlItem: (UrlEntity) -> Unit,
     isDarkModeEnabled: Boolean = isSystemInDarkTheme()
@@ -56,16 +54,18 @@ fun HomeScreen(
         DropdownMenuItem(onClick = {}) {
             Text(text = "Log out")
         }
+        if (!isDarkModeSupported) {
+            DropdownMenuItem(onClick = { onDarkModeOptionClicked() }) {
+                Text(text = if (isDarkModeEnabled) "Turn off dark mode" else "Turn on dark mode")
+            }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (!searchBarExpanded) {
                 PocketAppBar(
-                    isDarkModeSupported = isDarkModeSupported,
-                    onDarkModeIconClicked = onDarkModeIconClicked,
                     onSearchIconClicked = { searchBarExpanded = true },
-                    isDarkModeEnabled = isDarkModeEnabled,
                     isDropDownMenuExpanded = isDropDownMenuExpanded,
                     onDropDownMenuDismissRequest = { isDropDownMenuExpanded = false },
                     onDropDownMenuIconClicked = { isDropDownMenuExpanded = true },
@@ -143,10 +143,7 @@ fun HomeScreen(
 
 @Composable
 fun PocketAppBar(
-    isDarkModeSupported: Boolean = false,
-    isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
     onSearchIconClicked: (() -> Unit)? = null,
-    onDarkModeIconClicked: (() -> Unit)? = null,
     onDropDownMenuIconClicked: (() -> Unit)? = null,
     dropDownMenuContent: @Composable (() -> Unit)? = null,
     onDropDownMenuDismissRequest: () -> Unit,
@@ -177,15 +174,6 @@ fun PocketAppBar(
             }
         }
     )
-    if (!isDarkModeSupported) {
-        Icon(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .clickable { onDarkModeIconClicked?.invoke() },
-            imageVector = if (isDarkModeEnabled) Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
-            contentDescription = "Dark mode icon",
-        )
-    }
 }
 
 @Composable
