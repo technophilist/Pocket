@@ -72,6 +72,7 @@ fun HomeScreen(
     if (isAlertDialogVisible) {
         AlertDialog(
             title = { Text(text = stringResource(id = R.string.label_log_out_message)) },
+            text = { Text(text = stringResource(id = R.string.label_log_out_alert_dialog_text)) },
             onDismissRequest = { isAlertDialogVisible = false },
             confirmButton = {
                 TextButton(
