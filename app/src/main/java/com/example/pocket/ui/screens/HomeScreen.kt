@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.runtime.*
@@ -50,6 +51,12 @@ fun HomeScreen(
     val searchBarState = rememberSearchBarState(isCloseIconVisible = true)
     var searchText by rememberSaveable { mutableStateOf("") }
     var searchBarExpanded by rememberSaveable { mutableStateOf(false) }
+    var isDropDownMenuExpanded by rememberSaveable { mutableStateOf(false) }
+    val dropDownMenuContent = @Composable {
+        DropdownMenuItem(onClick = {}) {
+            Text(text = "Log out")
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -58,7 +65,11 @@ fun HomeScreen(
                     isDarkModeSupported = isDarkModeSupported,
                     onDarkModeIconClicked = onDarkModeIconClicked,
                     onSearchIconClicked = { searchBarExpanded = true },
-                    isDarkModeEnabled = isDarkModeEnabled
+                    isDarkModeEnabled = isDarkModeEnabled,
+                    isDropDownMenuExpanded = isDropDownMenuExpanded,
+                    onDropDownMenuDismissRequest = { isDropDownMenuExpanded = false },
+                    onDropDownMenuIconClicked = { isDropDownMenuExpanded = true },
+                    dropDownMenuContent = dropDownMenuContent
                 )
             } else {
                 SearchBar(
@@ -94,9 +105,9 @@ fun HomeScreen(
             }
 
             urlItems?.let {
-                if (it.isEmpty()){
+                if (it.isEmpty()) {
                     ListEmptyMessage(modifier = Modifier.fillMaxSize())
-                }else{
+                } else {
                     val snackbarMessage = stringResource(id = R.string.label_item_deleted)
                     val snackbarActionLabel = stringResource(id = R.string.label_undo)
                     UrlList(
@@ -104,14 +115,18 @@ fun HomeScreen(
                         fetchImageBitmap = { urlString ->
                             viewModel.getBitmap(urlString).asImageBitmap()
                         },
-                        urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
+                        urlItems = (if (searchText.isBlank()) urlItems else filteredList)
+                            ?: listOf(),
                         onClickItem = onClickUrlItem,
                         onItemSwiped = { urlEntity ->
                             viewModel.deleteUrlItem(urlEntity)
                             coroutineScope.launch {
                                 snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
                                 val snackBarResult =
-                                    snackbarHostState.showSnackbar(snackbarMessage, snackbarActionLabel)
+                                    snackbarHostState.showSnackbar(
+                                        snackbarMessage,
+                                        snackbarActionLabel
+                                    )
                                 if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
                             }
                         }
@@ -131,32 +146,45 @@ fun PocketAppBar(
     isDarkModeSupported: Boolean = false,
     isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
     onSearchIconClicked: (() -> Unit)? = null,
-    onDarkModeIconClicked: (() -> Unit)? = null
+    onDarkModeIconClicked: (() -> Unit)? = null,
+    onDropDownMenuIconClicked: (() -> Unit)? = null,
+    dropDownMenuContent: @Composable (() -> Unit)? = null,
+    onDropDownMenuDismissRequest: () -> Unit,
+    isDropDownMenuExpanded: Boolean,
 ) {
-    TopAppBar(contentPadding = PaddingValues(top = 8.dp, start = 8.dp)) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = stringResource(id = R.string.app_name),
-            style = MaterialTheme.typography.h1,
+    TopAppBar(
+        title = { Text(stringResource(id = R.string.app_name)) },
+        actions = {
+            IconButton(onClick = { onSearchIconClicked?.invoke() }) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Search Button"
+                )
+            }
+            Box {
+                IconButton(onClick = { onDropDownMenuIconClicked?.invoke() }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Menu Button",
+                    )
+                }
+                DropdownMenu(
+                    expanded = isDropDownMenuExpanded,
+                    onDismissRequest = onDropDownMenuDismissRequest,
+                    content = { dropDownMenuContent?.invoke() }
+                )
+
+            }
+        }
+    )
+    if (!isDarkModeSupported) {
+        Icon(
+            modifier = Modifier
+                .padding(end = 8.dp)
+                .clickable { onDarkModeIconClicked?.invoke() },
+            imageVector = if (isDarkModeEnabled) Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
+            contentDescription = "Dark mode icon",
         )
-        Column(modifier = Modifier.padding(8.dp)) {
-            Icon(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .clickable { onSearchIconClicked?.invoke() },
-                imageVector = Icons.Filled.Search,
-                contentDescription = ""
-            )
-        }
-        if (!isDarkModeSupported) {
-            Icon(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .clickable { onDarkModeIconClicked?.invoke() },
-                imageVector = if (isDarkModeEnabled) Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
-                contentDescription = "Dark mode icon",
-            )
-        }
     }
 }
 
