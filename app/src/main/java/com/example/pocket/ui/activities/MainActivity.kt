@@ -6,6 +6,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
@@ -16,10 +18,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.di.AppContainer
 import com.example.pocket.di.PocketApplication
@@ -32,6 +32,9 @@ import com.example.pocket.ui.theme.PocketAppTheme
 import com.example.pocket.utils.HomeScreenViewModelFactory
 import com.example.pocket.viewmodels.HomeScreenViewModel
 import com.example.pocket.viewmodels.HomeScreenViewModelImpl
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 class MainActivity : AppCompatActivity() {
@@ -40,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mViewModel: HomeScreenViewModel
     private lateinit var appContainer: AppContainer
 
+    @ExperimentalAnimationApi
     @ExperimentalComposeUiApi
     @ExperimentalPagerApi
     @ExperimentalMaterialApi
@@ -75,42 +79,61 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @ExperimentalAnimationApi
     @ExperimentalComposeUiApi
     @ExperimentalPagerApi
     @ExperimentalMaterialApi
     @Composable
     private fun PocketApp() {
-        val navController = rememberNavController()
+        val navController = rememberAnimatedNavController()
+        val slideAnimationSpec = tween<IntOffset>(350)
+        val fadeAnimationSpec = tween<Float>(350)
 
-        NavHost(
+        AnimatedNavHost(
             navController = navController,
-            startDestination = PocketNavigationDestinations.WELCOME_SCREEN
+            startDestination = PocketNavigationDestinations.WELCOME_SCREEN,
+            enterTransition = { _, target ->
+                when (target.destination.route) {
+                    PocketNavigationDestinations.HOME_SCREEN -> fadeIn(animationSpec = fadeAnimationSpec)
+                    else -> fadeIn(animationSpec = fadeAnimationSpec) + slideInHorizontally(
+                        initialOffsetX = { 1000 },
+                        animationSpec = slideAnimationSpec
+                    )
+                }
+            },
+            exitTransition = { _, _ ->
+                fadeOut(animationSpec = fadeAnimationSpec)
+            },
+            popExitTransition = { _, _ ->
+                fadeOut(animationSpec = fadeAnimationSpec) + slideOutHorizontally(
+                    targetOffsetX = { 1000 },
+                    animationSpec = slideAnimationSpec
+                )
+            },
+            popEnterTransition = { _, _ ->
+                fadeIn(animationSpec = fadeAnimationSpec)
+            }
         ) {
             composable(PocketNavigationDestinations.WELCOME_SCREEN) {
                 WelcomeScreen(navController = navController)
             }
 
             composable(PocketNavigationDestinations.LOGIN_SCREEN) {
-                LoginScreen(appContainer,navController)
+                LoginScreen(appContainer, navController)
             }
 
             composable(PocketNavigationDestinations.SIGNUP_SCREEN) {
-                SignUpScreen(appContainer,navController)
+                SignUpScreen(appContainer, navController)
             }
 
             composable(PocketNavigationDestinations.HOME_SCREEN) {
                 val isDarkModeSupported = remember { isDarkModeSupported }
                 val appTheme by mViewModel.currentAppTheme.observeAsState()
-                val isDarkModeEnabled = if (isDarkModeSupported) {
-                    /*
-                     if the system supports dark mode, use the system's current theme,else
-                     observe for changes in the appTheme from the viewModel
-                     */
-                    isSystemInDarkTheme()
-                } else {
-                    (appTheme == PocketPreferences.AppTheme.DARK)
-                }
-
+                /*
+                if the system supports dark mode, use the system's current theme,else
+                observe for changes in the appTheme from the viewModel
+                */
+                val isDarkModeEnabled = if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme == PocketPreferences.AppTheme.DARK)
                 HomeScreen(
                     viewModel = mViewModel,
                     onClickUrlItem = { openUrl(it.url) },
