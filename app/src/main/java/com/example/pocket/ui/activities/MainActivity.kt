@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity() {
                 val isDarkModeEnabled =
                     if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme == PocketPreferences.AppTheme.DARK)
                 HomeScreen(
+                    appContainer = appContainer,
                     viewModel = mViewModel,
                     onClickUrlItem = { openUrl(it.url) },
                     isDarkModeSupported = isDarkModeSupported,

@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.di.AppContainer
 import com.example.pocket.ui.components.PocketAppBar
 import com.example.pocket.ui.components.SearchBar
 import com.example.pocket.ui.components.UrlCard
@@ -34,11 +35,12 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
+    appContainer: AppContainer,
     isDarkModeSupported: Boolean = false,
     onDarkModeOptionClicked: (() -> Unit) = {},
-    viewModel: HomeScreenViewModel,
     onClickUrlItem: (UrlEntity) -> Unit,
-    isDarkModeEnabled: Boolean = isSystemInDarkTheme()
+    isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
+    viewModel: HomeScreenViewModel,
 ) {
     val urlItems by viewModel.savedUrls.observeAsState()
     val filteredList by viewModel.filteredList.observeAsState()
