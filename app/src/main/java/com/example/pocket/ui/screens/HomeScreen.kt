@@ -54,14 +54,12 @@ fun HomeScreen(
     var searchText by rememberSaveable { mutableStateOf("") }
     var searchBarExpanded by rememberSaveable { mutableStateOf(false) }
     var isDropDownMenuExpanded by rememberSaveable { mutableStateOf(false) }
+    var isAlertDialogVisible by rememberSaveable { mutableStateOf(false) }
     val dropDownMenuContent = @Composable {
         DropdownMenuItem(
             onClick = {
-                coroutineScope.launch(Dispatchers.IO) {
-                    appContainer.authenticationService.signOut()
-                }
                 isDropDownMenuExpanded = false
-                navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN)
+                isAlertDialogVisible = true
             },
             content = { Text(text = stringResource(id = R.string.label_log_out)) }
         )
@@ -70,6 +68,29 @@ fun HomeScreen(
                 Text(text = stringResource(id = if (isDarkModeEnabled) R.string.label_turn_off_dark_mode else R.string.label_turn_on_dark_mode))
             }
         }
+    }
+    if (isAlertDialogVisible) {
+        AlertDialog(
+            title = { Text(text = stringResource(id = R.string.label_log_out_message)) },
+            onDismissRequest = { isAlertDialogVisible = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        coroutineScope.launch(Dispatchers.IO) { appContainer.authenticationService.signOut() }
+                        isDropDownMenuExpanded = false
+                        isAlertDialogVisible = false
+                        navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN)
+                    },
+                    content = { Text(text = stringResource(id = R.string.label_yes)) }
+                )
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { isAlertDialogVisible = false },
+                    content = { Text(text = stringResource(id = R.string.label_no)) }
+                )
+            }
+        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
