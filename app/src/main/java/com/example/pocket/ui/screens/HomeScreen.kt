@@ -29,7 +29,9 @@ import com.example.pocket.ui.components.PocketAppBar
 import com.example.pocket.ui.components.SearchBar
 import com.example.pocket.ui.components.UrlCard
 import com.example.pocket.ui.components.rememberSearchBarState
+import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.HomeScreenViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -53,9 +55,16 @@ fun HomeScreen(
     var searchBarExpanded by rememberSaveable { mutableStateOf(false) }
     var isDropDownMenuExpanded by rememberSaveable { mutableStateOf(false) }
     val dropDownMenuContent = @Composable {
-        DropdownMenuItem(onClick = {}) {
-            Text(text = stringResource(id = R.string.label_log_out))
-        }
+        DropdownMenuItem(
+            onClick = {
+                coroutineScope.launch(Dispatchers.IO) {
+                    appContainer.authenticationService.signOut()
+                }
+                isDropDownMenuExpanded = false
+                navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN)
+            },
+            content = { Text(text = stringResource(id = R.string.label_log_out)) }
+        )
         if (!isDarkModeSupported) {
             DropdownMenuItem(onClick = { onDarkModeOptionClicked() }) {
                 Text(text = stringResource(id = if (isDarkModeEnabled) R.string.label_turn_off_dark_mode else R.string.label_turn_on_dark_mode))
