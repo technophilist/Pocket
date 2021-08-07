@@ -50,11 +50,11 @@ fun HomeScreen(
     var isDropDownMenuExpanded by rememberSaveable { mutableStateOf(false) }
     val dropDownMenuContent = @Composable {
         DropdownMenuItem(onClick = {}) {
-            Text(text = "Log out")
+            Text(text = stringResource(id = R.string.label_log_out))
         }
         if (!isDarkModeSupported) {
             DropdownMenuItem(onClick = { onDarkModeOptionClicked() }) {
-                Text(text = if (isDarkModeEnabled) "Turn off dark mode" else "Turn on dark mode")
+                Text(text = stringResource(id = if (isDarkModeEnabled) R.string.label_turn_off_dark_mode else R.string.label_turn_on_dark_mode))
             }
         }
     }
