@@ -36,6 +36,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     private val isDarkModeSupported =
@@ -80,7 +81,10 @@ class MainActivity : AppCompatActivity() {
             else PocketNavigationDestinations.WELCOME_SCREEN,
             enterTransition = { _, target ->
                 when (target.destination.route) {
+                    // use this animation when the user successfully logs in
                     PocketNavigationDestinations.HOME_SCREEN -> fadeIn(animationSpec = fadeAnimationSpec)
+                    // use this animation when the user logs out and returns to the welcome screen
+                    PocketNavigationDestinations.WELCOME_SCREEN-> fadeIn(animationSpec = fadeAnimationSpec)
                     else -> fadeIn(animationSpec = fadeAnimationSpec) + slideInHorizontally(
                         initialOffsetX = { 1000 },
                         animationSpec = slideAnimationSpec
