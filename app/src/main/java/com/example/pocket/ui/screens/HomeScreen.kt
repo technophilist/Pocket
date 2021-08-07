@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.ui.components.PocketAppBar
 import com.example.pocket.ui.components.SearchBar
 import com.example.pocket.ui.components.UrlCard
 import com.example.pocket.ui.components.rememberSearchBarState
@@ -139,41 +137,6 @@ fun HomeScreen(
             hostState = snackbarHostState
         )
     }
-}
-
-@Composable
-fun PocketAppBar(
-    onSearchIconClicked: (() -> Unit)? = null,
-    onDropDownMenuIconClicked: (() -> Unit)? = null,
-    dropDownMenuContent: @Composable (() -> Unit)? = null,
-    onDropDownMenuDismissRequest: () -> Unit,
-    isDropDownMenuExpanded: Boolean,
-) {
-    TopAppBar(
-        title = { Text(stringResource(id = R.string.app_name)) },
-        actions = {
-            IconButton(onClick = { onSearchIconClicked?.invoke() }) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Search Button"
-                )
-            }
-            Box {
-                IconButton(onClick = { onDropDownMenuIconClicked?.invoke() }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Menu Button",
-                    )
-                }
-                DropdownMenu(
-                    expanded = isDropDownMenuExpanded,
-                    onDismissRequest = onDropDownMenuDismissRequest,
-                    content = { dropDownMenuContent?.invoke() }
-                )
-
-            }
-        }
-    )
 }
 
 @Composable
