@@ -54,22 +54,7 @@ class MainActivity : AppCompatActivity() {
             this,
             HomeScreenViewModelFactory(application, appContainer.pocketRepository)
         ).get(HomeScreenViewModelImpl::class.java)
-
-        /*
-         if dark mode is not supported , then the app theme will not automatically
-         change to reflect the night mode colors defined for the status bar in
-         the xml file
-         */
-        if (!isDarkModeSupported) {
-            // observing the current app theme to set the correct status bar color
-            mViewModel.currentAppTheme.observe(this) { theme ->
-                AppCompatDelegate.setDefaultNightMode(
-                    if (theme == PocketPreferences.AppTheme.DARK) AppCompatDelegate.MODE_NIGHT_YES
-                    else AppCompatDelegate.MODE_NIGHT_NO
-                )
-            }
-        }
-
+        setStatusBarColor(isDarkModeSupported)
         setContent {
             PocketAppTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -91,7 +76,8 @@ class MainActivity : AppCompatActivity() {
 
         AnimatedNavHost(
             navController = navController,
-            startDestination = PocketNavigationDestinations.WELCOME_SCREEN,
+            startDestination = if (appContainer.authenticationService.isLoggedIn) PocketNavigationDestinations.HOME_SCREEN
+            else PocketNavigationDestinations.WELCOME_SCREEN,
             enterTransition = { _, target ->
                 when (target.destination.route) {
                     PocketNavigationDestinations.HOME_SCREEN -> fadeIn(animationSpec = fadeAnimationSpec)
@@ -133,7 +119,8 @@ class MainActivity : AppCompatActivity() {
                 if the system supports dark mode, use the system's current theme,else
                 observe for changes in the appTheme from the viewModel
                 */
-                val isDarkModeEnabled = if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme == PocketPreferences.AppTheme.DARK)
+                val isDarkModeEnabled =
+                    if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme == PocketPreferences.AppTheme.DARK)
                 HomeScreen(
                     viewModel = mViewModel,
                     onClickUrlItem = { openUrl(it.url) },
@@ -148,7 +135,23 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+    }
 
+    private fun setStatusBarColor(isDarkModeSupported: Boolean) {
+        /*
+        if dark mode is not supported , then the app theme will not automatically
+        change to reflect the night mode colors defined for the status bar in
+        the xml file
+        */
+        if (!isDarkModeSupported) {
+            // observing the current app theme to set the correct status bar color
+            mViewModel.currentAppTheme.observe(this) { theme ->
+                AppCompatDelegate.setDefaultNightMode(
+                    if (theme == PocketPreferences.AppTheme.DARK) AppCompatDelegate.MODE_NIGHT_YES
+                    else AppCompatDelegate.MODE_NIGHT_NO
+                )
+            }
+        }
     }
 
     private fun openUrl(urlString: String) {
