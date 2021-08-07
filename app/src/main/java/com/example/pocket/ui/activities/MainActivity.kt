@@ -123,6 +123,7 @@ class MainActivity : AppCompatActivity() {
                     if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme == PocketPreferences.AppTheme.DARK)
                 HomeScreen(
                     appContainer = appContainer,
+                    navController = navController,
                     viewModel = mViewModel,
                     onClickUrlItem = { openUrl(it.url) },
                     isDarkModeSupported = isDarkModeSupported,

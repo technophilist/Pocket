@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.di.AppContainer
@@ -36,6 +37,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     appContainer: AppContainer,
+    navController: NavController,
     isDarkModeSupported: Boolean = false,
     onDarkModeOptionClicked: (() -> Unit) = {},
     onClickUrlItem: (UrlEntity) -> Unit,
