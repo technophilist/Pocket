@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
@@ -71,8 +72,22 @@ fun HomeScreen(
     }
     if (isAlertDialogVisible) {
         AlertDialog(
-            title = { Text(text = stringResource(id = R.string.label_log_out_message)) },
-            text = { Text(text = stringResource(id = R.string.label_log_out_alert_dialog_text)) },
+            title = {
+                Text(
+                    text = stringResource(id = R.string.label_log_out_message),
+                    style = MaterialTheme.typography.h6,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(id = R.string.label_log_out_alert_dialog_text),
+                    style = MaterialTheme.typography.body1,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            },
             onDismissRequest = { isAlertDialogVisible = false },
             confirmButton = {
                 TextButton(
@@ -82,13 +97,27 @@ fun HomeScreen(
                         isAlertDialogVisible = false
                         navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN)
                     },
-                    content = { Text(text = stringResource(id = R.string.label_yes)) }
+                    content = {
+                        Text(
+                            text = stringResource(id = R.string.label_yes),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.button
+                        )
+                    }
                 )
             },
             dismissButton = {
                 TextButton(
                     onClick = { isAlertDialogVisible = false },
-                    content = { Text(text = stringResource(id = R.string.label_no)) }
+                    content = {
+                        Text(
+                            text = stringResource(id = R.string.label_no),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.button
+                        )
+                    }
                 )
             }
         )
@@ -295,5 +324,3 @@ private fun SwipeToDismissUrlCard(
         }
     }
 }
-
-
