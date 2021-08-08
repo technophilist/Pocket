@@ -13,6 +13,7 @@ import com.example.pocket.data.preferences.PocketPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 
 
@@ -24,7 +25,8 @@ interface HomeScreenViewModel {
     fun deleteUrlItem(urlItem: UrlEntity)
     fun undoDelete()
     fun onSearchTextValueChange(searchText: String)
-    fun changeAppTheme(theme:PocketPreferences.AppTheme)
+    fun changeAppTheme(theme: PocketPreferences.AppTheme)
+    fun deleteAllUrlItems()
     suspend fun getBitmap(imageAbsolutePathString: String): Bitmap
 }
 
@@ -37,6 +39,9 @@ class HomeScreenViewModelImpl(
     override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
     override val savedUrls = mRepository.savedUrls
     override val currentAppTheme = mRepository.appTheme
+    init {
+        Timber.d("OInit")
+    }
 
     override fun deleteUrlItem(urlItem: UrlEntity) {
         mRecentlyDeletedItem = savedUrls.value?.let { mRepository.deleteUrl(urlItem) }
@@ -59,13 +64,16 @@ class HomeScreenViewModelImpl(
         mRepository.updateThemePreference(theme)
     }
 
+    override fun deleteAllUrlItems() {
+        savedUrls.value?.forEach(::deleteUrlItem)
+    }
+
     override suspend fun getBitmap(imageAbsolutePathString: String): Bitmap =
         withContext(Dispatchers.IO) {
             File(imageAbsolutePathString)
                 .inputStream()
                 .use { BitmapFactory.decodeStream(it) }
         }
-
 }
 
 
