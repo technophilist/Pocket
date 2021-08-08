@@ -29,20 +29,18 @@ import com.example.pocket.ui.screens.LoginScreen
 import com.example.pocket.ui.screens.SignUpScreen
 import com.example.pocket.ui.screens.WelcomeScreen
 import com.example.pocket.ui.theme.PocketAppTheme
-import com.example.pocket.utils.HomeScreenViewModelFactory
-import com.example.pocket.viewmodels.HomeScreenViewModel
-import com.example.pocket.viewmodels.HomeScreenViewModelImpl
+import com.example.pocket.utils.MainActivityViewModelFactory
+import com.example.pocket.viewmodels.MainActivityViewModel
+import com.example.pocket.viewmodels.MainActivityViewModelImpl
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
-import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
-    private val isDarkModeSupported =
-        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
-    private lateinit var mViewModel: HomeScreenViewModel
+    private val isDarkModeSupported = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
     private lateinit var appContainer: AppContainer
+    private lateinit var mViewModel: MainActivityViewModel
 
     @ExperimentalAnimationApi
     @ExperimentalComposeUiApi
@@ -53,8 +51,8 @@ class MainActivity : AppCompatActivity() {
         appContainer = (application as PocketApplication).appContainer
         mViewModel = ViewModelProvider(
             this,
-            HomeScreenViewModelFactory(application, appContainer.pocketRepository)
-        ).get(HomeScreenViewModelImpl::class.java)
+            MainActivityViewModelFactory(appContainer.pocketRepository)
+        ).get(MainActivityViewModelImpl::class.java)
         setStatusBarColor(isDarkModeSupported)
         setContent {
             PocketAppTheme {
@@ -84,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                     // use this animation when the user successfully logs in
                     PocketNavigationDestinations.HOME_SCREEN -> fadeIn(animationSpec = fadeAnimationSpec)
                     // use this animation when the user logs out and returns to the welcome screen
-                    PocketNavigationDestinations.WELCOME_SCREEN-> fadeIn(animationSpec = fadeAnimationSpec)
+                    PocketNavigationDestinations.WELCOME_SCREEN -> fadeIn(animationSpec = fadeAnimationSpec)
                     else -> fadeIn(animationSpec = fadeAnimationSpec) + slideInHorizontally(
                         initialOffsetX = { 1000 },
                         animationSpec = slideAnimationSpec
@@ -128,7 +126,6 @@ class MainActivity : AppCompatActivity() {
                 HomeScreen(
                     appContainer = appContainer,
                     navController = navController,
-                    viewModel = mViewModel,
                     onClickUrlItem = { openUrl(it.url) },
                     isDarkModeSupported = isDarkModeSupported,
                     onDarkModeOptionClicked = {
