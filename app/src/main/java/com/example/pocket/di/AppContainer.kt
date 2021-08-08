@@ -10,6 +10,7 @@ import com.example.pocket.data.PocketRepository
 import com.example.pocket.data.database.UrlDatabase
 import com.example.pocket.data.network.PocketNetwork
 import com.example.pocket.data.preferences.PocketPreferencesManager
+import com.example.pocket.utils.HomeScreenViewModelFactory
 import kotlinx.coroutines.Dispatchers
 
 
@@ -20,11 +21,11 @@ class AppContainer(application: Application) {
 
     private val applicationContext = application.applicationContext
 
-    //default Dispatchers
+    // default Dispatchers
     private val defaultRepositoryDispatcher = Dispatchers.IO
     private val defaultNetworkDispatcher = Dispatchers.IO
 
-    //data
+    // data
     private val network = PocketNetwork(applicationContext, defaultNetworkDispatcher)
     private val database = Room.databaseBuilder(
         applicationContext,
@@ -33,13 +34,13 @@ class AppContainer(application: Application) {
     ).build()
     private val dao = database.getDao()
 
-    //preferences manager
+    // preferences manager
     private val datastore = PreferenceDataStoreFactory.create {
         applicationContext.preferencesDataStoreFile(PREFERENCES_NAME)
     }
     private val preferencesManager = PocketPreferencesManager(datastore)
 
-    //dependencies
+    // dependencies
     val pocketRepository = PocketRepository(
         network,
         dao,
@@ -50,10 +51,12 @@ class AppContainer(application: Application) {
 
     val authenticationService = FirebaseAuthenticationService()
 
-    //login container will be null if the user is not in the login flow
+    // login container will be null if the user is not in the login flow
     var loginContainer: LoginContainer? = null
 
-    //sign-up container will be null if the user is not in the sign-up flow
+    // sign-up container will be null if the user is not in the sign-up flow
     var signUpContainer: SignUpContainer? = null
+    
+    var homeScreenViewModelFactory = HomeScreenViewModelFactory(application,pocketRepository)
 
 }
