@@ -39,9 +39,6 @@ class HomeScreenViewModelImpl(
     override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
     override val savedUrls = mRepository.savedUrls
     override val currentAppTheme = mRepository.appTheme
-    init {
-        Timber.d("OInit")
-    }
 
     override fun deleteUrlItem(urlItem: UrlEntity) {
         mRecentlyDeletedItem = savedUrls.value?.let { mRepository.deleteUrl(urlItem) }
