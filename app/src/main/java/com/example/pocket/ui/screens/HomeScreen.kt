@@ -95,7 +95,11 @@ fun HomeScreen(
                         coroutineScope.launch(Dispatchers.IO) { appContainer.authenticationService.signOut() }
                         isDropDownMenuExpanded = false
                         isAlertDialogVisible = false
-                        navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN)
+                        navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN){
+                            popUpTo(PocketNavigationDestinations.HOME_SCREEN){
+                                inclusive = true
+                            }
+                        }
                     },
                     content = {
                         Text(
