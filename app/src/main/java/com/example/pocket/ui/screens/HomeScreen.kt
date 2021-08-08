@@ -47,6 +47,9 @@ fun HomeScreen(
     isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
     viewModel: HomeScreenViewModel,
 ) {
+
+    val snackbarMessage = stringResource(id = R.string.label_item_deleted)
+    val snackbarActionLabel = stringResource(id = R.string.label_undo)
     val urlItems by viewModel.savedUrls.observeAsState()
     val filteredList by viewModel.filteredList.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -95,8 +98,8 @@ fun HomeScreen(
                         coroutineScope.launch(Dispatchers.IO) { appContainer.authenticationService.signOut() }
                         isDropDownMenuExpanded = false
                         isAlertDialogVisible = false
-                        navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN){
-                            popUpTo(PocketNavigationDestinations.HOME_SCREEN){
+                        navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN) {
+                            popUpTo(PocketNavigationDestinations.HOME_SCREEN) {
                                 inclusive = true
                             }
                         }
@@ -170,35 +173,21 @@ fun HomeScreen(
                 }
             }
 
-            urlItems?.let {
-                if (it.isEmpty()) {
-                    ListEmptyMessage(modifier = Modifier.fillMaxSize())
-                } else {
-                    val snackbarMessage = stringResource(id = R.string.label_item_deleted)
-                    val snackbarActionLabel = stringResource(id = R.string.label_undo)
-                    UrlList(
-                        modifier = Modifier.fillMaxSize(),
-                        fetchImageBitmap = { urlString ->
-                            viewModel.getBitmap(urlString).asImageBitmap()
-                        },
-                        urlItems = (if (searchText.isBlank()) urlItems else filteredList)
-                            ?: listOf(),
-                        onClickItem = onClickUrlItem,
-                        onItemSwiped = { urlEntity ->
-                            viewModel.deleteUrlItem(urlEntity)
-                            coroutineScope.launch {
-                                snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
-                                val snackBarResult =
-                                    snackbarHostState.showSnackbar(
-                                        snackbarMessage,
-                                        snackbarActionLabel
-                                    )
-                                if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
-                            }
-                        }
-                    )
+            UrlList(
+                modifier = Modifier.fillMaxSize(),
+                fetchImageBitmap = { urlString -> viewModel.getBitmap(urlString).asImageBitmap() },
+                urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
+                onClickItem = onClickUrlItem,
+                onItemSwiped = { urlEntity ->
+                    viewModel.deleteUrlItem(urlEntity)
+                    coroutineScope.launch {
+                        snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
+                        val snackBarResult =
+                            snackbarHostState.showSnackbar(snackbarMessage, snackbarActionLabel)
+                        if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
+                    }
                 }
-            }
+            )
         }
         SnackbarHost(
             modifier = Modifier.align(Alignment.BottomCenter),
@@ -234,7 +223,8 @@ private fun UrlList(
     onItemSwiped: (UrlEntity) -> Unit = {},
     fetchImageBitmap: suspend (String) -> ImageBitmap,
 ) {
-    LazyColumn(
+    if (urlItems.isEmpty()) ListEmptyMessage(modifier = Modifier.fillMaxSize())
+    else LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(
             vertical = 8.dp,
