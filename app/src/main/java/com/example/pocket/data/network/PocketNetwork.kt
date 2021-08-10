@@ -43,10 +43,9 @@ class PocketNetwork(
     override suspend fun fetchWebsiteContentTitle(url: URL): String? =
         withContext(mDefaultDispatcher) {
             runCatching {
-                val document = mDocumentHashMap.getOrPut(url.toString()) {
-                    Jsoup.connect(url.toString()).getDocument()
-                }
-                document.title()
+               mDocumentHashMap
+                   .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
+                   .title()
             }.getOrNull()
         }
 
@@ -75,21 +74,12 @@ class PocketNetwork(
      */
     private suspend fun getImageUrl(url: URL): String? = withContext(mDefaultDispatcher) {
         runCatching {
-            val document = mDocumentHashMap.getOrPut(url.toString()) {
-                Jsoup.connect(url.toString()).getDocument()
-            }
-
-            //selecting all the meta elements
-            val metaElements = document.select("meta")
-
-            //selecting all meta graph tags
-            val openGraphElements = metaElements.filter { it.attr("property").contains("og:") }
-
-            //selecting the 'og:image' tag
-            val ogImageTag = openGraphElements.find { it.attr("property") == "og:image" }
-
-            //returning the value of the 'content' property which contains the url of the image
-            ogImageTag?.attr("content")
+            mDocumentHashMap
+                .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
+                .select("meta")
+                .filter { metaElement -> metaElement.attr("property").contains("og:") }
+                .find { openGraphElement -> openGraphElement.attr("property") == "og:image" }
+                ?.attr("content") // the value of the 'content' attribute contains the url of the image
         }.getOrNull()
     }
 
@@ -132,21 +122,11 @@ class PocketNetwork(
      */
     private suspend fun getFaviconUrlFromTags(url: URL): String? = withContext(mDefaultDispatcher) {
         runCatching {
-            val document = mDocumentHashMap.getOrPut(url.toString()){
-                Jsoup.connect(url.toString()).getDocument()
-            }
-
-            //selecting all <link> elements
-            val linkElements = document.select("link")
-
-            //filtering all the link elements that have icon/shortcut icon as their attribute
-            val shortcutElements = linkElements.filter {
-                it.attr("rel") == "shortcut icon" || it.attr("rel") == "icon"
-            }
-            /* Select the first element and get the url of the favicon.
-             * If it throws a NoSuchElementException , it means that the list is empty.
-             */
-            shortcutElements.first().attr("href")
+            mDocumentHashMap
+                .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
+                .select("link")
+                .firstOrNull{ linkElement -> linkElement.attr("rel") == "shortcut icon" || linkElement.attr("rel") == "icon"}
+                ?.attr("href")
         }.getOrNull()
     }
 }
