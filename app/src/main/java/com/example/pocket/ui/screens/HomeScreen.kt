@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
@@ -31,7 +32,9 @@ import com.example.pocket.ui.components.SearchBar
 import com.example.pocket.ui.components.UrlCard
 import com.example.pocket.ui.components.rememberSearchBarState
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
+import com.example.pocket.utils.HomeScreenViewModelFactory
 import com.example.pocket.viewmodels.HomeScreenViewModel
+import com.example.pocket.viewmodels.HomeScreenViewModelImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -45,11 +48,10 @@ fun HomeScreen(
     onDarkModeOptionClicked: (() -> Unit) = {},
     onClickUrlItem: (UrlEntity) -> Unit,
     isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
-    viewModel: HomeScreenViewModel,
 ) {
-
     val snackbarMessage = stringResource(id = R.string.label_item_deleted)
     val snackbarActionLabel = stringResource(id = R.string.label_undo)
+    val viewModel: HomeScreenViewModel = viewModel(factory = appContainer.homeScreenViewModelFactory)
     val urlItems by viewModel.savedUrls.observeAsState()
     val filteredList by viewModel.filteredList.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -95,6 +97,7 @@ fun HomeScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        viewModel.deleteAllUrlItems()
                         coroutineScope.launch(Dispatchers.IO) { appContainer.authenticationService.signOut() }
                         isDropDownMenuExpanded = false
                         isAlertDialogVisible = false
