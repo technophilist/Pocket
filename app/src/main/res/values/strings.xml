@@ -31,7 +31,7 @@
     <string name="label_log_out_message">Are you sure want to log out?</string>
     <string name="label_no">No</string>
     <string name="label_yes">Yes</string>
-    <string name="label_log_out_alert_dialog_text">If you sign out, all saved items will be permanently deleted.</string>
+    <string name="label_log_out_alert_dialog_text">If you log out, all saved items will be permanently deleted.</string>
 
     <!-- Login Screen -->
     <string name="label_login_with_email">Log in with mail</string>
