@@ -32,9 +32,7 @@ import com.example.pocket.ui.components.SearchBar
 import com.example.pocket.ui.components.UrlCard
 import com.example.pocket.ui.components.rememberSearchBarState
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
-import com.example.pocket.utils.HomeScreenViewModelFactory
 import com.example.pocket.viewmodels.HomeScreenViewModel
-import com.example.pocket.viewmodels.HomeScreenViewModelImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -51,7 +49,8 @@ fun HomeScreen(
 ) {
     val snackbarMessage = stringResource(id = R.string.label_item_deleted)
     val snackbarActionLabel = stringResource(id = R.string.label_undo)
-    val viewModel: HomeScreenViewModel = viewModel(factory = appContainer.homeScreenViewModelFactory)
+    val viewModel: HomeScreenViewModel =
+        viewModel(factory = appContainer.homeScreenViewModelFactory)
     val urlItems by viewModel.savedUrls.observeAsState()
     val filteredList by viewModel.filteredList.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -76,6 +75,39 @@ fun HomeScreen(
         }
     }
     if (isAlertDialogVisible) {
+        val confirmButton = @Composable {
+            TextButton(
+                onClick = {
+                    viewModel.deleteAllUrlItems()
+                    coroutineScope.launch(Dispatchers.IO) { appContainer.authenticationService.signOut() }
+                    isDropDownMenuExpanded = false
+                    isAlertDialogVisible = false
+                    navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN) {
+                        popUpTo(PocketNavigationDestinations.HOME_SCREEN) {
+                            inclusive = true
+                        }
+                    }
+                }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.label_yes),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.button
+                )
+            }
+        }
+
+        val dismissButton = @Composable {
+            TextButton(onClick = { isAlertDialogVisible = false }) {
+                Text(
+                    text = stringResource(id = R.string.label_no),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.button
+                )
+            }
+        }
         AlertDialog(
             title = {
                 Text(
@@ -94,42 +126,8 @@ fun HomeScreen(
                 )
             },
             onDismissRequest = { isAlertDialogVisible = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.deleteAllUrlItems()
-                        coroutineScope.launch(Dispatchers.IO) { appContainer.authenticationService.signOut() }
-                        isDropDownMenuExpanded = false
-                        isAlertDialogVisible = false
-                        navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN) {
-                            popUpTo(PocketNavigationDestinations.HOME_SCREEN) {
-                                inclusive = true
-                            }
-                        }
-                    },
-                    content = {
-                        Text(
-                            text = stringResource(id = R.string.label_yes),
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp,
-                            style = MaterialTheme.typography.button
-                        )
-                    }
-                )
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { isAlertDialogVisible = false },
-                    content = {
-                        Text(
-                            text = stringResource(id = R.string.label_no),
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp,
-                            style = MaterialTheme.typography.button
-                        )
-                    }
-                )
-            }
+            confirmButton = { confirmButton() },
+            dismissButton = { dismissButton() }
         )
     }
 
@@ -307,12 +305,12 @@ private fun SwipeToDismissUrlCard(
                 }
 
             } else {
-                thumbnailBitmapState?.let {
+                thumbnailBitmapState?.let { imageBitmap ->
                     Image(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(3f),
-                        bitmap = it,
+                        bitmap = imageBitmap,
                         contentDescription = "Thumbnail",
                         contentScale = ContentScale.Crop
                     )
