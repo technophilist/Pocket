@@ -8,9 +8,10 @@ import com.example.pocket.data.preferences.PocketPreferencesManager.PreferenceKe
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import javax.inject.Inject
 
 
-class PocketPreferencesManager(
+class PocketPreferencesManager @Inject constructor(
     private val mDataStore: DataStore<Preferences>
 ) : PreferencesManager {
 
