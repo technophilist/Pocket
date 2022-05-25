@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.*
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var authenticationService: AuthenticationService
 
-    private lateinit var mViewModel: MainActivityViewModel
+    private val mViewModel: MainActivityViewModel by viewModels<MainActivityViewModelImpl>()
 
     @ExperimentalAnimationApi
     @ExperimentalComposeUiApi
@@ -62,10 +63,6 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mViewModel = ViewModelProvider(
-            this,
-            MainActivityViewModelFactory(repository)
-        ).get(MainActivityViewModelImpl::class.java)
         setStatusBarColor(isDarkModeSupported)
         setContent {
             PocketAppTheme {
