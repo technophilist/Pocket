@@ -20,9 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
-import androidx.lifecycle.ViewModelProvider
 import com.example.pocket.auth.AuthenticationService
-import com.example.pocket.data.PocketRepository
 import com.example.pocket.data.Repository
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.di.AppContainer
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var authenticationService: AuthenticationService
 
-    private val mViewModel: MainActivityViewModel by viewModels<MainActivityViewModelImpl>()
+    private val mainActivityViewModel: MainActivityViewModel by viewModels<MainActivityViewModelImpl>()
 
     @ExperimentalAnimationApi
     @ExperimentalComposeUiApi
@@ -125,7 +123,7 @@ class MainActivity : AppCompatActivity() {
 
             composable(PocketNavigationDestinations.HOME_SCREEN) {
                 val isDarkModeSupported = remember { isDarkModeSupported }
-                val appTheme by mViewModel.currentAppTheme.observeAsState()
+                val appTheme by mainActivityViewModel.currentAppTheme.observeAsState()
                 /*
                 if the system supports dark mode, use the system's current theme,else
                 observe for changes in the appTheme from the viewModel
@@ -138,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                     onClickUrlItem = { openUrl(it.url) },
                     isDarkModeSupported = isDarkModeSupported,
                     onDarkModeOptionClicked = {
-                        mViewModel.changeAppTheme(
+                        mainActivityViewModel.changeAppTheme(
                             if (appTheme == PocketPreferences.AppTheme.LIGHT) PocketPreferences.AppTheme.DARK
                             else PocketPreferences.AppTheme.LIGHT
                         )
@@ -157,7 +155,7 @@ class MainActivity : AppCompatActivity() {
         */
         if (!isDarkModeSupported) {
             // observing the current app theme to set the correct status bar color
-            mViewModel.currentAppTheme.observe(this) { theme ->
+            mainActivityViewModel.currentAppTheme.observe(this) { theme ->
                 AppCompatDelegate.setDefaultNightMode(
                     if (theme == PocketPreferences.AppTheme.DARK) AppCompatDelegate.MODE_NIGHT_YES
                     else AppCompatDelegate.MODE_NIGHT_NO
