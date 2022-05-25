@@ -33,8 +33,3 @@ class SignUpViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>) = SignUpViewModelImpl(authenticationService,defaultDispatcher) as T
 }
-
-class MainActivityViewModelFactory(private val repository: Repository):ViewModelProvider.Factory{
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel?> create(modelClass: Class<T>) = MainActivityViewModelImpl(repository) as T
-}

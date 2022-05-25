@@ -33,7 +33,6 @@ import com.example.pocket.ui.screens.LoginScreen
 import com.example.pocket.ui.screens.SignUpScreen
 import com.example.pocket.ui.screens.WelcomeScreen
 import com.example.pocket.ui.theme.PocketAppTheme
-import com.example.pocket.utils.MainActivityViewModelFactory
 import com.example.pocket.viewmodels.MainActivityViewModel
 import com.example.pocket.viewmodels.MainActivityViewModelImpl
 import com.google.accompanist.navigation.animation.AnimatedNavHost
