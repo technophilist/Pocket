@@ -10,7 +10,12 @@ import com.example.pocket.data.PocketRepository
 import com.example.pocket.data.database.UrlDatabase
 import com.example.pocket.data.network.PocketNetwork
 import com.example.pocket.data.preferences.PocketPreferencesManager
+import com.example.pocket.data.preferences.PreferencesManager
 import com.example.pocket.utils.HomeScreenViewModelFactory
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 
 
@@ -18,6 +23,12 @@ private const val PREFERENCES_NAME = "pocket_user_preferences"
 private const val DATABASE_NAME = "Pocket_Database"
 
 class AppContainer(application: Application) {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface AppContainerEntryPoint {
+        fun getPreferencesManager(): PreferencesManager
+    }
 
     private val applicationContext = application.applicationContext
 
@@ -34,11 +45,7 @@ class AppContainer(application: Application) {
     ).build()
     private val dao = database.getDao()
 
-    // preferences manager
-    private val datastore = PreferenceDataStoreFactory.create {
-        applicationContext.preferencesDataStoreFile(PREFERENCES_NAME)
-    }
-    private val preferencesManager = PocketPreferencesManager(datastore)
+    private val preferencesManager = getPreferencesManager()
 
     // dependencies
     val pocketRepository = PocketRepository(
@@ -56,7 +63,11 @@ class AppContainer(application: Application) {
 
     // sign-up container will be null if the user is not in the sign-up flow
     var signUpContainer: SignUpContainer? = null
-    
-    var homeScreenViewModelFactory = HomeScreenViewModelFactory(application,pocketRepository)
 
+    var homeScreenViewModelFactory = HomeScreenViewModelFactory(application, pocketRepository)
+
+    private fun getPreferencesManager(): PreferencesManager = EntryPointAccessors.fromApplication(
+        this.applicationContext,
+        AppContainerEntryPoint::class.java
+    ).getPreferencesManager()
 }
