@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion = 30
@@ -112,6 +113,10 @@ dependencies {
 
     //data store
     implementation "androidx.datastore:datastore-preferences:1.0.0-beta01"
+
+    //hilt
+    implementation "com.google.dagger:hilt-android:2.40"
+    kapt "com.google.dagger:hilt-compiler:2.40"
 
 }
 
