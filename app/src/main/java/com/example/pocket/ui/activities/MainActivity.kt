@@ -20,6 +20,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.ViewModelProvider
+import com.example.pocket.auth.AuthenticationService
+import com.example.pocket.data.PocketRepository
+import com.example.pocket.data.Repository
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.di.AppContainer
 import com.example.pocket.di.PocketApplication
@@ -36,10 +39,21 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val isDarkModeSupported = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
-    private lateinit var appContainer: AppContainer
+    private val isDarkModeSupported =
+        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
+    private val appContainer: AppContainer by lazy { (application as PocketApplication).appContainer }
+
+    @Inject
+    lateinit var repository: Repository
+
+    @Inject
+    lateinit var authenticationService: AuthenticationService
+
     private lateinit var mViewModel: MainActivityViewModel
 
     @ExperimentalAnimationApi
@@ -48,10 +62,9 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appContainer = (application as PocketApplication).appContainer
         mViewModel = ViewModelProvider(
             this,
-            MainActivityViewModelFactory(appContainer.pocketRepository)
+            MainActivityViewModelFactory(repository)
         ).get(MainActivityViewModelImpl::class.java)
         setStatusBarColor(isDarkModeSupported)
         setContent {
@@ -75,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
         AnimatedNavHost(
             navController = navController,
-            startDestination = if (appContainer.authenticationService.isLoggedIn) PocketNavigationDestinations.HOME_SCREEN
+            startDestination = if (authenticationService.isLoggedIn) PocketNavigationDestinations.HOME_SCREEN
             else PocketNavigationDestinations.WELCOME_SCREEN,
             enterTransition = { _, target ->
                 when (target.destination.route) {
