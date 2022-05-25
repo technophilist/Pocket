@@ -6,13 +6,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.auth.AuthenticationService
+import com.example.pocket.di.IoCoroutineDispatcher
 import com.example.pocket.utils.containsDigit
 import com.example.pocket.utils.containsLowercase
 import com.example.pocket.utils.containsUppercase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 interface LoginViewModel {
@@ -20,9 +23,10 @@ interface LoginViewModel {
     fun authenticate(emailAddress: String, password: String)
 }
 
-class LoginViewModelImpl(
+@HiltViewModel
+class LoginViewModelImpl @Inject constructor(
     private val mAuthenticationService: AuthenticationService,
-    private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoCoroutineDispatcher private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel(), LoginViewModel {
 
     private val _authenticationResult = MutableLiveData<AuthenticationResult>()
@@ -39,9 +43,14 @@ class LoginViewModelImpl(
      * This method is used to authenticate a user with the provided [emailAddress] and [password].
      */
     override fun authenticate(emailAddress: String, password: String) {
-      CoroutineScope(mDefaultDispatcher).launch {
+        CoroutineScope(mDefaultDispatcher).launch {
             //if the email and password are valid, then try signing in the user with the authentication service.
-            _authenticationResult.postValue(mAuthenticationService.signIn(emailAddress.trim(), password))
+            _authenticationResult.postValue(
+                mAuthenticationService.signIn(
+                    emailAddress.trim(),
+                    password
+                )
+            )
         }
     }
 }
