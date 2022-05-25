@@ -84,8 +84,8 @@ class MainActivity : AppCompatActivity() {
             navController = navController,
             startDestination = if (authenticationService.isLoggedIn) PocketNavigationDestinations.HOME_SCREEN
             else PocketNavigationDestinations.WELCOME_SCREEN,
-            enterTransition = { _, target ->
-                when (target.destination.route) {
+            enterTransition = {
+                when (targetState.destination.route) {
                     // use this animation when the user successfully logs in
                     PocketNavigationDestinations.HOME_SCREEN -> fadeIn(animationSpec = fadeAnimationSpec)
                     // use this animation when the user logs out and returns to the welcome screen
@@ -96,19 +96,15 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             },
-            exitTransition = { _, _ ->
-                fadeOut(animationSpec = fadeAnimationSpec)
-            },
-            popExitTransition = { _, _ ->
+            exitTransition = { fadeOut(animationSpec = fadeAnimationSpec) },
+            popExitTransition = {
                 fadeOut(animationSpec = fadeAnimationSpec) + slideOutHorizontally(
                     targetOffsetX = { 1000 },
                     animationSpec = slideAnimationSpec
                 )
             },
-            popEnterTransition = { _, _ ->
-                fadeIn(animationSpec = fadeAnimationSpec)
-            }
-        ) {
+            popEnterTransition = { fadeIn(animationSpec = fadeAnimationSpec) },
+        )  {
             composable(PocketNavigationDestinations.WELCOME_SCREEN) {
                 WelcomeScreen(navController = navController)
             }
