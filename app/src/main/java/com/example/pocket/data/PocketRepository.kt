@@ -148,44 +148,19 @@ class PocketRepository @Inject constructor(
         directoryName: String
     ): String? = withContext(defaultDispatcher) {
         runCatching {
-
             val bitmapImage = (resource as BitmapDrawable).bitmap
-
-            //creating a file instance with the specified path
             val directory = File("$mFilesDirectory/$directoryName")
-
-            //create the directory only if it doesn't already exist
             if (!directory.exists()) directory.mkdir()
-
-            //string representing the path of the saved resource
-            var savedPath: String?
-
-            /*
-             * toLowerCase() without any args uses Locale.getDefault() implicitly,which means that it is not locale agnostic
-             * this may cause un-expected lowercase conversions
-             */
             val fileExtension = filetype.name.toLowerCase(Locale.ROOT)
             val imageFile = File("${directory.absolutePath}/" + fileName + ".$fileExtension")
-
-            //create a new image file
             imageFile.createNewFile()
-
-            //writing the image to the file using FileOutputStream
-            imageFile.outputStream().use {
+            val imageAbsolutePath = imageFile.outputStream().use {
                 bitmapImage.compress(filetype, 100, it)
-                savedPath = imageFile.absolutePath
+                imageFile.absolutePath
             }
-
-            //return the path of the created file
-            savedPath
-
-        }.getOrElse {
-
-            //if any exception occurs,return null
-            null
-        }
+            imageAbsolutePath
+        }.getOrNull()
     }
-
 
     override suspend fun insertUrl(urlItem: UrlEntity) {
         dao.insertUrl(urlItem)
