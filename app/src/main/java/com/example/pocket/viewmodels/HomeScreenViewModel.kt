@@ -51,11 +51,13 @@ class HomeScreenViewModelImpl @Inject constructor(
     override val savedUrls = mRepository.savedUrls.asFlow().asLiveData()
 
     override fun deleteUrlItem(urlItem: UrlEntity) {
-        mRecentlyDeletedItem = savedUrls.value?.let { mRepository.deleteUrl(urlItem) }
+        if (savedUrls.value != null) {
+            viewModelScope.launch { mRecentlyDeletedItem = mRepository.deleteUrl(urlItem) }
+        }
     }
 
     override fun undoDelete() {
-        mRecentlyDeletedItem?.let { mRepository.insertUrl(it) }
+        mRecentlyDeletedItem?.let { viewModelScope.launch { mRepository.insertUrl(it) } }
     }
 
     override fun onSearchTextValueChange(searchText: String) {

@@ -26,9 +26,9 @@ interface Repository {
     val savedUrls: LiveData<List<UrlEntity>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
     suspend fun saveUrl(url: URL)
-    fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
-    fun deleteUrl(urlItem: UrlEntity): UrlEntity
-    fun insertUrl(urlItem: UrlEntity)
+    suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
+    suspend fun deleteUrl(urlItem: UrlEntity): UrlEntity
+    suspend fun insertUrl(urlItem: UrlEntity)
 }
 
 class PocketRepository @Inject constructor(
@@ -39,7 +39,6 @@ class PocketRepository @Inject constructor(
     @ApplicationContext context: Context
 ) : Repository {
     private val mFilesDirectory = context.filesDir
-    private val mCoroutineScope = CoroutineScope(mDefaultDispatcher)
     private val mLongSnackbarDuration = 10_000L
     private val mUserPreferencesFlow = mPocketPreferencesManger.userPreferences
     private var mRecentThumbnailDeleteJob: Job? = null
@@ -117,13 +116,13 @@ class PocketRepository @Inject constructor(
      * @param urlItem the url item to be deleted
      * @return the deleted url item
      */
-    override fun deleteUrl(urlItem: UrlEntity): UrlEntity {
+    override suspend fun deleteUrl(urlItem: UrlEntity): UrlEntity {
         /*
          Jetpack compose doesn't support item delete animations for lazy lists.So it
          becomes necessary to delete the item from the database and re-insert it if the
          user clicks on the undo action of the snackBar.
         * */
-        mCoroutineScope.launch { mDao.deleteUrl(urlItem.id) }
+        mDao.deleteUrl(urlItem.id)
 
         /*
          If mRecentThumbnailDeleteJob is not null and a new
@@ -132,18 +131,18 @@ class PocketRepository @Inject constructor(
          means that it is safe to delete the thumbnail and favicon
          images associated with that url from the device storage.
          */
-        mRecentThumbnailDeleteJob = mCoroutineScope.launch {
-            delay(mLongSnackbarDuration)
-            urlItem.imageAbsolutePath?.let { File(it).delete() }
-            urlItem.faviconAbsolutePath?.let {
-                File(it).delete()
+        mRecentThumbnailDeleteJob = coroutineScope {
+            launch {
+                delay(mLongSnackbarDuration)
+                urlItem.imageAbsolutePath?.let { File(it).delete() }
+                urlItem.faviconAbsolutePath?.let {File(it).delete() }
             }
         }
         return urlItem
     }
 
-    override fun updateThemePreference(appTheme: PocketPreferences.AppTheme) {
-        mCoroutineScope.launch { mPocketPreferencesManger.updateThemePreference(appTheme) }
+    override suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme) {
+        mPocketPreferencesManger.updateThemePreference(appTheme)
     }
 
     /**
@@ -201,8 +200,8 @@ class PocketRepository @Inject constructor(
     }
 
 
-    override fun insertUrl(urlItem: UrlEntity) {
-        mCoroutineScope.launch { mDao.insertUrl(urlItem) }
+    override suspend fun insertUrl(urlItem: UrlEntity) {
+        mDao.insertUrl(urlItem)
         if (mRecentThumbnailDeleteJob?.isActive == true) {
             /*
             If it is active it means this function was called as
@@ -213,7 +212,6 @@ class PocketRepository @Inject constructor(
             //Cancelling the job , so it doesn't delete the thumbnail
             mRecentThumbnailDeleteJob?.cancel()
         }
-
     }
 }
 
