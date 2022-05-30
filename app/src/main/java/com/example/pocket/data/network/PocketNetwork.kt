@@ -23,8 +23,8 @@ interface Network {
 }
 
 class PocketNetwork @Inject constructor(
-    @ApplicationContext private val mContext: Context,
-    @IoCoroutineDispatcher private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @ApplicationContext private val context: Context,
+    @IoCoroutineDispatcher private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : Network {
 
     /**
@@ -44,7 +44,7 @@ class PocketNetwork @Inject constructor(
      * string.
      */
     override suspend fun fetchWebsiteContentTitle(url: URL): String? =
-        withContext(mDefaultDispatcher) {
+        withContext(defaultDispatcher) {
             runCatching {
                 mDocumentHashMap
                     .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
@@ -61,7 +61,7 @@ class PocketNetwork @Inject constructor(
     override suspend fun fetchImage(url: URL): Drawable? =
         getImageUrl(url)?.let {
             runCatching {
-                Glide.with(mContext)
+                Glide.with(context)
                     .asDrawable()
                     .load(it)
                     .getDownloadedResource()
@@ -75,7 +75,7 @@ class PocketNetwork @Inject constructor(
      * @param url the complete url of the page
      * @return the url of the image
      */
-    private suspend fun getImageUrl(url: URL): String? = withContext(mDefaultDispatcher) {
+    private suspend fun getImageUrl(url: URL): String? = withContext(defaultDispatcher) {
         runCatching {
             mDocumentHashMap
                 .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
@@ -90,10 +90,10 @@ class PocketNetwork @Inject constructor(
      * Tries to fetch the favicon of a web page as a Drawable using the [url].
      * If the favicon is not found or glide throws an error , it will return null.
      */
-    override suspend fun fetchFavicon(url: URL): Drawable? = withContext(mDefaultDispatcher) {
+    override suspend fun fetchFavicon(url: URL): Drawable? = withContext(defaultDispatcher) {
         runCatching {
             //try getting the image using /favicon.ico convention used in the web
-            Glide.with(mContext)
+            Glide.with(context)
                 .asDrawable()
                 .load("${url.protocol}://${url.host}/favicon.ico")
                 .getDownloadedResource()
@@ -109,7 +109,7 @@ class PocketNetwork @Inject constructor(
                 [getFaviconUrlFromTags] returns a url string only if
                 it can find a valid url to the favicon
                  */
-                Glide.with(mContext)
+                Glide.with(context)
                     .asDrawable()
                     .load(urlString)
                     .getDownloadedResource()
@@ -123,7 +123,7 @@ class PocketNetwork @Inject constructor(
      * is not possible to find a link to the favicon, it returns null else it returns
      * the string representing the url of the favicon.
      */
-    private suspend fun getFaviconUrlFromTags(url: URL): String? = withContext(mDefaultDispatcher) {
+    private suspend fun getFaviconUrlFromTags(url: URL): String? = withContext(defaultDispatcher) {
         runCatching {
             mDocumentHashMap
                 .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
