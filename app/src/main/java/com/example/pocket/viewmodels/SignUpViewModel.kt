@@ -77,26 +77,4 @@ class SignUpViewModelImpl @Inject constructor(
             }
         }
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as SignUpViewModelImpl
-
-        if (authenticationService != other.authenticationService) return false
-        if (mDefaultDispatcher != other.mDefaultDispatcher) return false
-        if (_accountCreationResult != other._accountCreationResult) return false
-        if (accountCreationResult != other.accountCreationResult) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = authenticationService.hashCode()
-        result = 31 * result + mDefaultDispatcher.hashCode()
-        result = 31 * result + _accountCreationResult.hashCode()
-        result = 31 * result + accountCreationResult.hashCode()
-        return result
-    }
 }
