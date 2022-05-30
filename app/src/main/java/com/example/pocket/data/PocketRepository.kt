@@ -101,7 +101,7 @@ class PocketRepository @Inject constructor(
      * @return true if exists else false
      */
     private suspend fun urlExists(url: URL) =
-        when (withContext(defaultDispatcher) { dao.checkIfUrlExists(url.toString()) }) {
+        when (dao.checkIfUrlExists(url.toString())) {
             0 -> false
             else -> true
         }
@@ -133,7 +133,7 @@ class PocketRepository @Inject constructor(
             launch {
                 delay(mLongSnackbarDuration)
                 urlItem.imageAbsolutePath?.let { File(it).delete() }
-                urlItem.faviconAbsolutePath?.let {File(it).delete() }
+                urlItem.faviconAbsolutePath?.let { File(it).delete() }
             }
         }
         return urlItem
