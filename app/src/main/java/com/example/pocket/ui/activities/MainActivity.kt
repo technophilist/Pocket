@@ -35,6 +35,7 @@ import com.example.pocket.ui.theme.PocketAppTheme
 import com.example.pocket.viewmodels.LoginViewModelImpl
 import com.example.pocket.viewmodels.MainActivityViewModel
 import com.example.pocket.viewmodels.MainActivityViewModelImpl
+import com.example.pocket.viewmodels.SignUpViewModelImpl
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -116,8 +117,9 @@ class MainActivity : AppCompatActivity() {
                 LoginScreen(loginViewModel, navController)
             }
 
-            composable(PocketNavigationDestinations.SIGNUP_SCREEN) {
-                SignUpScreen(appContainer, navController)
+            composable(PocketNavigationDestinations.SIGNUP_SCREEN) { backstackEntry ->
+                val signUpViewModel = hiltViewModel<SignUpViewModelImpl>(backstackEntry)
+                SignUpScreen(signUpViewModel, navController)
             }
 
             composable(PocketNavigationDestinations.HOME_SCREEN) {
