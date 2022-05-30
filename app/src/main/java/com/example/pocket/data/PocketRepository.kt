@@ -75,15 +75,13 @@ class PocketRepository @Inject constructor(
                 directoryName = "favicons"
             )
         }
-        // save it to the database
-        dao.insertUrl(
-            UrlEntity(
-                url.toString(),
-                urlContentTitle,
-                imageAbsolutePath,
-                faviconPath
-            )
+        val urlEntity = UrlEntity(
+            url = url.toString(),
+            contentTitle = urlContentTitle,
+            imageAbsolutePath = imageAbsolutePath,
+            faviconAbsolutePath = faviconPath
         )
+        dao.insertUrl(urlEntity)
     }
 
     /**
