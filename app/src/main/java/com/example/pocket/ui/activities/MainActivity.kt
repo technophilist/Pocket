@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pocket.auth.AuthenticationService
 import com.example.pocket.data.Repository
 import com.example.pocket.data.preferences.PocketPreferences
@@ -31,6 +32,7 @@ import com.example.pocket.ui.screens.LoginScreen
 import com.example.pocket.ui.screens.SignUpScreen
 import com.example.pocket.ui.screens.WelcomeScreen
 import com.example.pocket.ui.theme.PocketAppTheme
+import com.example.pocket.viewmodels.LoginViewModelImpl
 import com.example.pocket.viewmodels.MainActivityViewModel
 import com.example.pocket.viewmodels.MainActivityViewModelImpl
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -104,13 +106,14 @@ class MainActivity : AppCompatActivity() {
                 )
             },
             popEnterTransition = { fadeIn(animationSpec = fadeAnimationSpec) },
-        )  {
+        ) {
             composable(PocketNavigationDestinations.WELCOME_SCREEN) {
                 WelcomeScreen(navController = navController)
             }
 
-            composable(PocketNavigationDestinations.LOGIN_SCREEN) {
-                LoginScreen(appContainer, navController)
+            composable(PocketNavigationDestinations.LOGIN_SCREEN) { backstackEntry ->
+                val loginViewModel = hiltViewModel<LoginViewModelImpl>(backstackEntry)
+                LoginScreen(loginViewModel, navController)
             }
 
             composable(PocketNavigationDestinations.SIGNUP_SCREEN) {
