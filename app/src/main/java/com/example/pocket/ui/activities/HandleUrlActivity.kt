@@ -8,19 +8,24 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.pocket.R
+import com.example.pocket.auth.AuthenticationService
 import com.example.pocket.di.PocketApplication
 import com.example.pocket.workers.SaveUrlWorker
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class HandleUrlActivity : AppCompatActivity() {
 
+    @Inject
+    lateinit var authenticationService: AuthenticationService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_handle_url)
-        val appContainer = (applicationContext as PocketApplication).appContainer
 
         // if the user is not logged in, don't save the url
-        if (!appContainer.authenticationService.isLoggedIn) {
+        if (!authenticationService.isLoggedIn) {
             Toast.makeText(
                 this,
                 resources.getString(R.string.label_login_to_save_files),
