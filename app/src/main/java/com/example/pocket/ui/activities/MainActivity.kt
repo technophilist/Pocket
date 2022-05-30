@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
@@ -24,30 +25,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pocket.auth.AuthenticationService
 import com.example.pocket.data.Repository
 import com.example.pocket.data.preferences.PocketPreferences
-import com.example.pocket.di.AppContainer
-import com.example.pocket.di.PocketApplication
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.ui.screens.HomeScreen
 import com.example.pocket.ui.screens.LoginScreen
 import com.example.pocket.ui.screens.SignUpScreen
 import com.example.pocket.ui.screens.WelcomeScreen
 import com.example.pocket.ui.theme.PocketAppTheme
-import com.example.pocket.viewmodels.LoginViewModelImpl
-import com.example.pocket.viewmodels.MainActivityViewModel
-import com.example.pocket.viewmodels.MainActivityViewModelImpl
-import com.example.pocket.viewmodels.SignUpViewModelImpl
+import com.example.pocket.viewmodels.*
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val isDarkModeSupported =
         android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
-    private val appContainer: AppContainer by lazy { (application as PocketApplication).appContainer }
 
     @Inject
     lateinit var repository: Repository
@@ -122,9 +119,11 @@ class MainActivity : AppCompatActivity() {
                 SignUpScreen(signUpViewModel, navController)
             }
 
-            composable(PocketNavigationDestinations.HOME_SCREEN) {
+            composable(PocketNavigationDestinations.HOME_SCREEN) { backStackEntry ->
                 val isDarkModeSupported = remember { isDarkModeSupported }
                 val appTheme by mainActivityViewModel.currentAppTheme.observeAsState()
+                val homeScreenViewModel = hiltViewModel<HomeScreenViewModelImpl>(backStackEntry)
+                val coroutineScope = rememberCoroutineScope()
                 /*
                 if the system supports dark mode, use the system's current theme,else
                 observe for changes in the appTheme from the viewModel
@@ -132,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                 val isDarkModeEnabled =
                     if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme == PocketPreferences.AppTheme.DARK)
                 HomeScreen(
-                    appContainer = appContainer,
+                    homeScreenViewModel = homeScreenViewModel,
                     navController = navController,
                     onClickUrlItem = { openUrl(it.url) },
                     isDarkModeSupported = isDarkModeSupported,
@@ -141,6 +140,9 @@ class MainActivity : AppCompatActivity() {
                             if (appTheme == PocketPreferences.AppTheme.LIGHT) PocketPreferences.AppTheme.DARK
                             else PocketPreferences.AppTheme.LIGHT
                         )
+                    },
+                    onSignOutButtonClick = {
+                        coroutineScope.launch(Dispatchers.IO) { authenticationService.signOut() }
                     },
                     isDarkModeEnabled = isDarkModeEnabled
                 )
