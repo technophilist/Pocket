@@ -57,15 +57,6 @@ class AppContainer(application: Application) {
     )
 
     val authenticationService = FirebaseAuthenticationService()
-
-    // login container will be null if the user is not in the login flow
-    var loginContainer: LoginContainer? = null
-
-    // sign-up container will be null if the user is not in the sign-up flow
-    var signUpContainer: SignUpContainer? = null
-
-    var homeScreenViewModelFactory = HomeScreenViewModelFactory(application, pocketRepository)
-
     private fun getPreferencesManager(): PreferencesManager = EntryPointAccessors.fromApplication(
         this.applicationContext,
         AppContainerEntryPoint::class.java
