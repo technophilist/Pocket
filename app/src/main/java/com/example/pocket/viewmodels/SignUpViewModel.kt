@@ -9,14 +9,17 @@ import com.example.pocket.auth.AuthServiceInvalidEmailException
 import com.example.pocket.auth.AuthServiceInvalidPasswordException
 import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.auth.AuthenticationService
+import com.example.pocket.di.IoCoroutineDispatcher
 import com.example.pocket.utils.containsDigit
 import com.example.pocket.utils.containsLowercase
 import com.example.pocket.utils.containsUppercase
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 interface SignUpViewModel {
     val accountCreationResult: LiveData<AuthenticationResult>
@@ -28,9 +31,10 @@ interface SignUpViewModel {
     )
 }
 
-class SignUpViewModelImpl(
+@HiltViewModel
+class SignUpViewModelImpl @Inject constructor(
     private val authenticationService: AuthenticationService,
-    private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @IoCoroutineDispatcher private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel(), SignUpViewModel {
 
     private val _accountCreationResult = MutableLiveData<AuthenticationResult>()
@@ -72,5 +76,27 @@ class SignUpViewModelImpl(
                 _accountCreationResult.postValue(authenticationResult)
             }
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SignUpViewModelImpl
+
+        if (authenticationService != other.authenticationService) return false
+        if (mDefaultDispatcher != other.mDefaultDispatcher) return false
+        if (_accountCreationResult != other._accountCreationResult) return false
+        if (accountCreationResult != other.accountCreationResult) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = authenticationService.hashCode()
+        result = 31 * result + mDefaultDispatcher.hashCode()
+        result = 31 * result + _accountCreationResult.hashCode()
+        result = 31 * result + accountCreationResult.hashCode()
+        return result
     }
 }
