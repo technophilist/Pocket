@@ -60,12 +60,14 @@ class PocketNetwork @Inject constructor(
      */
     override suspend fun fetchImage(url: URL): Drawable? =
         getImageUrl(url)?.let {
-            runCatching {
-                Glide.with(context)
-                    .asDrawable()
-                    .load(it)
-                    .getDownloadedResource()
-            }.getOrNull()
+            withContext(defaultDispatcher) {
+                runCatching {
+                    Glide.with(context)
+                        .asDrawable()
+                        .load(it)
+                        .getDownloadedResource()
+                }.getOrNull()
+            }
         }
 
     /**
