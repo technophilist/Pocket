@@ -1,17 +1,12 @@
 package com.example.pocket.di
 
 import android.app.Application
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
-import com.example.pocket.auth.AuthenticationService
 import com.example.pocket.auth.FirebaseAuthenticationService
 import com.example.pocket.data.PocketRepository
 import com.example.pocket.data.database.UrlDatabase
 import com.example.pocket.data.network.PocketNetwork
-import com.example.pocket.data.preferences.PocketPreferencesManager
 import com.example.pocket.data.preferences.PreferencesManager
-import com.example.pocket.utils.HomeScreenViewModelFactory
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
