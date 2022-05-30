@@ -6,6 +6,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.map
 import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.network.Network
@@ -40,19 +42,9 @@ class PocketRepository @Inject constructor(
     private val mCoroutineScope = CoroutineScope(mDefaultDispatcher)
     private val mLongSnackbarDuration = 10_000L
     private val mUserPreferencesFlow = mPocketPreferencesManger.userPreferences
-    private val _appTheme = MutableLiveData(PocketPreferences.AppTheme.SYSTEM)
     private var mRecentThumbnailDeleteJob: Job? = null
-
     override val savedUrls = mDao.getAllUrls()
-    override val appTheme = _appTheme as LiveData<PocketPreferences.AppTheme>
-
-    init {
-        mCoroutineScope.launch {
-            mUserPreferencesFlow.collect { preferences ->
-                _appTheme.postValue(preferences.appTheme)
-            }
-        }
-    }
+    override val appTheme = mUserPreferencesFlow.asLiveData().map { it.appTheme }
 
     /**
      * Used for saving the [url],and the associated favicon and thumbnail.
