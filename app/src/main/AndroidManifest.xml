@@ -32,5 +32,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="com.example.pocket.workmanager-init"
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            xmlns:tools="http://schemas.android.com/tools"
+            tools:node="remove"/>
     </application>
 </manifest>
