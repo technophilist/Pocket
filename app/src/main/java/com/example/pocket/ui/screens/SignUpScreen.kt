@@ -1,6 +1,5 @@
 package com.example.pocket.ui.screens
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -20,15 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pocket.R
 import com.example.pocket.auth.AuthServiceInvalidEmailException
 import com.example.pocket.auth.AuthServiceInvalidPasswordException
 import com.example.pocket.auth.AuthServiceUserCollisionException
 import com.example.pocket.auth.AuthenticationResult
-import com.example.pocket.di.AppContainer
-import com.example.pocket.di.SignUpContainer
 import com.example.pocket.ui.components.CircularLoadingProgressOverlay
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.SignUpViewModel
@@ -36,27 +32,10 @@ import com.example.pocket.viewmodels.SignUpViewModel
 @ExperimentalComposeUiApi
 @Composable
 fun SignUpScreen(
-    appContainer: AppContainer,
+    signUpViewModel:SignUpViewModel,
     navController: NavController
 ) {
-
-    // viewmodel and livedata
-    val viewmodelFactory = remember {
-        //start sign-up flow
-        /*
-         * if the signup container is not null, it means that this composable
-         * was recalled because of a config change.SignUpContainer() can survive
-         * config changes because it is defined in the Application class.This check
-         * prevents a new instance of SignUpContainer being constructed on every
-         * config change.
-         */
-        if (appContainer.signUpContainer == null) {
-            appContainer.signUpContainer = SignUpContainer(appContainer.authenticationService)
-        }
-        appContainer.signUpContainer!!.signUpViewModelFactory
-    }
-    val viewmodel: SignUpViewModel = viewModel(factory = viewmodelFactory)
-    val result = viewmodel.accountCreationResult.observeAsState()
+    val result = signUpViewModel.accountCreationResult.observeAsState()
 
     // states for text fields
     var emailAddressText by rememberSaveable { mutableStateOf("") }
@@ -105,7 +84,7 @@ fun SignUpScreen(
         if (firstNameText.isNotBlank() && lastNameText.isNotBlank() && emailAddressText.isNotBlank() && passwordText.isNotEmpty()) {
             keyboardController?.hide()
             isLoading = true
-            viewmodel.createNewAccount(
+            signUpViewModel.createNewAccount(
                 "$firstNameText $lastNameText",
                 emailAddressText,
                 passwordText
@@ -119,19 +98,11 @@ fun SignUpScreen(
         stringResource(id = R.string.label_enter_valid_email_and_password)
     val userAlreadyExistsErrorMessage = stringResource(id = R.string.label_user_already_exists)
 
-    BackHandler {
-        //end signup flow
-        appContainer.signUpContainer = null
-        navController.navigateUp()
-    }
-
     DisposableEffect(result.value) {
         when (val authResult = result.value) {
             is AuthenticationResult.Success -> {
                 isLoading = false
                 isErrorMessageVisible = false
-                //end sign-up flow
-                appContainer.signUpContainer = null
                 navController.navigate(PocketNavigationDestinations.HOME_SCREEN) {
                     popUpTo(PocketNavigationDestinations.WELCOME_SCREEN) {
                         inclusive = true
@@ -282,7 +253,7 @@ fun SignUpScreen(
                     .fillMaxWidth(),
                 onClick = {
                     isLoading = true
-                    viewmodel.createNewAccount(
+                    signUpViewModel.createNewAccount(
                         "$firstNameText $lastNameText",
                         emailAddressText,
                         passwordText

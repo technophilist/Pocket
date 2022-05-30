@@ -5,10 +5,11 @@ import com.example.pocket.utils.createUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.suspendCancellableCoroutine
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FirebaseAuthenticationService : AuthenticationService {
+class FirebaseAuthenticationService @Inject constructor() : AuthenticationService {
 
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     override val isLoggedIn: Boolean get() = mAuth.currentUser != null

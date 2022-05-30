@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.*
@@ -16,31 +17,42 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
-import androidx.lifecycle.ViewModelProvider
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.pocket.auth.AuthenticationService
+import com.example.pocket.data.Repository
 import com.example.pocket.data.preferences.PocketPreferences
-import com.example.pocket.di.AppContainer
-import com.example.pocket.di.PocketApplication
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.ui.screens.HomeScreen
 import com.example.pocket.ui.screens.LoginScreen
 import com.example.pocket.ui.screens.SignUpScreen
 import com.example.pocket.ui.screens.WelcomeScreen
 import com.example.pocket.ui.theme.PocketAppTheme
-import com.example.pocket.utils.MainActivityViewModelFactory
-import com.example.pocket.viewmodels.MainActivityViewModel
-import com.example.pocket.viewmodels.MainActivityViewModelImpl
+import com.example.pocket.viewmodels.*
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val isDarkModeSupported = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
-    private lateinit var appContainer: AppContainer
-    private lateinit var mViewModel: MainActivityViewModel
+    private val isDarkModeSupported =
+        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
+
+    @Inject
+    lateinit var repository: Repository
+
+    @Inject
+    lateinit var authenticationService: AuthenticationService
+
+    private val mainActivityViewModel: MainActivityViewModel by viewModels<MainActivityViewModelImpl>()
 
     @ExperimentalAnimationApi
     @ExperimentalComposeUiApi
@@ -48,11 +60,6 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appContainer = (application as PocketApplication).appContainer
-        mViewModel = ViewModelProvider(
-            this,
-            MainActivityViewModelFactory(appContainer.pocketRepository)
-        ).get(MainActivityViewModelImpl::class.java)
         setStatusBarColor(isDarkModeSupported)
         setContent {
             PocketAppTheme {
@@ -75,10 +82,10 @@ class MainActivity : AppCompatActivity() {
 
         AnimatedNavHost(
             navController = navController,
-            startDestination = if (appContainer.authenticationService.isLoggedIn) PocketNavigationDestinations.HOME_SCREEN
+            startDestination = if (authenticationService.isLoggedIn) PocketNavigationDestinations.HOME_SCREEN
             else PocketNavigationDestinations.WELCOME_SCREEN,
-            enterTransition = { _, target ->
-                when (target.destination.route) {
+            enterTransition = {
+                when (targetState.destination.route) {
                     // use this animation when the user successfully logs in
                     PocketNavigationDestinations.HOME_SCREEN -> fadeIn(animationSpec = fadeAnimationSpec)
                     // use this animation when the user logs out and returns to the welcome screen
@@ -89,34 +96,34 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             },
-            exitTransition = { _, _ ->
-                fadeOut(animationSpec = fadeAnimationSpec)
-            },
-            popExitTransition = { _, _ ->
+            exitTransition = { fadeOut(animationSpec = fadeAnimationSpec) },
+            popExitTransition = {
                 fadeOut(animationSpec = fadeAnimationSpec) + slideOutHorizontally(
                     targetOffsetX = { 1000 },
                     animationSpec = slideAnimationSpec
                 )
             },
-            popEnterTransition = { _, _ ->
-                fadeIn(animationSpec = fadeAnimationSpec)
-            }
+            popEnterTransition = { fadeIn(animationSpec = fadeAnimationSpec) },
         ) {
             composable(PocketNavigationDestinations.WELCOME_SCREEN) {
                 WelcomeScreen(navController = navController)
             }
 
-            composable(PocketNavigationDestinations.LOGIN_SCREEN) {
-                LoginScreen(appContainer, navController)
+            composable(PocketNavigationDestinations.LOGIN_SCREEN) { backstackEntry ->
+                val loginViewModel = hiltViewModel<LoginViewModelImpl>(backstackEntry)
+                LoginScreen(loginViewModel, navController)
             }
 
-            composable(PocketNavigationDestinations.SIGNUP_SCREEN) {
-                SignUpScreen(appContainer, navController)
+            composable(PocketNavigationDestinations.SIGNUP_SCREEN) { backstackEntry ->
+                val signUpViewModel = hiltViewModel<SignUpViewModelImpl>(backstackEntry)
+                SignUpScreen(signUpViewModel, navController)
             }
 
-            composable(PocketNavigationDestinations.HOME_SCREEN) {
+            composable(PocketNavigationDestinations.HOME_SCREEN) { backStackEntry ->
                 val isDarkModeSupported = remember { isDarkModeSupported }
-                val appTheme by mViewModel.currentAppTheme.observeAsState()
+                val appTheme by mainActivityViewModel.currentAppTheme.observeAsState()
+                val homeScreenViewModel = hiltViewModel<HomeScreenViewModelImpl>(backStackEntry)
+                val coroutineScope = rememberCoroutineScope()
                 /*
                 if the system supports dark mode, use the system's current theme,else
                 observe for changes in the appTheme from the viewModel
@@ -124,15 +131,18 @@ class MainActivity : AppCompatActivity() {
                 val isDarkModeEnabled =
                     if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme == PocketPreferences.AppTheme.DARK)
                 HomeScreen(
-                    appContainer = appContainer,
+                    homeScreenViewModel = homeScreenViewModel,
                     navController = navController,
                     onClickUrlItem = { openUrl(it.url) },
                     isDarkModeSupported = isDarkModeSupported,
                     onDarkModeOptionClicked = {
-                        mViewModel.changeAppTheme(
+                        mainActivityViewModel.changeAppTheme(
                             if (appTheme == PocketPreferences.AppTheme.LIGHT) PocketPreferences.AppTheme.DARK
                             else PocketPreferences.AppTheme.LIGHT
                         )
+                    },
+                    onSignOutButtonClick = {
+                        coroutineScope.launch(Dispatchers.IO) { authenticationService.signOut() }
                     },
                     isDarkModeEnabled = isDarkModeEnabled
                 )
@@ -148,7 +158,7 @@ class MainActivity : AppCompatActivity() {
         */
         if (!isDarkModeSupported) {
             // observing the current app theme to set the correct status bar color
-            mViewModel.currentAppTheme.observe(this) { theme ->
+            mainActivityViewModel.currentAppTheme.observe(this) { theme ->
                 AppCompatDelegate.setDefaultNightMode(
                     if (theme == PocketPreferences.AppTheme.DARK) AppCompatDelegate.MODE_NIGHT_YES
                     else AppCompatDelegate.MODE_NIGHT_NO

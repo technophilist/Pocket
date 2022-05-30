@@ -22,37 +22,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
-import com.example.pocket.di.AppContainer
 import com.example.pocket.ui.components.PocketAppBar
 import com.example.pocket.ui.components.SearchBar
 import com.example.pocket.ui.components.UrlCard
 import com.example.pocket.ui.components.rememberSearchBarState
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.HomeScreenViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
-    appContainer: AppContainer,
+    homeScreenViewModel:HomeScreenViewModel,
     navController: NavController,
     isDarkModeSupported: Boolean = false,
     onDarkModeOptionClicked: (() -> Unit) = {},
     onClickUrlItem: (UrlEntity) -> Unit,
+    onSignOutButtonClick:()->Unit,
     isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
 ) {
     val snackbarMessage = stringResource(id = R.string.label_item_deleted)
     val snackbarActionLabel = stringResource(id = R.string.label_undo)
-    val viewModel: HomeScreenViewModel =
-        viewModel(factory = appContainer.homeScreenViewModelFactory)
-    val urlItems by viewModel.savedUrls.observeAsState()
-    val filteredList by viewModel.filteredList.observeAsState()
+    val urlItems by homeScreenViewModel.savedUrls.observeAsState()
+    val filteredList by homeScreenViewModel.filteredList.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val searchBarState = rememberSearchBarState(isCloseIconVisible = true)
@@ -78,8 +74,8 @@ fun HomeScreen(
         val confirmButton = @Composable {
             TextButton(
                 onClick = {
-                    viewModel.deleteAllUrlItems()
-                    coroutineScope.launch(Dispatchers.IO) { appContainer.authenticationService.signOut() }
+                    homeScreenViewModel.deleteAllUrlItems()
+                    onSignOutButtonClick()
                     isDropDownMenuExpanded = false
                     isAlertDialogVisible = false
                     navController.navigate(PocketNavigationDestinations.WELCOME_SCREEN) {
@@ -147,7 +143,7 @@ fun HomeScreen(
                     searchText = searchText,
                     onSearchTextChange = {
                         searchText = it
-                        viewModel.onSearchTextValueChange(it)
+                        homeScreenViewModel.onSearchTextValueChange(it)
                     },
                     onCloseIconClicked = {
                         /*
@@ -176,16 +172,16 @@ fun HomeScreen(
 
             UrlList(
                 modifier = Modifier.fillMaxSize(),
-                fetchImageBitmap = { urlString -> viewModel.getBitmap(urlString).asImageBitmap() },
+                fetchImageBitmap = { urlString -> homeScreenViewModel.getBitmap(urlString).asImageBitmap() },
                 urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
                 onClickItem = onClickUrlItem,
                 onItemSwiped = { urlEntity ->
-                    viewModel.deleteUrlItem(urlEntity)
+                    homeScreenViewModel.deleteUrlItem(urlEntity)
                     coroutineScope.launch {
                         snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
                         val snackBarResult =
                             snackbarHostState.showSnackbar(snackbarMessage, snackbarActionLabel)
-                        if (snackBarResult == SnackbarResult.ActionPerformed) viewModel.undoDelete()
+                        if (snackBarResult == SnackbarResult.ActionPerformed) homeScreenViewModel.undoDelete()
                     }
                 }
             )

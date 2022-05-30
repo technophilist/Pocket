@@ -11,11 +11,14 @@ import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.network.Network
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.data.preferences.PreferencesManager
+import com.example.pocket.di.IoCoroutineDispatcher
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import java.io.File
 import java.net.URL
 import java.util.*
+import javax.inject.Inject
 
 interface Repository {
     val savedUrls: LiveData<List<UrlEntity>>
@@ -26,12 +29,12 @@ interface Repository {
     fun insertUrl(urlItem: UrlEntity)
 }
 
-class PocketRepository(
+class PocketRepository @Inject constructor(
     private val mNetwork: Network,
     private val mDao: Dao,
     private val mPocketPreferencesManger: PreferencesManager,
-    private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    context: Context
+    @IoCoroutineDispatcher private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    @ApplicationContext context: Context
 ) : Repository {
     private val mFilesDirectory = context.filesDir
     private val mCoroutineScope = CoroutineScope(mDefaultDispatcher)

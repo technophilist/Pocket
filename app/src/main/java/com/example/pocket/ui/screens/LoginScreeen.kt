@@ -1,6 +1,5 @@
 package com.example.pocket.ui.screens
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -18,46 +17,23 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pocket.R
 import com.example.pocket.auth.AuthenticationResult
-import com.example.pocket.di.AppContainer
-import com.example.pocket.di.LoginContainer
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.LoginViewModel
 
 @ExperimentalComposeUiApi
 @Composable
 fun LoginScreen(
-    appContainer: AppContainer,
+    loginViewModel:LoginViewModel,
     navController: NavController
 ) {
-
-    // viewmodel and livedata
-    val viewmodelFactory = remember {
-        // start login flow
-        /*
-         * if the login container is not null, it means that this composable
-         * was recalled because of a config change.LoginContainer() can survive
-         * config changes because it is defined in the Application class.This check
-         * prevents a new instance of LoginContainer being constructed on every
-         * config change.
-         */
-        if (appContainer.loginContainer == null) {
-            appContainer.loginContainer = LoginContainer(appContainer.authenticationService)
-        }
-        appContainer.loginContainer!!.loginViewModelFactory
-    }
-    val viewmodel: LoginViewModel = viewModel(factory = viewmodelFactory)
-    val authenticationResult = viewmodel.authenticationResult.observeAsState()
+    val authenticationResult = loginViewModel.authenticationResult.observeAsState()
 
     // states for text fields
     var emailAddressText by rememberSaveable { mutableStateOf("") }
@@ -93,15 +69,9 @@ fun LoginScreen(
         if (emailAddressText.isNotBlank() && passwordText.isNotEmpty()) {
             keyboardController?.hide()
             isLoading = true
-            viewmodel.authenticate(emailAddressText, passwordText)
+            loginViewModel.authenticate(emailAddressText, passwordText)
         }
     })
-
-    BackHandler {
-        // end login flow
-        appContainer.loginContainer = null
-        navController.navigateUp()
-    }
 
     DisposableEffect(authenticationResult.value) {
         /*
@@ -112,8 +82,6 @@ fun LoginScreen(
         when (authenticationResult.value) {
             is AuthenticationResult.Success -> {
                 isLoading = false
-                // end login flow
-                appContainer.loginContainer = null
                 navController.navigate(PocketNavigationDestinations.HOME_SCREEN) {
                     //if successfully logged in, pop the backstack
                     popUpTo(PocketNavigationDestinations.WELCOME_SCREEN) {
@@ -232,7 +200,7 @@ fun LoginScreen(
                     .fillMaxWidth(),
                 onClick = {
                     isLoading = true
-                    viewmodel.authenticate(emailAddressText, passwordText)
+                    loginViewModel.authenticate(emailAddressText, passwordText)
                 },
                 shape = MaterialTheme.shapes.medium,
                 content = { Text(text = stringResource(id = R.string.label_login), fontWeight = FontWeight.Bold) },

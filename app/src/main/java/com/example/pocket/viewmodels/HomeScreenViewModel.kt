@@ -6,10 +6,12 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.*
 import com.example.pocket.data.Repository
 import com.example.pocket.data.database.UrlEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import javax.inject.Inject
 
 
 interface HomeScreenViewModel {
@@ -22,7 +24,8 @@ interface HomeScreenViewModel {
     suspend fun getBitmap(imageAbsolutePathString: String): Bitmap
 }
 
-class HomeScreenViewModelImpl(
+@HiltViewModel
+class HomeScreenViewModelImpl @Inject constructor(
     private val mRepository: Repository,
     application: Application
 ) : AndroidViewModel(application), HomeScreenViewModel {

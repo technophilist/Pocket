@@ -3,14 +3,17 @@ package com.example.pocket.data.network
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
+import com.example.pocket.di.IoCoroutineDispatcher
 import com.example.pocket.utils.getDocument
 import com.example.pocket.utils.getDownloadedResource
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.net.URL
+import javax.inject.Inject
 
 
 interface Network {
@@ -19,9 +22,9 @@ interface Network {
     suspend fun fetchFavicon(url: URL): Drawable?
 }
 
-class PocketNetwork(
-    private val mContext: Context,
-    private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+class PocketNetwork @Inject constructor(
+    @ApplicationContext private val mContext: Context,
+    @IoCoroutineDispatcher private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : Network {
 
     /**
@@ -43,9 +46,9 @@ class PocketNetwork(
     override suspend fun fetchWebsiteContentTitle(url: URL): String? =
         withContext(mDefaultDispatcher) {
             runCatching {
-               mDocumentHashMap
-                   .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
-                   .title()
+                mDocumentHashMap
+                    .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
+                    .title()
             }.getOrNull()
         }
 
@@ -125,7 +128,11 @@ class PocketNetwork(
             mDocumentHashMap
                 .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
                 .select("link")
-                .firstOrNull{ linkElement -> linkElement.attr("rel") == "shortcut icon" || linkElement.attr("rel") == "icon"}
+                .firstOrNull { linkElement ->
+                    linkElement.attr("rel") == "shortcut icon" || linkElement.attr(
+                        "rel"
+                    ) == "icon"
+                }
                 ?.attr("href")
         }.getOrNull()
     }
