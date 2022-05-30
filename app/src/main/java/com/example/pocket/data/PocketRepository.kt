@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import com.example.pocket.data.database.Dao
@@ -16,7 +15,6 @@ import com.example.pocket.data.preferences.PreferencesManager
 import com.example.pocket.di.IoCoroutineDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -32,17 +30,17 @@ interface Repository {
 }
 
 class PocketRepository @Inject constructor(
-    private val mNetwork: Network,
-    private val mDao: Dao,
-    private val mPocketPreferencesManger: PreferencesManager,
-    @IoCoroutineDispatcher private val mDefaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val network: Network,
+    private val dao: Dao,
+    private val preferencesManager: PreferencesManager,
+    @IoCoroutineDispatcher private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
     @ApplicationContext context: Context
 ) : Repository {
     private val mFilesDirectory = context.filesDir
     private val mLongSnackbarDuration = 10_000L
-    private val mUserPreferencesFlow = mPocketPreferencesManger.userPreferences
+    private val mUserPreferencesFlow = preferencesManager.userPreferences
     private var mRecentThumbnailDeleteJob: Job? = null
-    override val savedUrls = mDao.getAllUrls()
+    override val savedUrls = dao.getAllUrls()
     override val appTheme = mUserPreferencesFlow.asLiveData().map { it.appTheme }
 
     /**
@@ -57,7 +55,7 @@ class PocketRepository @Inject constructor(
         // save the url only if it doesn't exist
         if (!urlExists(url)) {
             // get the content title of the webpage
-            val urlContentTitle = mNetwork.fetchWebsiteContentTitle(url)
+            val urlContentTitle = network.fetchWebsiteContentTitle(url)
 
             // save the url only if the urlContentTitle is not null
             if (urlContentTitle != null) {
@@ -66,7 +64,7 @@ class PocketRepository @Inject constructor(
                  * to the location where the image was downloaded
                  */
                 val imageAbsolutePath: String? =
-                    mNetwork.fetchImage(url)?.let { thumbnailDrawable ->
+                    network.fetchImage(url)?.let { thumbnailDrawable ->
                         saveImageToInternalStorage(
                             resource = thumbnailDrawable,
                             fileName = url.host + urlContentTitle,
@@ -75,7 +73,7 @@ class PocketRepository @Inject constructor(
                     }
 
                 // download the favicon,save to the internal storage and get the path to the location where the image was downloaded
-                val faviconPath: String? = mNetwork.fetchFavicon(url)?.let { faviconDrawable ->
+                val faviconPath: String? = network.fetchFavicon(url)?.let { faviconDrawable ->
                     saveImageToInternalStorage(
                         resource = faviconDrawable,
                         fileName = url.host + urlContentTitle + "favicon",
@@ -85,7 +83,7 @@ class PocketRepository @Inject constructor(
                 }
 
                 // save it to the database
-                mDao.insertUrl(
+                dao.insertUrl(
                     UrlEntity(
                         url.toString(),
                         urlContentTitle,
@@ -103,7 +101,7 @@ class PocketRepository @Inject constructor(
      * @return true if exists else false
      */
     private suspend fun urlExists(url: URL) =
-        when (withContext(mDefaultDispatcher) { mDao.checkIfUrlExists(url.toString()) }) {
+        when (withContext(defaultDispatcher) { dao.checkIfUrlExists(url.toString()) }) {
             0 -> false
             else -> true
         }
@@ -122,7 +120,7 @@ class PocketRepository @Inject constructor(
          becomes necessary to delete the item from the database and re-insert it if the
          user clicks on the undo action of the snackBar.
         * */
-        mDao.deleteUrl(urlItem.id)
+        dao.deleteUrl(urlItem.id)
 
         /*
          If mRecentThumbnailDeleteJob is not null and a new
@@ -142,7 +140,7 @@ class PocketRepository @Inject constructor(
     }
 
     override suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme) {
-        mPocketPreferencesManger.updateThemePreference(appTheme)
+        preferencesManager.updateThemePreference(appTheme)
     }
 
     /**
@@ -159,7 +157,7 @@ class PocketRepository @Inject constructor(
         fileName: String,
         filetype: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
         directoryName: String
-    ): String? = withContext(mDefaultDispatcher) {
+    ): String? = withContext(defaultDispatcher) {
         runCatching {
 
             val bitmapImage = (resource as BitmapDrawable).bitmap
@@ -201,7 +199,7 @@ class PocketRepository @Inject constructor(
 
 
     override suspend fun insertUrl(urlItem: UrlEntity) {
-        mDao.insertUrl(urlItem)
+        dao.insertUrl(urlItem)
         if (mRecentThumbnailDeleteJob?.isActive == true) {
             /*
             If it is active it means this function was called as
