@@ -52,47 +52,38 @@ class PocketRepository @Inject constructor(
      * the internal storage of the device.
      */
     override suspend fun saveUrl(url: URL) {
-        // save the url only if it doesn't exist
-        if (!urlExists(url)) {
-            // get the content title of the webpage
-            val urlContentTitle = network.fetchWebsiteContentTitle(url)
-
-            // save the url only if the urlContentTitle is not null
-            if (urlContentTitle != null) {
-
-                /* Download the image that will be used as the thumbnail,save to the internal storage and get the path
-                 * to the location where the image was downloaded
-                 */
-                val imageAbsolutePath: String? =
-                    network.fetchImage(url)?.let { thumbnailDrawable ->
-                        saveImageToInternalStorage(
-                            resource = thumbnailDrawable,
-                            fileName = url.host + urlContentTitle,
-                            directoryName = "thumbnails"
-                        )
-                    }
-
-                // download the favicon,save to the internal storage and get the path to the location where the image was downloaded
-                val faviconPath: String? = network.fetchFavicon(url)?.let { faviconDrawable ->
-                    saveImageToInternalStorage(
-                        resource = faviconDrawable,
-                        fileName = url.host + urlContentTitle + "favicon",
-                        filetype = Bitmap.CompressFormat.PNG,
-                        directoryName = "favicons"
-                    )
-                }
-
-                // save it to the database
-                dao.insertUrl(
-                    UrlEntity(
-                        url.toString(),
-                        urlContentTitle,
-                        imageAbsolutePath,
-                        faviconPath
-                    )
+        if (urlExists(url)) return
+        val urlContentTitle = network.fetchWebsiteContentTitle(url) ?: return
+        /* Download the image that will be used as the thumbnail,save to the internal storage and get the path
+         * to the location where the image was downloaded
+         */
+        val imageAbsolutePath: String? =
+            network.fetchImage(url)?.let { thumbnailDrawable ->
+                saveImageToInternalStorage(
+                    resource = thumbnailDrawable,
+                    fileName = url.host + urlContentTitle,
+                    directoryName = "thumbnails"
                 )
             }
+
+        // download the favicon,save to the internal storage and get the path to the location where the image was downloaded
+        val faviconPath: String? = network.fetchFavicon(url)?.let { faviconDrawable ->
+            saveImageToInternalStorage(
+                resource = faviconDrawable,
+                fileName = url.host + urlContentTitle + "favicon",
+                filetype = Bitmap.CompressFormat.PNG,
+                directoryName = "favicons"
+            )
         }
+        // save it to the database
+        dao.insertUrl(
+            UrlEntity(
+                url.toString(),
+                urlContentTitle,
+                imageAbsolutePath,
+                faviconPath
+            )
+        )
     }
 
     /**
