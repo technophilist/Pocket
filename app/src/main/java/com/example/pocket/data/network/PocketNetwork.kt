@@ -33,8 +33,30 @@ class PocketNetwork @Inject constructor(
      * Parsing an HTML document is resource intensive.By using
      * this Hashmap, if the [Document] object already exists for
      * a URL string(key of the map) in the map, then we can directly
-     * fetch it from the map instead of parsing the same HTML document
-     * again.
+     * fetch it from the map instead of fetching and parsing the same
+     * HTML document again.
+     * For example, both [fetchThumbnail] and [fetchFavicon] take an
+     * instance of [URL] as parameter.
+     * Without the presence of this hashmap, it becomes a necessity
+     * to:
+     * - Make a network request to get the HTML document.
+     * - Parse the document.
+     * - Perform the necessary operations.
+     * These steps have to be performed for both [fetchFavicon] and
+     * [fetchThumbnail] even if they are called subsequently with the
+     * same url. Instead, both of these functions make use of this map.
+     * So, a call to either one of these functions will memoize the
+     * parsed document object. This precludes the need to fetch and
+     * parse the document when the other function is called with the
+     * same url.
+     *
+     * ```
+     * val url = URL("www.example.com")
+     * // fetches, parses, memoizes the document and fetches the thumbnail.
+     * val thumbnail = network.fetchThumbnail(url)
+     * // uses the memoized document object ineternally and fetches the favicon.
+     * val favicon  = network.fetchFavicon(url)
+     * ```
      */
     private val mDocumentHashMap = HashMap<String, Document>()
 
