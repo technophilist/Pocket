@@ -58,7 +58,7 @@ class PocketNetwork @Inject constructor(
      * val favicon  = network.fetchFavicon(url)
      * ```
      */
-    private val mDocumentHashMap = HashMap<String, Document>()
+    private val documentHashMap = HashMap<String, Document>()
 
     /**
      * Used to fetch the content title of the webpage using the [url].
@@ -68,7 +68,7 @@ class PocketNetwork @Inject constructor(
     override suspend fun fetchWebsiteContentTitle(url: URL): String? =
         withContext(defaultDispatcher) {
             runCatching {
-                mDocumentHashMap
+                documentHashMap
                     .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
                     .title()
             }.getOrNull()
@@ -101,7 +101,7 @@ class PocketNetwork @Inject constructor(
      */
     private suspend fun getImageUrl(url: URL): String? = withContext(defaultDispatcher) {
         runCatching {
-            mDocumentHashMap
+            documentHashMap
                 .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
                 .select("meta")
                 .filter { metaElement -> metaElement.attr("property").contains("og:") }
@@ -149,7 +149,7 @@ class PocketNetwork @Inject constructor(
      */
     private suspend fun getFaviconUrlFromTags(url: URL): String? = withContext(defaultDispatcher) {
         runCatching {
-            mDocumentHashMap
+            documentHashMap
                 .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
                 .select("link")
                 .firstOrNull { linkElement ->
