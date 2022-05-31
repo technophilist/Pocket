@@ -28,10 +28,12 @@ class SaveUrlWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParameters) {
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun doWork() = withContext(defaultDispatcher) {
-        inputData.getString(HandleUrlActivity.EXTRA_URL)?.let {
-            repository.saveUrl(URL(it))
+        runCatching {
+            val urlString = inputData.getString(HandleUrlActivity.EXTRA_URL)!!
+            val url = URL(urlString)
+            repository.saveUrl(url)
             Result.success()
-        } ?: Result.failure()
+        }.getOrElse { Result.failure() }
     }
 }
 
