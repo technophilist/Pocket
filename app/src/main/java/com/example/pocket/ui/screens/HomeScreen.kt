@@ -1,5 +1,6 @@
 package com.example.pocket.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,8 +15,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -23,8 +26,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.ui.activities.HandleUrlActivity.Companion.SAVE_URL_WORKERS_TAG
 import com.example.pocket.ui.components.PocketAppBar
 import com.example.pocket.ui.components.SearchBar
 import com.example.pocket.ui.components.UrlCard
@@ -37,12 +43,12 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
-    homeScreenViewModel:HomeScreenViewModel,
+    homeScreenViewModel: HomeScreenViewModel,
     navController: NavController,
     isDarkModeSupported: Boolean = false,
     onDarkModeOptionClicked: (() -> Unit) = {},
     onClickUrlItem: (UrlEntity) -> Unit,
-    onSignOutButtonClick:()->Unit,
+    onSignOutButtonClick: () -> Unit,
     isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
 ) {
     val snackbarMessage = stringResource(id = R.string.label_item_deleted)
@@ -56,6 +62,11 @@ fun HomeScreen(
     var searchBarExpanded by rememberSaveable { mutableStateOf(false) }
     var isDropDownMenuExpanded by rememberSaveable { mutableStateOf(false) }
     var isAlertDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val workerManager = remember { WorkManager.getInstance(context) }
+    val saveUrlWorkerState by workerManager
+        .getWorkInfosByTagLiveData(SAVE_URL_WORKERS_TAG)
+        .observeAsState()
     val dropDownMenuContent = @Composable {
         DropdownMenuItem(
             onClick = {
@@ -169,10 +180,14 @@ fun HomeScreen(
                     searchBarState.focusRequester.requestFocus()
                 }
             }
-
+            AnimatedVisibility(saveUrlWorkerState?.any { it.state == WorkInfo.State.ENQUEUED } == true) {
+                WaitingForNetworkCard()
+            }
             UrlList(
                 modifier = Modifier.fillMaxSize(),
-                fetchImageBitmap = { urlString -> homeScreenViewModel.getBitmap(urlString).asImageBitmap() },
+                fetchImageBitmap = { urlString ->
+                    homeScreenViewModel.getBitmap(urlString).asImageBitmap()
+                },
                 urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
                 onClickItem = onClickUrlItem,
                 onItemSwiped = { urlEntity ->
@@ -312,6 +327,26 @@ private fun SwipeToDismissUrlCard(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun WaitingForNetworkCard() {
+    Card(
+        backgroundColor = MaterialTheme.colors.error,
+        shape = RectangleShape
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Waiting for network to update",
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.onError
+            )
         }
     }
 }
