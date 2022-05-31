@@ -41,8 +41,7 @@ class PocketNetworkTest {
             URL("https://9to5google.com/2021/07/28/android-studio-arctic-fox-wear-os-pairing-jetpack-compose"),
             URL("https://9to5mac.com/2021/07/23/exclusive-apple-testing-new-external-display-with-a-dedicated-a13-chip-and-neural-engine/"),
             URL("https://www.xda-developers.com/android-studio-arctic-fox-jetpack-compose-1-0/"),
-            URL("https://www.cnbc.com/2021/07/27/apples-iphone-hot-streak-will-run-into-global-chip-shortage.html"),
-            URL("https://developer.android.com/studio?gclid=EAIaIQobChMImZmDq6uG8gIVjx0rCh3QYANqEAAYASAAEgJD9vD_BwE&gclsrc=aw.ds")
+            URL("https://www.cnbc.com/2021/07/27/apples-iphone-hot-streak-will-run-into-global-chip-shortage.html")
         )
         urlList.forEach { url ->
             val drawable = runBlocking {
