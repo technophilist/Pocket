@@ -47,6 +47,7 @@ class HandleUrlActivity : AppCompatActivity() {
             val workRequest = OneTimeWorkRequestBuilder<SaveUrlWorker>()
                 .setInputData(dataBuilder.build())
                 .setConstraints(constraints)
+                .addTag(SAVE_URL_WORKERS_TAG)
                 .build()
             WorkManager.getInstance(this).enqueue(workRequest)
             Toast.makeText(
@@ -61,5 +62,7 @@ class HandleUrlActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_URL = "Url of the html resource"
+        const val SAVE_URL_WORKERS_TAG =
+            "com.example.pocket.ui.activities.HandleUrlActivity.SAVE_URL_WORKERS_TAG¬"
     }
 }
