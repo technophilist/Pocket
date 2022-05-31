@@ -21,7 +21,7 @@ class PocketNetworkTest {
         // given a list of URL's that doesn't contain an image in them
         val urlList = listOf(
             URL("https://www.google.com"),
-            URL("https://www.quora.com/"),
+            URL("https://developer.android.com/studio"),
             URL("https://twitter.com/") // url without og:image tag
         )
         urlList.forEach { url ->
