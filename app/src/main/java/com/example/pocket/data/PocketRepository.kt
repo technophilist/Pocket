@@ -58,7 +58,7 @@ class PocketRepository @Inject constructor(
          * to the location where the image was downloaded
          */
         val imageAbsolutePath: String? =
-            network.fetchImage(url)?.let { thumbnailDrawable ->
+            network.fetchThumbnail(url)?.let { thumbnailDrawable ->
                 saveImageToInternalStorage(
                     resource = thumbnailDrawable,
                     fileName = url.host + urlContentTitle,

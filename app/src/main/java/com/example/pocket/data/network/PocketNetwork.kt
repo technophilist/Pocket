@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 interface Network {
     suspend fun fetchWebsiteContentTitle(url: URL): String?
-    suspend fun fetchImage(url: URL): Drawable?
+    suspend fun fetchThumbnail(url: URL): Drawable?
     suspend fun fetchFavicon(url: URL): Drawable?
 }
 
@@ -53,12 +53,12 @@ class PocketNetwork @Inject constructor(
         }
 
     /**
-     * Used to fetch the 'hero' image of the webpage as a drawable,
+     * Used to fetch the thumbnail image of the webpage as a drawable,
      * using the 'og:image' open graph tag with the help of glide.If any
      * exception is thrown,it will return null.
      * @param url The url of the web page
      */
-    override suspend fun fetchImage(url: URL): Drawable? =
+    override suspend fun fetchThumbnail(url: URL): Drawable? =
         getImageUrl(url)?.let {
             withContext(defaultDispatcher) {
                 runCatching {
