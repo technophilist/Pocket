@@ -46,14 +46,14 @@ class PocketRepository @Inject constructor(
     /**
      * Used for saving the [url],and the associated favicon and thumbnail.
      * It will save the url only if it doesn't already exist in the
-     * database and the content title is not null.The URL and the absolute
-     * paths of the favicon and the thumbnail will be stored in the database.
-     * Whereas,the thumbnail image and the favicon image will be stored in
-     * the internal storage of the device.
+     * database.The URL and the absolute paths of the favicon and the thumbnail
+     * will be stored in the database.Whereas,the thumbnail image and the favicon
+     * image will be stored in the internal storage of the device.
      */
     override suspend fun saveUrl(url: URL) {
         if (urlExists(url)) return
-        val urlContentTitle = network.fetchWebsiteContentTitle(url) ?: return
+        // if there is not content title, use the url as the content title.
+        val urlContentTitle = network.fetchWebsiteContentTitle(url) ?: url.toString()
         /* Download the image that will be used as the thumbnail,save to the internal storage and get the path
          * to the location where the image was downloaded
          */
