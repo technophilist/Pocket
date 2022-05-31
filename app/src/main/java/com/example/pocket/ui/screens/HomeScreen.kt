@@ -181,7 +181,10 @@ fun HomeScreen(
                 }
             }
             AnimatedVisibility(saveUrlWorkerState?.any { it.state == WorkInfo.State.ENQUEUED } == true) {
-                WaitingForNetworkCard()
+                Banner("Waiting for network to update")
+            }
+            AnimatedVisibility(saveUrlWorkerState?.any { it.state == WorkInfo.State.RUNNING } == true) {
+                Banner("Refreshing")
             }
             UrlList(
                 modifier = Modifier.fillMaxSize(),
@@ -332,7 +335,7 @@ private fun SwipeToDismissUrlCard(
 }
 
 @Composable
-private fun WaitingForNetworkCard() {
+private fun Banner(text: String) {
     Card(
         backgroundColor = MaterialTheme.colors.error,
         shape = RectangleShape
@@ -343,7 +346,7 @@ private fun WaitingForNetworkCard() {
                 .padding(16.dp)
         ) {
             Text(
-                text = "Waiting for network to update",
+                text = text,
                 style = MaterialTheme.typography.body2,
                 color = MaterialTheme.colors.onError
             )
