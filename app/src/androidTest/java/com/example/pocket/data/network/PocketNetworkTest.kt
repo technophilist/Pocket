@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -16,7 +17,7 @@ class PocketNetworkTest {
     private val network: Network = PocketNetwork(context)
 
     @Test
-    fun imageFetchTest_invalidURLs_returnsNull() {
+    fun thumbnailFetchTest_invalidURLs_returnsNull() {
         // given a list of URL's that doesn't contain an image in them
         val urlList = listOf(
             URL("https://www.google.com"),
@@ -34,7 +35,7 @@ class PocketNetworkTest {
     }
 
     @Test
-    fun imageFetchTest_validURLs_returnsNotNull() {
+    fun thumbnailFetchTest_validURLs_returnsNotNull() {
         // given a list of URL's that contain an image in them
         val urlList = listOf(
             URL("https://9to5google.com/2021/07/28/android-studio-arctic-fox-wear-os-pairing-jetpack-compose"),
