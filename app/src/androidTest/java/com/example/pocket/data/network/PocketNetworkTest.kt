@@ -45,8 +45,8 @@ class PocketNetworkTest {
         )
         urlList.forEach { url ->
             val drawable = runBlocking {
-                // when calling fetchFavicon()
-                network.fetchFavicon(url)
+                // when calling fetchImage()
+                network.fetchImage(url)
             }
             // the drawable must not be null
             assertNotNull(drawable)
