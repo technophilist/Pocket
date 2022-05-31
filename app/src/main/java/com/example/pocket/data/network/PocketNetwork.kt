@@ -7,6 +7,7 @@ import com.example.pocket.di.IoCoroutineDispatcher
 import com.example.pocket.utils.getDocument
 import com.example.pocket.utils.getDownloadedResource
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -115,31 +116,29 @@ class PocketNetwork @Inject constructor(
      * If the favicon is not found or glide throws an error , it will return null.
      */
     override suspend fun fetchFavicon(url: URL): Drawable? = withContext(defaultDispatcher) {
-        runCatching {
-            //try getting the image using /favicon.ico convention used in the web
-            Glide.with(context)
-                .asDrawable()
-                .load("${url.protocol}://${url.host}/favicon.ico")
-                .getDownloadedResource()
-        }.getOrElse {
+        try {
+            //try getting the image using '/favicon.ico' convention used in the web
+            getDrawableFromGlide("${url.protocol}://${url.host}/favicon.ico")
+        } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             /*
              * If it throws an error,try getting the favicon from the tags.
              * If it is still not possible to get the favicon using the tags,
              * return null.
              */
-            getFaviconUrlFromTags(url)?.let { urlString ->
-                /*
-                we are not using a try/catch block because the
-                [getFaviconUrlFromTags] returns a url string only if
-                it can find a valid url to the favicon
-                 */
-                Glide.with(context)
-                    .asDrawable()
-                    .load(urlString)
-                    .getDownloadedResource()
-            }
+            val tagUrlString = getFaviconUrlFromTags(url) ?: return@withContext null
+            runCatching { getDrawableFromGlide(tagUrlString) }.getOrNull()
         }
     }
+
+    /**
+     * A helper method that uses [Glide] to get a drawable using the
+     * provided [urlString].
+     */
+    private suspend fun getDrawableFromGlide(urlString: String) = Glide.with(context)
+        .asDrawable()
+        .load(urlString)
+        .getDownloadedResource()
 
     /**
      * Tries to get the favicon of the website using the "shortcut icon" or "icon"
