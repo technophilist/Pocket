@@ -15,3 +15,4 @@
 local.properties
 app/src/main/java/com/example/pocket/Tests.kt
 app/google-services.json
+/.idea/
