@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
@@ -68,23 +69,23 @@ private fun UrlCardFooter(
     favicon: ImageBitmap? = null,
     hostName: String
 ) {
-    Row(modifier = modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         favicon?.let {
             Image(
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .size(24.dp)
-                    .clip(CircleShape)
-                    .alignByBaseline(),
+                    .clip(CircleShape),
                 bitmap = it,
                 contentDescription = "Thumbnail",
                 contentScale = ContentScale.Crop
             )
         }
         Text(
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .alignByBaseline(),
+            modifier = Modifier.padding(start = 8.dp),
             text = hostName,
             style = MaterialTheme.typography.caption
         )
