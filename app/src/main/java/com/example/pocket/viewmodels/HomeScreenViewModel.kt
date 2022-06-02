@@ -26,7 +26,10 @@ interface HomeScreenViewModel {
     )
     val savedUrls: LiveData<List<UrlEntity>>
     val savedUrlItems: LiveData<List<SavedUrlItem>>
+
+    @Deprecated(message = "Use other overload of this method.")
     fun deleteUrlItem(urlItem: UrlEntity)
+    fun deleteUrlItem(urlItem: SavedUrlItem)
     fun undoDelete()
     fun onSearchTextValueChange(searchText: String)
     fun deleteAllUrlItems()
@@ -40,6 +43,7 @@ class HomeScreenViewModelImpl @Inject constructor(
     application: Application
 ) : AndroidViewModel(application), HomeScreenViewModel {
     private var recentlyDeletedItem: UrlEntity? = null
+    private var recentlyDeletedUrlItem: SavedUrlItem? = null
     private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())
     override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
 
@@ -63,6 +67,7 @@ class HomeScreenViewModelImpl @Inject constructor(
     override val savedUrls = repository.savedUrls.asFlow().asLiveData()
     override val savedUrlItems: LiveData<List<SavedUrlItem>> = repository.savedUrlItems
 
+    @Deprecated("Use other overload of this method.")
     override fun deleteUrlItem(urlItem: UrlEntity) {
         if (savedUrls.value != null) {
             viewModelScope.launch { recentlyDeletedItem = repository.deleteUrl(urlItem) }
@@ -83,6 +88,14 @@ class HomeScreenViewModelImpl @Inject constructor(
 
     override fun deleteAllUrlItems() {
         savedUrls.value?.forEach(::deleteUrlItem)
+    }
+
+    override fun deleteUrlItem(urlItem: SavedUrlItem) {
+        if (savedUrlItems.value != null) {
+            viewModelScope.launch {
+                recentlyDeletedUrlItem = repository.deleteSavedUrlItem(urlItem)
+            }
+        }
     }
 
     override suspend fun getBitmap(imageAbsolutePathString: String): Bitmap =
