@@ -18,7 +18,12 @@ import javax.inject.Inject
 
 
 interface HomeScreenViewModel {
+    @Deprecated(
+        message = "Use filteredUrlItemsproperty.",
+        replaceWith = ReplaceWith("filteredUrlItems")
+    )
     val filteredList: LiveData<List<UrlEntity>>
+    val filteredUrlItems: LiveData<List<SavedUrlItem>>
 
     @Deprecated(
         message = "Used savedUrlItems property instead.",
@@ -44,9 +49,15 @@ class HomeScreenViewModelImpl @Inject constructor(
 ) : AndroidViewModel(application), HomeScreenViewModel {
     private var recentlyDeletedItem: UrlEntity? = null
     private var recentlyDeletedUrlItem: SavedUrlItem? = null
+    private val _filteredUrlItems = MutableLiveData<List<SavedUrlItem>>(listOf())
     private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())
-    override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
 
+    @Deprecated(
+        "Use filteredUrlItemsList property.",
+        replaceWith = ReplaceWith("filteredUrlItemsList")
+    )
+    override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
+    override val filteredUrlItems = _filteredUrlItems as LiveData<List<SavedUrlItem>>
     //TODO Check this
     /**
      * Converting the livedata to flow, and, back to a live data.
@@ -79,10 +90,16 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override fun onSearchTextValueChange(searchText: String) {
+        // TODO remove
         viewModelScope.launch(defaultDispatcher) {
             val filteredList = savedUrls.value
                 ?.filter { it.contentTitle.contains(searchText, true) }
             filteredList?.let { _filteredUrlList.postValue(it) }
+        }
+        viewModelScope.launch {
+            savedUrlItems.value
+                ?.filter { it.title.contains(searchText, true) }
+                ?.let { filteredList -> _filteredUrlItems.value = filteredList }
         }
     }
 
