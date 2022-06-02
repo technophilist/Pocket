@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.*
 import com.example.pocket.data.Repository
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.data.domain.SavedUrlItem
 import com.example.pocket.di.DefaultCoroutineDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,7 +19,13 @@ import javax.inject.Inject
 
 interface HomeScreenViewModel {
     val filteredList: LiveData<List<UrlEntity>>
+
+    @Deprecated(
+        message = "Used savedUrlItems property instead.",
+        replaceWith = ReplaceWith("savedUrlItems")
+    )
     val savedUrls: LiveData<List<UrlEntity>>
+    val savedUrlItems: LiveData<List<SavedUrlItem>>
     fun deleteUrlItem(urlItem: UrlEntity)
     fun undoDelete()
     fun onSearchTextValueChange(searchText: String)
@@ -52,7 +59,9 @@ class HomeScreenViewModelImpl @Inject constructor(
      * exist in the database.In order to prevent this, a force refresh is
      * needed.
      */
+    @Deprecated("Used savedUrlItems property instead.", replaceWith = ReplaceWith("savedUrlItems"))
     override val savedUrls = repository.savedUrls.asFlow().asLiveData()
+    override val savedUrlItems: LiveData<List<SavedUrlItem>> = repository.savedUrlItems
 
     override fun deleteUrlItem(urlItem: UrlEntity) {
         if (savedUrls.value != null) {
