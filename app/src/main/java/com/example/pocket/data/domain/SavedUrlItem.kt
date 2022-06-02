@@ -13,3 +13,15 @@ data class SavedUrlItem(
     val imageAbsolutePath: String? = null,
     val faviconAbsolutePath: String? = null
 )
+
+/**
+ * A converter function used to convert an instance of [SavedUrlItem]
+ * to an instance of [UrlEntity].
+ */
+fun SavedUrlItem.toUrlEntity() = UrlEntity(
+    id = id.toInt(),
+    url = url.toString(),
+    contentTitle = title,
+    imageAbsolutePath = imageAbsolutePath,
+    faviconAbsolutePath = faviconAbsolutePath
+)
