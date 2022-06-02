@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.*
 import com.example.pocket.data.Repository
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.di.DefaultCoroutineDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -27,6 +29,7 @@ interface HomeScreenViewModel {
 @HiltViewModel
 class HomeScreenViewModelImpl @Inject constructor(
     private val mRepository: Repository,
+    @DefaultCoroutineDispatcher private val defaultDispatcher: CoroutineDispatcher,
     application: Application
 ) : AndroidViewModel(application), HomeScreenViewModel {
     private var mRecentlyDeletedItem: UrlEntity? = null
@@ -61,10 +64,9 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override fun onSearchTextValueChange(searchText: String) {
-        viewModelScope.launch(Dispatchers.Default) {
-            //filtering the list based on the searchText
-            val filteredList =
-                savedUrls.value?.filter { it.contentTitle.contains(searchText, true) }
+        viewModelScope.launch(defaultDispatcher) {
+            val filteredList = savedUrls.value
+                ?.filter { it.contentTitle.contains(searchText, true) }
             filteredList?.let { _filteredUrlList.postValue(it) }
         }
     }
