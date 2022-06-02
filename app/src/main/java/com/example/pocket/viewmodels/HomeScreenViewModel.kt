@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.example.pocket.data.Repository
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.domain.SavedUrlItem
+import com.example.pocket.data.domain.toUrlEntity
 import com.example.pocket.di.DefaultCoroutineDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -86,7 +87,9 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override fun undoDelete() {
+        // TODO remove
         recentlyDeletedItem?.let { viewModelScope.launch { repository.insertUrl(it) } }
+        recentlyDeletedUrlItem?.let { viewModelScope.launch { repository.insertUrl(it.toUrlEntity()) } }
     }
 
     override fun onSearchTextValueChange(searchText: String) {
@@ -104,7 +107,9 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override fun deleteAllUrlItems() {
+        // TODO remove
         savedUrls.value?.forEach(::deleteUrlItem)
+        savedUrlItems.value?.forEach(::deleteUrlItem)
     }
 
     override fun deleteUrlItem(urlItem: SavedUrlItem) {
