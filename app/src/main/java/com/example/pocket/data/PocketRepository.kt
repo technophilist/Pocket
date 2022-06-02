@@ -11,6 +11,7 @@ import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.database.toSavedUrlItem
 import com.example.pocket.data.domain.SavedUrlItem
+import com.example.pocket.data.domain.toUrlEntity
 import com.example.pocket.data.network.Network
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.data.preferences.PreferencesManager
@@ -32,7 +33,13 @@ interface Repository {
     val appTheme: LiveData<PocketPreferences.AppTheme>
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
+
+    @Deprecated(
+        message = "Use deleteSavedUrlItem() method.",
+        replaceWith = ReplaceWith("deleteSavedUrlItem()")
+    )
     suspend fun deleteUrl(urlItem: UrlEntity): UrlEntity
+    suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
     suspend fun insertUrl(urlItem: UrlEntity)
 }
 
@@ -115,6 +122,10 @@ class PocketRepository @Inject constructor(
      * @param urlItem the url item to be deleted
      * @return the deleted url item
      */
+    @Deprecated(
+        "Use deleteSavedUrlItem() method.",
+        replaceWith = ReplaceWith("deleteSavedUrlItem()")
+    )
     override suspend fun deleteUrl(urlItem: UrlEntity): UrlEntity {
         /*
          Jetpack compose doesn't support item delete animations for lazy lists.So it
@@ -138,6 +149,31 @@ class PocketRepository @Inject constructor(
             }
         }
         return urlItem
+    }
+
+    override suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem {
+        val urlItem = savedUrlItem.toUrlEntity()
+        /*
+         * Jetpack compose doesn't support item delete animations for lazy lists.So it
+         * becomes necessary to delete the item from the database and re-insert it if the
+         * user clicks on the undo action of the snackBar.
+         */
+        dao.deleteUrl(urlItem.id)
+        /*
+         If mRecentThumbnailDeleteJob is not null and a new
+         Job is assigned to it, it means that the undo delete
+         snack bar for that particular url was dismissed.Which
+         means that it is safe to delete the thumbnail and favicon
+         images associated with that url from the device storage.
+         */
+        mRecentThumbnailDeleteJob = coroutineScope {
+            launch {
+                delay(mLongSnackbarDuration)
+                urlItem.imageAbsolutePath?.let { File(it).delete() }
+                urlItem.faviconAbsolutePath?.let { File(it).delete() }
+            }
+        }
+        return savedUrlItem
     }
 
     override suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme) {
