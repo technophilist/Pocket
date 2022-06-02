@@ -28,14 +28,15 @@ interface HomeScreenViewModel {
 
 @HiltViewModel
 class HomeScreenViewModelImpl @Inject constructor(
-    private val mRepository: Repository,
+    private val repository: Repository,
     @DefaultCoroutineDispatcher private val defaultDispatcher: CoroutineDispatcher,
     application: Application
 ) : AndroidViewModel(application), HomeScreenViewModel {
-    private var mRecentlyDeletedItem: UrlEntity? = null
+    private var recentlyDeletedItem: UrlEntity? = null
     private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())
     override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
 
+    //TODO Check this
     /**
      * Converting the livedata to flow, and, back to a live data.
      * This forces the live data to refresh.
@@ -51,16 +52,16 @@ class HomeScreenViewModelImpl @Inject constructor(
      * exist in the database.In order to prevent this, a force refresh is
      * needed.
      */
-    override val savedUrls = mRepository.savedUrls.asFlow().asLiveData()
+    override val savedUrls = repository.savedUrls.asFlow().asLiveData()
 
     override fun deleteUrlItem(urlItem: UrlEntity) {
         if (savedUrls.value != null) {
-            viewModelScope.launch { mRecentlyDeletedItem = mRepository.deleteUrl(urlItem) }
+            viewModelScope.launch { recentlyDeletedItem = repository.deleteUrl(urlItem) }
         }
     }
 
     override fun undoDelete() {
-        mRecentlyDeletedItem?.let { viewModelScope.launch { mRepository.insertUrl(it) } }
+        recentlyDeletedItem?.let { viewModelScope.launch { repository.insertUrl(it) } }
     }
 
     override fun onSearchTextValueChange(searchText: String) {
