@@ -9,6 +9,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.data.database.toSavedUrlItem
+import com.example.pocket.data.domain.SavedUrlItem
 import com.example.pocket.data.network.Network
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.data.preferences.PreferencesManager
@@ -21,7 +23,12 @@ import java.util.*
 import javax.inject.Inject
 
 interface Repository {
+    @Deprecated(
+        message = "Used savedUrlItems property instead.",
+        replaceWith = ReplaceWith("savedUrlItems")
+    )
     val savedUrls: LiveData<List<UrlEntity>>
+    val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
@@ -40,7 +47,12 @@ class PocketRepository @Inject constructor(
     private val mLongSnackbarDuration = 10_000L
     private val mUserPreferencesFlow = preferencesManager.userPreferences
     private var mRecentThumbnailDeleteJob: Job? = null
+
+    @Deprecated("Used savedUrlItems property instead.", replaceWith = ReplaceWith("savedUrlItems"))
     override val savedUrls = dao.getAllUrls()
+    override val savedUrlItems = dao.getAllUrls().map { urlEntityList ->
+        urlEntityList.map { it.toSavedUrlItem() }
+    }
     override val appTheme = mUserPreferencesFlow.asLiveData().map { it.appTheme }
 
     /**
