@@ -24,21 +24,10 @@ import java.util.*
 import javax.inject.Inject
 
 interface Repository {
-    @Deprecated(
-        message = "Used savedUrlItems property instead.",
-        replaceWith = ReplaceWith("savedUrlItems")
-    )
-    val savedUrls: LiveData<List<UrlEntity>>
     val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
-
-    @Deprecated(
-        message = "Use deleteSavedUrlItem() method.",
-        replaceWith = ReplaceWith("deleteSavedUrlItem()")
-    )
-    suspend fun deleteUrl(urlItem: UrlEntity): UrlEntity
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
     suspend fun insertUrl(urlItem: UrlEntity)
 }
@@ -54,9 +43,6 @@ class PocketRepository @Inject constructor(
     private val mLongSnackbarDuration = 10_000L
     private val mUserPreferencesFlow = preferencesManager.userPreferences
     private var mRecentThumbnailDeleteJob: Job? = null
-
-    @Deprecated("Used savedUrlItems property instead.", replaceWith = ReplaceWith("savedUrlItems"))
-    override val savedUrls = dao.getAllUrls()
     override val savedUrlItems = dao.getAllUrls().map { urlEntityList ->
         urlEntityList.map { it.toSavedUrlItem() }
     }
@@ -119,38 +105,9 @@ class PocketRepository @Inject constructor(
      * Even though the url entity will be deleted immediately, the thumbnail
      * of the url will remain in the devices' internal storage for
      * [mLongSnackbarDuration] seconds before getting deleted.
-     * @param urlItem the url item to be deleted
+     * @param savedUrlItem the url item to be deleted
      * @return the deleted url item
      */
-    @Deprecated(
-        "Use deleteSavedUrlItem() method.",
-        replaceWith = ReplaceWith("deleteSavedUrlItem()")
-    )
-    override suspend fun deleteUrl(urlItem: UrlEntity): UrlEntity {
-        /*
-         Jetpack compose doesn't support item delete animations for lazy lists.So it
-         becomes necessary to delete the item from the database and re-insert it if the
-         user clicks on the undo action of the snackBar.
-        * */
-        dao.deleteUrl(urlItem.id)
-
-        /*
-         If mRecentThumbnailDeleteJob is not null and a new
-         Job is assigned to it, it means that the undo delete
-         snack bar for that particular url was dismissed.Which
-         means that it is safe to delete the thumbnail and favicon
-         images associated with that url from the device storage.
-         */
-        mRecentThumbnailDeleteJob = coroutineScope {
-            launch {
-                delay(mLongSnackbarDuration)
-                urlItem.imageAbsolutePath?.let { File(it).delete() }
-                urlItem.faviconAbsolutePath?.let { File(it).delete() }
-            }
-        }
-        return urlItem
-    }
-
     override suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem {
         val urlItem = savedUrlItem.toUrlEntity()
         /*
