@@ -26,7 +26,6 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
-import com.example.pocket.data.database.toSavedUrlItem
 import com.example.pocket.data.domain.SavedUrlItem
 import com.example.pocket.data.domain.toUrlEntity
 import com.example.pocket.ui.activities.HandleUrlActivity.Companion.SAVE_URL_WORKERS_TAG
@@ -52,8 +51,8 @@ fun HomeScreen(
 ) {
     val snackbarMessage = stringResource(id = R.string.label_item_deleted)
     val snackbarActionLabel = stringResource(id = R.string.label_undo)
-    val urlItems by homeScreenViewModel.savedUrls.observeAsState()
-    val filteredList by homeScreenViewModel.filteredList.observeAsState()
+    val savedUrlItems by homeScreenViewModel.savedUrlItems.observeAsState()
+    val filteredUrlItems by homeScreenViewModel.filteredUrlItems.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val searchBarState = rememberSearchBarState(isCloseIconVisible = true)
@@ -190,8 +189,8 @@ fun HomeScreen(
                 fetchImageBitmap = { urlString ->
                     homeScreenViewModel.getBitmap(urlString).asImageBitmap()
                 },
-                urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
-                onClickItem = onClickUrlItem,
+                urlItems = (if (searchText.isBlank()) savedUrlItems else filteredUrlItems) ?: listOf(),
+                onClickItem = { onClickUrlItem(it.toUrlEntity()) },
                 onItemSwiped = { urlEntity ->
                     homeScreenViewModel.deleteUrlItem(urlEntity)
                     coroutineScope.launch {
@@ -232,9 +231,9 @@ private fun ListEmptyMessage(modifier: Modifier = Modifier) {
 @Composable
 private fun UrlList(
     modifier: Modifier = Modifier,
-    urlItems: List<UrlEntity>,
-    onClickItem: (UrlEntity) -> Unit,
-    onItemSwiped: (UrlEntity) -> Unit = {},
+    urlItems: List<SavedUrlItem>,
+    onClickItem: (SavedUrlItem) -> Unit,
+    onItemSwiped: (SavedUrlItem) -> Unit = {},
     fetchImageBitmap: suspend (String) -> ImageBitmap,
 ) {
     if (urlItems.isEmpty()) ListEmptyMessage(modifier = Modifier.fillMaxSize())
@@ -247,16 +246,16 @@ private fun UrlList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
-            items = urlItems.map { it.toSavedUrlItem() },
+            items = urlItems,
             key = { it.id }
         ) { urlItem ->
             SwipeToDismissUrlCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(310.dp)
-                    .clickable { onClickItem(urlItem.toUrlEntity()) },
+                    .clickable { onClickItem(urlItem) },
                 fetchImageBitmap = fetchImageBitmap,
-                onCardSwiped = { onItemSwiped(urlItem.toUrlEntity()) },
+                onCardSwiped = onItemSwiped,
                 savedUrlItem = urlItem
             )
         }
