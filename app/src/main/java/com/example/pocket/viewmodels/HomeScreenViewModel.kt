@@ -3,9 +3,11 @@ package com.example.pocket.viewmodels
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.pocket.data.Repository
-import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.domain.SavedUrlItem
 import com.example.pocket.data.domain.toUrlEntity
 import com.example.pocket.di.DefaultCoroutineDispatcher
@@ -19,22 +21,8 @@ import javax.inject.Inject
 
 
 interface HomeScreenViewModel {
-    @Deprecated(
-        message = "Use filteredUrlItemsproperty.",
-        replaceWith = ReplaceWith("filteredUrlItems")
-    )
-    val filteredList: LiveData<List<UrlEntity>>
     val filteredUrlItems: LiveData<List<SavedUrlItem>>
-
-    @Deprecated(
-        message = "Used savedUrlItems property instead.",
-        replaceWith = ReplaceWith("savedUrlItems")
-    )
-    val savedUrls: LiveData<List<UrlEntity>>
     val savedUrlItems: LiveData<List<SavedUrlItem>>
-
-    @Deprecated(message = "Use other overload of this method.")
-    fun deleteUrlItem(urlItem: UrlEntity)
     fun deleteUrlItem(urlItem: SavedUrlItem)
     fun undoDelete()
     fun onSearchTextValueChange(searchText: String)
@@ -48,16 +36,8 @@ class HomeScreenViewModelImpl @Inject constructor(
     @DefaultCoroutineDispatcher private val defaultDispatcher: CoroutineDispatcher,
     application: Application
 ) : AndroidViewModel(application), HomeScreenViewModel {
-    private var recentlyDeletedItem: UrlEntity? = null
     private var recentlyDeletedUrlItem: SavedUrlItem? = null
     private val _filteredUrlItems = MutableLiveData<List<SavedUrlItem>>(listOf())
-    private val _filteredUrlList = MutableLiveData<List<UrlEntity>>(listOf())
-
-    @Deprecated(
-        "Use filteredUrlItemsList property.",
-        replaceWith = ReplaceWith("filteredUrlItemsList")
-    )
-    override val filteredList = _filteredUrlList as LiveData<List<UrlEntity>>
     override val filteredUrlItems = _filteredUrlItems as LiveData<List<SavedUrlItem>>
     //TODO Check this
     /**
@@ -75,31 +55,14 @@ class HomeScreenViewModelImpl @Inject constructor(
      * exist in the database.In order to prevent this, a force refresh is
      * needed.
      */
-    @Deprecated("Used savedUrlItems property instead.", replaceWith = ReplaceWith("savedUrlItems"))
-    override val savedUrls = repository.savedUrls.asFlow().asLiveData()
     override val savedUrlItems: LiveData<List<SavedUrlItem>> = repository.savedUrlItems
 
-    @Deprecated("Use other overload of this method.")
-    override fun deleteUrlItem(urlItem: UrlEntity) {
-        if (savedUrls.value != null) {
-            viewModelScope.launch { recentlyDeletedItem = repository.deleteUrl(urlItem) }
-        }
-    }
-
     override fun undoDelete() {
-        // TODO remove
-        recentlyDeletedItem?.let { viewModelScope.launch { repository.insertUrl(it) } }
         recentlyDeletedUrlItem?.let { viewModelScope.launch { repository.insertUrl(it.toUrlEntity()) } }
     }
 
     override fun onSearchTextValueChange(searchText: String) {
-        // TODO remove
         viewModelScope.launch(defaultDispatcher) {
-            val filteredList = savedUrls.value
-                ?.filter { it.contentTitle.contains(searchText, true) }
-            filteredList?.let { _filteredUrlList.postValue(it) }
-        }
-        viewModelScope.launch {
             savedUrlItems.value
                 ?.filter { it.title.contains(searchText, true) }
                 ?.let { filteredList -> _filteredUrlItems.value = filteredList }
@@ -107,8 +70,6 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override fun deleteAllUrlItems() {
-        // TODO remove
-        savedUrls.value?.forEach(::deleteUrlItem)
         savedUrlItems.value?.forEach(::deleteUrlItem)
     }
 
@@ -121,6 +82,8 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override suspend fun getBitmap(imageAbsolutePathString: String): Bitmap =
+        // I don't think this method belongs here
+        // TODO hardcoded dispatcher
         withContext(Dispatchers.IO) {
             File(imageAbsolutePathString)
                 .inputStream()
