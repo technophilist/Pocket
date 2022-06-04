@@ -27,6 +27,8 @@ import androidx.work.WorkManager
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.database.toSavedUrlItem
+import com.example.pocket.data.domain.SavedUrlItem
+import com.example.pocket.data.domain.toUrlEntity
 import com.example.pocket.ui.activities.HandleUrlActivity.Companion.SAVE_URL_WORKERS_TAG
 import com.example.pocket.ui.components.PocketAppBar
 import com.example.pocket.ui.components.SavedUrlItemCard
@@ -245,17 +247,17 @@ private fun UrlList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
-            items = urlItems,
+            items = urlItems.map { it.toSavedUrlItem() },
             key = { it.id }
         ) { urlItem ->
             SwipeToDismissUrlCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(310.dp)
-                    .clickable { onClickItem(urlItem) },
+                    .clickable { onClickItem(urlItem.toUrlEntity()) },
                 fetchImageBitmap = fetchImageBitmap,
-                onCardSwiped = onItemSwiped,
-                urlItem = urlItem
+                onCardSwiped = { onItemSwiped(urlItem.toUrlEntity()) },
+                savedUrlItem = urlItem
             )
         }
     }
@@ -266,23 +268,23 @@ private fun UrlList(
 private fun SwipeToDismissUrlCard(
     modifier: Modifier = Modifier,
     fetchImageBitmap: suspend (String) -> ImageBitmap,
-    onCardSwiped: (UrlEntity) -> Unit = {},
-    urlItem: UrlEntity,
+    onCardSwiped: (SavedUrlItem) -> Unit = {},
+    savedUrlItem: SavedUrlItem,
 ) {
     var thumbnailBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
     var faviconBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
     val dismissState = rememberDismissState {
         if (it == DismissValue.DismissedToEnd) {
-            onCardSwiped(urlItem)
+            onCardSwiped(savedUrlItem)
             true
         } else false
     }
-    urlItem.imageAbsolutePath?.let {
-        LaunchedEffect(urlItem.id) { thumbnailBitmapState = fetchImageBitmap(it) }
+    savedUrlItem.imageAbsolutePath?.let {
+        LaunchedEffect(savedUrlItem.id) { thumbnailBitmapState = fetchImageBitmap(it) }
     }
 
-    urlItem.faviconAbsolutePath?.let {
-        LaunchedEffect(urlItem.id) { faviconBitmapState = fetchImageBitmap(it) }
+    savedUrlItem.faviconAbsolutePath?.let {
+        LaunchedEffect(savedUrlItem.id) { faviconBitmapState = fetchImageBitmap(it) }
     }
 
     SwipeToDismiss(
@@ -292,7 +294,7 @@ private fun SwipeToDismissUrlCard(
     ) {
         SavedUrlItemCard(
             modifier = modifier,
-            savedUrlItem = urlItem.toSavedUrlItem(),
+            savedUrlItem = savedUrlItem,
             thumbnail = thumbnailBitmapState,
             favicon = faviconBitmapState
         )
