@@ -29,7 +29,13 @@ interface Repository {
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
+
+    @Deprecated(
+        message = "Use the other overload.",
+        replaceWith = ReplaceWith("insertUrl(savedUrlItem=)")
+    )
     suspend fun insertUrl(urlItem: UrlEntity)
+    suspend fun insertUrl(savedUrlItem: SavedUrlItem)
 }
 
 class PocketRepository @Inject constructor(
@@ -167,8 +173,23 @@ class PocketRepository @Inject constructor(
         }.getOrNull()
     }
 
+    @Deprecated("Use the other overload.", replaceWith = ReplaceWith("insertUrl(savedUrlItem=)"))
     override suspend fun insertUrl(urlItem: UrlEntity) {
         dao.insertUrl(urlItem)
+        if (mRecentThumbnailDeleteJob?.isActive == true) {
+            /*
+            If it is active it means this function was called as
+            a result of the user clicking the 'undo' button
+            of the snack bar.
+             */
+
+            //Cancelling the job , so it doesn't delete the thumbnail
+            mRecentThumbnailDeleteJob?.cancel()
+        }
+    }
+
+    override suspend fun insertUrl(savedUrlItem: SavedUrlItem) {
+        dao.insertUrl(savedUrlItem.toUrlEntity())
         if (mRecentThumbnailDeleteJob?.isActive == true) {
             /*
             If it is active it means this function was called as
