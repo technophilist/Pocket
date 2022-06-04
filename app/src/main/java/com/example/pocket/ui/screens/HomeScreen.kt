@@ -1,8 +1,6 @@
 package com.example.pocket.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -17,12 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -30,10 +26,11 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.pocket.R
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.data.database.toSavedUrlItem
 import com.example.pocket.ui.activities.HandleUrlActivity.Companion.SAVE_URL_WORKERS_TAG
 import com.example.pocket.ui.components.PocketAppBar
+import com.example.pocket.ui.components.SavedUrlItemCard
 import com.example.pocket.ui.components.SearchBar
-import com.example.pocket.ui.components.UrlCard
 import com.example.pocket.ui.components.rememberSearchBarState
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.HomeScreenViewModel
@@ -293,44 +290,12 @@ private fun SwipeToDismissUrlCard(
         background = {},
         directions = setOf(DismissDirection.StartToEnd)
     ) {
-
-        UrlCard(
+        SavedUrlItemCard(
             modifier = modifier,
-            contentTitle = urlItem.contentTitle,
-            hostName = urlItem.host,
-            favicon = faviconBitmapState,
-        ) {
-            if (urlItem.imageAbsolutePath == null) {
-                //if the image path is null,display the host with primary background
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colors.primary)
-                        .fillMaxWidth()
-                        .weight(3f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = urlItem.host,
-                        style = MaterialTheme.typography.h3,
-                        color = MaterialTheme.colors.onPrimary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-            } else {
-                thumbnailBitmapState?.let { imageBitmap ->
-                    Image(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(3f),
-                        bitmap = imageBitmap,
-                        contentDescription = "Thumbnail",
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-        }
+            savedUrlItem = urlItem.toSavedUrlItem(),
+            thumbnail = thumbnailBitmapState,
+            favicon = faviconBitmapState
+        )
     }
 }
 
