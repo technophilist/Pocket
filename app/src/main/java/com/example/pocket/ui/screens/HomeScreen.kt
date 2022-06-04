@@ -25,9 +25,7 @@ import androidx.navigation.NavController
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.pocket.R
-import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.domain.SavedUrlItem
-import com.example.pocket.data.domain.toUrlEntity
 import com.example.pocket.ui.activities.HandleUrlActivity.Companion.SAVE_URL_WORKERS_TAG
 import com.example.pocket.ui.components.PocketAppBar
 import com.example.pocket.ui.components.SavedUrlItemCard
@@ -45,7 +43,7 @@ fun HomeScreen(
     navController: NavController,
     isDarkModeSupported: Boolean = false,
     onDarkModeOptionClicked: (() -> Unit) = {},
-    onClickUrlItem: (UrlEntity) -> Unit,
+    onClickUrlItem: (SavedUrlItem) -> Unit,
     onSignOutButtonClick: () -> Unit,
     isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
 ) {
@@ -189,8 +187,9 @@ fun HomeScreen(
                 fetchImageBitmap = { urlString ->
                     homeScreenViewModel.getBitmap(urlString).asImageBitmap()
                 },
-                urlItems = (if (searchText.isBlank()) savedUrlItems else filteredUrlItems) ?: listOf(),
-                onClickItem = { onClickUrlItem(it.toUrlEntity()) },
+                urlItems = (if (searchText.isBlank()) savedUrlItems else filteredUrlItems)
+                    ?: listOf(),
+                onClickItem = onClickUrlItem,
                 onItemSwiped = { urlEntity ->
                     homeScreenViewModel.deleteUrlItem(urlEntity)
                     coroutineScope.launch {
