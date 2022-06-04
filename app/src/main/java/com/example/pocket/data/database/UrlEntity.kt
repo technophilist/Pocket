@@ -5,6 +5,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.example.pocket.data.domain.SavedUrlItem
+import java.net.URL
 
 /**
  *The data class that represents an url item in the database.
@@ -22,7 +24,7 @@ data class UrlEntity(
     val url: String,
     val contentTitle: String,
     val imageAbsolutePath: String?, //thumbnail
-    val faviconAbsolutePath:String?=null,
+    val faviconAbsolutePath: String? = null,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 ) {
@@ -45,4 +47,16 @@ data class UrlEntity(
     val host = hostBackingProperty
 
 }
+
+/**
+ * A converter function used to convert an instance of [UrlEntity] to
+ * [SavedUrlItem].
+ */
+fun UrlEntity.toSavedUrlItem() = SavedUrlItem(
+    id = id.toString(),
+    url = URL(url),
+    title = contentTitle,
+    imageAbsolutePath = imageAbsolutePath,
+    faviconAbsolutePath = faviconAbsolutePath
+)
 

@@ -1,8 +1,6 @@
 package com.example.pocket.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -17,23 +15,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.pocket.R
-import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.data.domain.SavedUrlItem
 import com.example.pocket.ui.activities.HandleUrlActivity.Companion.SAVE_URL_WORKERS_TAG
 import com.example.pocket.ui.components.PocketAppBar
+import com.example.pocket.ui.components.SavedUrlItemCard
 import com.example.pocket.ui.components.SearchBar
-import com.example.pocket.ui.components.UrlCard
 import com.example.pocket.ui.components.rememberSearchBarState
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.HomeScreenViewModel
@@ -47,14 +43,14 @@ fun HomeScreen(
     navController: NavController,
     isDarkModeSupported: Boolean = false,
     onDarkModeOptionClicked: (() -> Unit) = {},
-    onClickUrlItem: (UrlEntity) -> Unit,
+    onClickUrlItem: (SavedUrlItem) -> Unit,
     onSignOutButtonClick: () -> Unit,
     isDarkModeEnabled: Boolean = isSystemInDarkTheme(),
 ) {
     val snackbarMessage = stringResource(id = R.string.label_item_deleted)
     val snackbarActionLabel = stringResource(id = R.string.label_undo)
-    val urlItems by homeScreenViewModel.savedUrls.observeAsState()
-    val filteredList by homeScreenViewModel.filteredList.observeAsState()
+    val savedUrlItems by homeScreenViewModel.savedUrlItems.observeAsState()
+    val filteredUrlItems by homeScreenViewModel.filteredUrlItems.observeAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val searchBarState = rememberSearchBarState(isCloseIconVisible = true)
@@ -191,7 +187,8 @@ fun HomeScreen(
                 fetchImageBitmap = { urlString ->
                     homeScreenViewModel.getBitmap(urlString).asImageBitmap()
                 },
-                urlItems = (if (searchText.isBlank()) urlItems else filteredList) ?: listOf(),
+                urlItems = (if (searchText.isBlank()) savedUrlItems else filteredUrlItems)
+                    ?: listOf(),
                 onClickItem = onClickUrlItem,
                 onItemSwiped = { urlEntity ->
                     homeScreenViewModel.deleteUrlItem(urlEntity)
@@ -233,9 +230,9 @@ private fun ListEmptyMessage(modifier: Modifier = Modifier) {
 @Composable
 private fun UrlList(
     modifier: Modifier = Modifier,
-    urlItems: List<UrlEntity>,
-    onClickItem: (UrlEntity) -> Unit,
-    onItemSwiped: (UrlEntity) -> Unit = {},
+    urlItems: List<SavedUrlItem>,
+    onClickItem: (SavedUrlItem) -> Unit,
+    onItemSwiped: (SavedUrlItem) -> Unit = {},
     fetchImageBitmap: suspend (String) -> ImageBitmap,
 ) {
     if (urlItems.isEmpty()) ListEmptyMessage(modifier = Modifier.fillMaxSize())
@@ -258,7 +255,7 @@ private fun UrlList(
                     .clickable { onClickItem(urlItem) },
                 fetchImageBitmap = fetchImageBitmap,
                 onCardSwiped = onItemSwiped,
-                urlItem = urlItem
+                savedUrlItem = urlItem
             )
         }
     }
@@ -269,23 +266,23 @@ private fun UrlList(
 private fun SwipeToDismissUrlCard(
     modifier: Modifier = Modifier,
     fetchImageBitmap: suspend (String) -> ImageBitmap,
-    onCardSwiped: (UrlEntity) -> Unit = {},
-    urlItem: UrlEntity,
+    onCardSwiped: (SavedUrlItem) -> Unit = {},
+    savedUrlItem: SavedUrlItem,
 ) {
     var thumbnailBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
     var faviconBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
     val dismissState = rememberDismissState {
         if (it == DismissValue.DismissedToEnd) {
-            onCardSwiped(urlItem)
+            onCardSwiped(savedUrlItem)
             true
         } else false
     }
-    urlItem.imageAbsolutePath?.let {
-        LaunchedEffect(urlItem.id) { thumbnailBitmapState = fetchImageBitmap(it) }
+    savedUrlItem.imageAbsolutePath?.let {
+        LaunchedEffect(savedUrlItem.id) { thumbnailBitmapState = fetchImageBitmap(it) }
     }
 
-    urlItem.faviconAbsolutePath?.let {
-        LaunchedEffect(urlItem.id) { faviconBitmapState = fetchImageBitmap(it) }
+    savedUrlItem.faviconAbsolutePath?.let {
+        LaunchedEffect(savedUrlItem.id) { faviconBitmapState = fetchImageBitmap(it) }
     }
 
     SwipeToDismiss(
@@ -293,44 +290,12 @@ private fun SwipeToDismissUrlCard(
         background = {},
         directions = setOf(DismissDirection.StartToEnd)
     ) {
-
-        UrlCard(
+        SavedUrlItemCard(
             modifier = modifier,
-            contentTitle = urlItem.contentTitle,
-            hostName = urlItem.host,
-            favicon = faviconBitmapState,
-        ) {
-            if (urlItem.imageAbsolutePath == null) {
-                //if the image path is null,display the host with primary background
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colors.primary)
-                        .fillMaxWidth()
-                        .weight(3f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = urlItem.host,
-                        style = MaterialTheme.typography.h3,
-                        color = MaterialTheme.colors.onPrimary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-            } else {
-                thumbnailBitmapState?.let { imageBitmap ->
-                    Image(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(3f),
-                        bitmap = imageBitmap,
-                        contentDescription = "Thumbnail",
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-        }
+            savedUrlItem = savedUrlItem,
+            thumbnail = thumbnailBitmapState,
+            favicon = faviconBitmapState
+        )
     }
 }
 

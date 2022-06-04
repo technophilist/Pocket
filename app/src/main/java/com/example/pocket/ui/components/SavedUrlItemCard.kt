@@ -1,11 +1,11 @@
 package com.example.pocket.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,38 +15,53 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.pocket.data.domain.SavedUrlItem
 
-
-/**
- * This composable represents a url card.
- *
- * @param modifier The modifier to be applied to the card.
- * @param favicon The favicon image of the webpage.
- * @param contentTitle The title of the webpage.
- * @param hostName The name of the host of the webpage.
- * */
+//TODO add docs
 @Composable
-fun UrlCard(
+fun SavedUrlItemCard(
     modifier: Modifier = Modifier,
-    favicon: ImageBitmap? = null,
-    contentTitle: String,
-    hostName: String,
-    content: @Composable () -> Unit
+    savedUrlItem: SavedUrlItem,
+    thumbnail: ImageBitmap? = null,
+    favicon: ImageBitmap? = null
 ) {
     Card(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(3f),
-                content = content
-            )
+            if (savedUrlItem.imageAbsolutePath == null) {
+                //if the image path is null,display the host with primary background
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colors.primary)
+                        .fillMaxWidth()
+                        .weight(3f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = savedUrlItem.url.host,
+                        style = MaterialTheme.typography.h3,
+                        color = MaterialTheme.colors.onPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
+            } else {
+                thumbnail?.let { imageBitmap ->
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(3f),
+                        bitmap = imageBitmap,
+                        contentDescription = "Thumbnail",
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
             Text(
                 modifier = Modifier
                     .padding(8.dp)
                     .weight(0.5f),
-                text = contentTitle,
+                text = savedUrlItem.title,
                 style = MaterialTheme.typography.h1,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -55,7 +70,7 @@ fun UrlCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.5f),
-                hostName = hostName,
+                hostName = savedUrlItem.url.host,
                 favicon = favicon
             )
         }
@@ -91,4 +106,3 @@ private fun UrlCardFooter(
         )
     }
 }
-

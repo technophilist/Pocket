@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                 HomeScreen(
                     homeScreenViewModel = homeScreenViewModel,
                     navController = navController,
-                    onClickUrlItem = { openUrl(it.url) },
+                    onClickUrlItem = { openUrl(it.url.toString()) },
                     isDarkModeSupported = isDarkModeSupported,
                     onDarkModeOptionClicked = {
                         mainActivityViewModel.changeAppTheme(

@@ -9,6 +9,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlEntity
+import com.example.pocket.data.database.toSavedUrlItem
+import com.example.pocket.data.domain.SavedUrlItem
+import com.example.pocket.data.domain.toUrlEntity
 import com.example.pocket.data.network.Network
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.data.preferences.PreferencesManager
@@ -21,12 +24,12 @@ import java.util.*
 import javax.inject.Inject
 
 interface Repository {
-    val savedUrls: LiveData<List<UrlEntity>>
+    val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
-    suspend fun deleteUrl(urlItem: UrlEntity): UrlEntity
-    suspend fun insertUrl(urlItem: UrlEntity)
+    suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
+    suspend fun insertUrl(savedUrlItem: SavedUrlItem)
 }
 
 class PocketRepository @Inject constructor(
@@ -40,7 +43,9 @@ class PocketRepository @Inject constructor(
     private val mLongSnackbarDuration = 10_000L
     private val mUserPreferencesFlow = preferencesManager.userPreferences
     private var mRecentThumbnailDeleteJob: Job? = null
-    override val savedUrls = dao.getAllUrls()
+    override val savedUrlItems = dao.getAllUrls().map { urlEntityList ->
+        urlEntityList.map { it.toSavedUrlItem() }
+    }
     override val appTheme = mUserPreferencesFlow.asLiveData().map { it.appTheme }
 
     /**
@@ -100,17 +105,17 @@ class PocketRepository @Inject constructor(
      * Even though the url entity will be deleted immediately, the thumbnail
      * of the url will remain in the devices' internal storage for
      * [mLongSnackbarDuration] seconds before getting deleted.
-     * @param urlItem the url item to be deleted
+     * @param savedUrlItem the url item to be deleted
      * @return the deleted url item
      */
-    override suspend fun deleteUrl(urlItem: UrlEntity): UrlEntity {
+    override suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem {
+        val urlItem = savedUrlItem.toUrlEntity()
         /*
-         Jetpack compose doesn't support item delete animations for lazy lists.So it
-         becomes necessary to delete the item from the database and re-insert it if the
-         user clicks on the undo action of the snackBar.
-        * */
+         * Jetpack compose doesn't support item delete animations for lazy lists.So it
+         * becomes necessary to delete the item from the database and re-insert it if the
+         * user clicks on the undo action of the snackBar.
+         */
         dao.deleteUrl(urlItem.id)
-
         /*
          If mRecentThumbnailDeleteJob is not null and a new
          Job is assigned to it, it means that the undo delete
@@ -125,7 +130,7 @@ class PocketRepository @Inject constructor(
                 urlItem.faviconAbsolutePath?.let { File(it).delete() }
             }
         }
-        return urlItem
+        return savedUrlItem
     }
 
     override suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme) {
@@ -162,8 +167,8 @@ class PocketRepository @Inject constructor(
         }.getOrNull()
     }
 
-    override suspend fun insertUrl(urlItem: UrlEntity) {
-        dao.insertUrl(urlItem)
+    override suspend fun insertUrl(savedUrlItem: SavedUrlItem) {
+        dao.insertUrl(savedUrlItem.toUrlEntity())
         if (mRecentThumbnailDeleteJob?.isActive == true) {
             /*
             If it is active it means this function was called as
