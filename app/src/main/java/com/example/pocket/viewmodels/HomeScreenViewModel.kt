@@ -9,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.pocket.data.Repository
 import com.example.pocket.data.domain.SavedUrlItem
-import com.example.pocket.data.domain.toUrlEntity
 import com.example.pocket.di.DefaultCoroutineDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -58,7 +57,7 @@ class HomeScreenViewModelImpl @Inject constructor(
     override val savedUrlItems: LiveData<List<SavedUrlItem>> = repository.savedUrlItems
 
     override fun undoDelete() {
-        recentlyDeletedUrlItem?.let { viewModelScope.launch { repository.insertUrl(it.toUrlEntity()) } }
+        recentlyDeletedUrlItem?.let { viewModelScope.launch { repository.insertUrl(it) } }
     }
 
     override fun onSearchTextValueChange(searchText: String) {
@@ -82,7 +81,7 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override suspend fun getBitmap(imageAbsolutePathString: String): Bitmap =
-        // I don't think this method belongs here
+    // I don't think this method belongs here
         // TODO hardcoded dispatcher
         withContext(Dispatchers.IO) {
             File(imageAbsolutePathString)
