@@ -63,8 +63,9 @@ class PocketNetwork @Inject constructor(
 
     /**
      * Used to fetch the content title of the webpage using the [url].
-     * If it is not possible to get the title,it returns an empty
-     * string.
+     * It will return null in the following cases:
+     * - If it is not able to fetch the title.
+     * - If the title is empty.
      */
     override suspend fun fetchWebsiteContentTitle(url: URL): String? =
         withContext(defaultDispatcher) {
@@ -72,6 +73,7 @@ class PocketNetwork @Inject constructor(
                 documentHashMap
                     .getOrPut(url.toString()) { Jsoup.connect(url.toString()).getDocument() }
                     .title()
+                    .ifEmpty { null }
             }.getOrNull()
         }
 
