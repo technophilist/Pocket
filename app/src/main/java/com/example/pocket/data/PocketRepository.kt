@@ -26,6 +26,7 @@ import javax.inject.Inject
 interface Repository {
     val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
+    // TODO (Improve Api) - function calls having close to same meaning -> saveUrl,insertUrl
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
@@ -39,14 +40,14 @@ class PocketRepository @Inject constructor(
     @IoCoroutineDispatcher private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
     @ApplicationContext context: Context
 ) : Repository {
-    private val mFilesDirectory = context.filesDir
-    private val mLongSnackbarDuration = 10_000L
-    private val mUserPreferencesFlow = preferencesManager.userPreferences
-    private var mRecentThumbnailDeleteJob: Job? = null
+    private val filesDirectory = context.filesDir
+    private val longSnackbarDuration = 10_000L
+    private val userPreferencesFlow = preferencesManager.userPreferences
+    private var recentThumbnailDeleteJob: Job? = null
     override val savedUrlItems = dao.getAllUrls().map { urlEntityList ->
         urlEntityList.map { it.toSavedUrlItem() }
     }
-    override val appTheme = mUserPreferencesFlow.asLiveData().map { it.appTheme }
+    override val appTheme = userPreferencesFlow.asLiveData().map { it.appTheme }
 
     /**
      * Used for saving the [url],and the associated favicon and thumbnail.
@@ -104,7 +105,7 @@ class PocketRepository @Inject constructor(
      * Used for deleting the url from the database.
      * Even though the url entity will be deleted immediately, the thumbnail
      * of the url will remain in the devices' internal storage for
-     * [mLongSnackbarDuration] seconds before getting deleted.
+     * [longSnackbarDuration] seconds before getting deleted.
      * @param savedUrlItem the url item to be deleted
      * @return the deleted url item
      */
@@ -123,9 +124,9 @@ class PocketRepository @Inject constructor(
          means that it is safe to delete the thumbnail and favicon
          images associated with that url from the device storage.
          */
-        mRecentThumbnailDeleteJob = coroutineScope {
+        recentThumbnailDeleteJob = coroutineScope {
             launch {
-                delay(mLongSnackbarDuration)
+                delay(longSnackbarDuration)
                 urlItem.imageAbsolutePath?.let { File(it).delete() }
                 urlItem.faviconAbsolutePath?.let { File(it).delete() }
             }
@@ -154,7 +155,7 @@ class PocketRepository @Inject constructor(
     ): String? = withContext(defaultDispatcher) {
         runCatching {
             val bitmapImage = (resource as BitmapDrawable).bitmap
-            val directory = File("$mFilesDirectory/$directoryName")
+            val directory = File("$filesDirectory/$directoryName")
             if (!directory.exists()) directory.mkdir()
             val fileExtension = filetype.name.toLowerCase(Locale.ROOT)
             val imageFile = File("${directory.absolutePath}/" + fileName + ".$fileExtension")
@@ -169,7 +170,7 @@ class PocketRepository @Inject constructor(
 
     override suspend fun insertUrl(savedUrlItem: SavedUrlItem) {
         dao.insertUrl(savedUrlItem.toUrlEntity())
-        if (mRecentThumbnailDeleteJob?.isActive == true) {
+        if (recentThumbnailDeleteJob?.isActive == true) {
             /*
             If it is active it means this function was called as
             a result of the user clicking the 'undo' button
@@ -177,7 +178,7 @@ class PocketRepository @Inject constructor(
              */
 
             //Cancelling the job , so it doesn't delete the thumbnail
-            mRecentThumbnailDeleteJob?.cancel()
+            recentThumbnailDeleteJob?.cancel()
         }
     }
 }
