@@ -30,6 +30,7 @@ interface Repository {
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
     suspend fun undoDelete(savedUrlItem: SavedUrlItem)
+    suspend fun getUrlItemsMarkedAsDeleted(): List<SavedUrlItem>
 }
 
 class PocketRepository @Inject constructor(
@@ -149,5 +150,9 @@ class PocketRepository @Inject constructor(
     override suspend fun undoDelete(savedUrlItem: SavedUrlItem) {
         dao.markUrlAsNotDeleted(savedUrlItem.toUrlEntity().id)
     }
+
+    override suspend fun getUrlItemsMarkedAsDeleted(): List<SavedUrlItem> =
+        dao.getAllUrlsMarkedAsDeleted().map { it.toSavedUrlItem() }
+
 }
 
