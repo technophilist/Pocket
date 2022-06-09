@@ -25,6 +25,7 @@ data class UrlEntity(
     val contentTitle: String,
     val imageAbsolutePath: String?, //thumbnail
     val faviconAbsolutePath: String? = null,
+    val isDeleted: Boolean = false,
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0
 ) {
