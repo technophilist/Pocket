@@ -26,6 +26,7 @@ import javax.inject.Inject
 interface Repository {
     val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
+
     // TODO (Improve Api) - function calls having close to same meaning -> saveUrl,insertUrl
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
@@ -103,34 +104,15 @@ class PocketRepository @Inject constructor(
 
     /**
      * Used for deleting the url from the database.
-     * Even though the url entity will be deleted immediately, the thumbnail
-     * of the url will remain in the devices' internal storage for
-     * [longSnackbarDuration] seconds before getting deleted.
+     * Note: This method removes only the [savedUrlItem] from the
+     * database. It **does not**  remove the associated favicon
+     * and thumbnails stored in the device's internal storage.
      * @param savedUrlItem the url item to be deleted
      * @return the deleted url item
      */
     override suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem {
         val urlItem = savedUrlItem.toUrlEntity()
-        /*
-         * Jetpack compose doesn't support item delete animations for lazy lists.So it
-         * becomes necessary to delete the item from the database and re-insert it if the
-         * user clicks on the undo action of the snackBar.
-         */
-        dao.deleteUrl(urlItem.id)
-        /*
-         If mRecentThumbnailDeleteJob is not null and a new
-         Job is assigned to it, it means that the undo delete
-         snack bar for that particular url was dismissed.Which
-         means that it is safe to delete the thumbnail and favicon
-         images associated with that url from the device storage.
-         */
-        recentThumbnailDeleteJob = coroutineScope {
-            launch {
-                delay(longSnackbarDuration)
-                urlItem.imageAbsolutePath?.let { File(it).delete() }
-                urlItem.faviconAbsolutePath?.let { File(it).delete() }
-            }
-        }
+        dao.markUrlAsDeleted(urlItem.id)
         return savedUrlItem
     }
 
