@@ -57,7 +57,7 @@ class HomeScreenViewModelImpl @Inject constructor(
     override val savedUrlItems: LiveData<List<SavedUrlItem>> = repository.savedUrlItems
 
     override fun undoDelete() {
-        recentlyDeletedUrlItem?.let { viewModelScope.launch { repository.insertUrl(it) } }
+        recentlyDeletedUrlItem?.let { viewModelScope.launch { repository.undoDelete(it) } }
     }
 
     override fun onSearchTextValueChange(searchText: String) {

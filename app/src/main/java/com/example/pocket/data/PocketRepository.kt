@@ -26,12 +26,10 @@ import javax.inject.Inject
 interface Repository {
     val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
-
-    // TODO (Improve Api) - function calls having close to same meaning -> saveUrl,insertUrl
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
-    suspend fun insertUrl(savedUrlItem: SavedUrlItem)
+    suspend fun undoDelete(savedUrlItem: SavedUrlItem)
 }
 
 class PocketRepository @Inject constructor(
@@ -42,9 +40,7 @@ class PocketRepository @Inject constructor(
     @ApplicationContext context: Context
 ) : Repository {
     private val filesDirectory = context.filesDir
-    private val longSnackbarDuration = 10_000L
     private val userPreferencesFlow = preferencesManager.userPreferences
-    private var recentThumbnailDeleteJob: Job? = null
     override val savedUrlItems = dao.getAllUrls().map { urlEntityList ->
         urlEntityList.map { it.toSavedUrlItem() }
     }
@@ -150,18 +146,8 @@ class PocketRepository @Inject constructor(
         }.getOrNull()
     }
 
-    override suspend fun insertUrl(savedUrlItem: SavedUrlItem) {
-        dao.insertUrl(savedUrlItem.toUrlEntity())
-        if (recentThumbnailDeleteJob?.isActive == true) {
-            /*
-            If it is active it means this function was called as
-            a result of the user clicking the 'undo' button
-            of the snack bar.
-             */
-
-            //Cancelling the job , so it doesn't delete the thumbnail
-            recentThumbnailDeleteJob?.cancel()
-        }
+    override suspend fun undoDelete(savedUrlItem: SavedUrlItem) {
+        dao.markUrlAsNotDeleted(savedUrlItem.toUrlEntity().id)
     }
 }
 
