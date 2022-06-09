@@ -2,14 +2,13 @@ package com.example.pocket.data.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Update
-
 
 @Dao
 interface Dao {
-    @Query("Select * from SavedUrlItems where isDeleted = 0")
+    @Query("select * from SavedUrlItems where isDeleted = 0")
     fun getAllUrls(): LiveData<List<UrlEntity>>
 
     @Query("select * from SavedUrlItems where isDeleted = 1")
@@ -17,6 +16,9 @@ interface Dao {
 
     @Insert
     suspend fun insertUrl(item: UrlEntity)
+
+    @Delete
+    suspend fun deleteUrl(item: UrlEntity)
 
     @Query("select exists(select url from SavedUrlItems where url =:urlString )")
     suspend fun checkIfUrlExists(urlString: String): Int
