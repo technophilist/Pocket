@@ -12,8 +12,8 @@ interface Dao {
     @Query("Select * from SavedUrlItems where isDeleted = 0")
     fun getAllUrls(): LiveData<List<UrlEntity>>
 
-    @Query("Delete from SavedUrlItems where id =:id")
-    suspend fun deleteUrl(id: Int)
+    @Query("select * from SavedUrlItems where isDeleted = 1")
+    suspend fun getAllUrlsMarkedAsDeleted(): List<UrlEntity>
 
     @Insert
     suspend fun insertUrl(item: UrlEntity)
