@@ -148,13 +148,26 @@ class PocketRepository @Inject constructor(
         }.getOrNull()
     }
 
+    /**
+     * Used to undo the deletion of the [savedUrlItem].
+     */
     override suspend fun undoDelete(savedUrlItem: SavedUrlItem) {
         dao.markUrlAsNotDeleted(savedUrlItem.toUrlEntity().id)
     }
 
+    /**
+     * Used to get a list of all [SavedUrlItem]'s marked as 'deleted'
+     * in the database.
+     */
     override suspend fun getUrlItemsMarkedAsDeleted(): List<SavedUrlItem> =
         dao.getAllUrlsMarkedAsDeleted().map { it.toSavedUrlItem() }
 
+    /**
+     * Used to permanently delete the specified [savedUrlItem].
+     * It not only deletes the item from the database, but, also
+     * deletes the thumbnail and favicon images stored in the device's
+     * internal storage.
+     */
     override suspend fun permanentlyDeleteSavedUrlItem(savedUrlItem: SavedUrlItem) {
         with(savedUrlItem.toUrlEntity()) {
             imageAbsolutePath?.let { File(it).delete() }
