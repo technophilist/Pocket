@@ -11,7 +11,7 @@ import kotlinx.coroutines.CancellationException
 
 // TODO add docs
 @HiltWorker
-class DeleteUrlItemsWorker @AssistedInject constructor(
+class CleanUpDeletedItemsWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val repository: Repository
