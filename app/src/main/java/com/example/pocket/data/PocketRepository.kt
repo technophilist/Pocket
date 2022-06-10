@@ -29,6 +29,7 @@ interface Repository {
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
+    suspend fun permanentlyDeleteSavedUrlItem(savedUrlItem: SavedUrlItem)
     suspend fun undoDelete(savedUrlItem: SavedUrlItem)
     suspend fun getUrlItemsMarkedAsDeleted(): List<SavedUrlItem>
 }
@@ -154,5 +155,12 @@ class PocketRepository @Inject constructor(
     override suspend fun getUrlItemsMarkedAsDeleted(): List<SavedUrlItem> =
         dao.getAllUrlsMarkedAsDeleted().map { it.toSavedUrlItem() }
 
+    override suspend fun permanentlyDeleteSavedUrlItem(savedUrlItem: SavedUrlItem) {
+        with(savedUrlItem.toUrlEntity()) {
+            imageAbsolutePath?.let { File(it).delete() }
+            faviconAbsolutePath?.let { File(it).delete() }
+            dao.deleteUrl(this)
+        }
+    }
 }
 
