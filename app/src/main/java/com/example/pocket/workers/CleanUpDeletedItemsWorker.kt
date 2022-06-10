@@ -9,7 +9,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CancellationException
 
-// TODO add docs
+/**
+ * This worker is responsible for deleting all the items marked
+ * as 'deleted' in the database.
+ */
 @HiltWorker
 class CleanUpDeletedItemsWorker @AssistedInject constructor(
     @Assisted context: Context,
