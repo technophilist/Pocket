@@ -3,6 +3,8 @@ package com.example.pocket.viewmodels
 import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,7 +28,7 @@ interface HomeScreenViewModel {
     fun undoDelete()
     fun onSearchTextValueChange(searchText: String)
     fun deleteAllUrlItems()
-    suspend fun getBitmap(imageAbsolutePathString: String): Bitmap
+    suspend fun getImageBitmap(imageAbsolutePathString: String): ImageBitmap
 }
 
 @HiltViewModel
@@ -80,13 +82,13 @@ class HomeScreenViewModelImpl @Inject constructor(
         }
     }
 
-    override suspend fun getBitmap(imageAbsolutePathString: String): Bitmap =
-    // I don't think this method belongs here
+    override suspend fun getImageBitmap(imageAbsolutePathString: String): ImageBitmap =
         // TODO hardcoded dispatcher
         withContext(Dispatchers.IO) {
             File(imageAbsolutePathString)
                 .inputStream()
                 .use { BitmapFactory.decodeStream(it) }
+                .asImageBitmap()
         }
 }
 

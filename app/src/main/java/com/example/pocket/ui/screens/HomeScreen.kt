@@ -184,9 +184,7 @@ fun HomeScreen(
             }
             UrlList(
                 modifier = Modifier.fillMaxSize(),
-                fetchImageBitmap = { urlString ->
-                    homeScreenViewModel.getBitmap(urlString).asImageBitmap()
-                },
+                fetchImageBitmap = homeScreenViewModel::getImageBitmap,
                 urlItems = (if (searchText.isBlank()) savedUrlItems else filteredUrlItems)
                     ?: listOf(),
                 onClickItem = onClickUrlItem,
