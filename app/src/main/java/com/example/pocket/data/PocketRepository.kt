@@ -26,11 +26,12 @@ import javax.inject.Inject
 interface Repository {
     val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
-    // TODO (Improve Api) - function calls having close to same meaning -> saveUrl,insertUrl
     suspend fun saveUrl(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
-    suspend fun insertUrl(savedUrlItem: SavedUrlItem)
+    suspend fun permanentlyDeleteSavedUrlItem(savedUrlItem: SavedUrlItem)
+    suspend fun undoDelete(savedUrlItem: SavedUrlItem)
+    suspend fun getUrlItemsMarkedAsDeleted(): List<SavedUrlItem>
 }
 
 class PocketRepository @Inject constructor(
@@ -41,9 +42,7 @@ class PocketRepository @Inject constructor(
     @ApplicationContext context: Context
 ) : Repository {
     private val filesDirectory = context.filesDir
-    private val longSnackbarDuration = 10_000L
     private val userPreferencesFlow = preferencesManager.userPreferences
-    private var recentThumbnailDeleteJob: Job? = null
     override val savedUrlItems = dao.getAllUrls().map { urlEntityList ->
         urlEntityList.map { it.toSavedUrlItem() }
     }
@@ -103,34 +102,15 @@ class PocketRepository @Inject constructor(
 
     /**
      * Used for deleting the url from the database.
-     * Even though the url entity will be deleted immediately, the thumbnail
-     * of the url will remain in the devices' internal storage for
-     * [longSnackbarDuration] seconds before getting deleted.
+     * Note: This method removes only the [savedUrlItem] from the
+     * database. It **does not**  remove the associated favicon
+     * and thumbnails stored in the device's internal storage.
      * @param savedUrlItem the url item to be deleted
      * @return the deleted url item
      */
     override suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem {
         val urlItem = savedUrlItem.toUrlEntity()
-        /*
-         * Jetpack compose doesn't support item delete animations for lazy lists.So it
-         * becomes necessary to delete the item from the database and re-insert it if the
-         * user clicks on the undo action of the snackBar.
-         */
-        dao.deleteUrl(urlItem.id)
-        /*
-         If mRecentThumbnailDeleteJob is not null and a new
-         Job is assigned to it, it means that the undo delete
-         snack bar for that particular url was dismissed.Which
-         means that it is safe to delete the thumbnail and favicon
-         images associated with that url from the device storage.
-         */
-        recentThumbnailDeleteJob = coroutineScope {
-            launch {
-                delay(longSnackbarDuration)
-                urlItem.imageAbsolutePath?.let { File(it).delete() }
-                urlItem.faviconAbsolutePath?.let { File(it).delete() }
-            }
-        }
+        dao.markUrlAsDeleted(urlItem.id)
         return savedUrlItem
     }
 
@@ -168,17 +148,31 @@ class PocketRepository @Inject constructor(
         }.getOrNull()
     }
 
-    override suspend fun insertUrl(savedUrlItem: SavedUrlItem) {
-        dao.insertUrl(savedUrlItem.toUrlEntity())
-        if (recentThumbnailDeleteJob?.isActive == true) {
-            /*
-            If it is active it means this function was called as
-            a result of the user clicking the 'undo' button
-            of the snack bar.
-             */
+    /**
+     * Used to undo the deletion of the [savedUrlItem].
+     */
+    override suspend fun undoDelete(savedUrlItem: SavedUrlItem) {
+        dao.markUrlAsNotDeleted(savedUrlItem.toUrlEntity().id)
+    }
 
-            //Cancelling the job , so it doesn't delete the thumbnail
-            recentThumbnailDeleteJob?.cancel()
+    /**
+     * Used to get a list of all [SavedUrlItem]'s marked as 'deleted'
+     * in the database.
+     */
+    override suspend fun getUrlItemsMarkedAsDeleted(): List<SavedUrlItem> =
+        dao.getAllUrlsMarkedAsDeleted().map { it.toSavedUrlItem() }
+
+    /**
+     * Used to permanently delete the specified [savedUrlItem].
+     * It not only deletes the item from the database, but, also
+     * deletes the thumbnail and favicon images stored in the device's
+     * internal storage.
+     */
+    override suspend fun permanentlyDeleteSavedUrlItem(savedUrlItem: SavedUrlItem) {
+        with(savedUrlItem.toUrlEntity()) {
+            imageAbsolutePath?.let { File(it).delete() }
+            faviconAbsolutePath?.let { File(it).delete() }
+            dao.deleteUrl(this)
         }
     }
 }
