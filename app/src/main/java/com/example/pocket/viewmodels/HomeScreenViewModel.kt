@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.pocket.data.Repository
 import com.example.pocket.data.domain.SavedUrlItem
 import com.example.pocket.di.DefaultCoroutineDispatcher
+import com.example.pocket.di.DispatchersProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,7 @@ interface HomeScreenViewModel {
 @HiltViewModel
 class HomeScreenViewModelImpl @Inject constructor(
     private val repository: Repository,
-    @DefaultCoroutineDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val dispatchersProvider: DispatchersProvider,
     application: Application
 ) : AndroidViewModel(application), HomeScreenViewModel {
     private var recentlyDeletedUrlItem: SavedUrlItem? = null
@@ -63,7 +64,7 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override fun onSearchTextValueChange(searchText: String) {
-        viewModelScope.launch(defaultDispatcher) {
+        viewModelScope.launch(dispatchersProvider.default) {
             savedUrlItems.value
                 ?.filter { it.title.contains(searchText, true) }
                 ?.let { filteredList -> _filteredUrlItems.value = filteredList }
@@ -83,8 +84,7 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override suspend fun getImageBitmap(imageAbsolutePathString: String): ImageBitmap =
-        // TODO hardcoded dispatcher
-        withContext(Dispatchers.IO) {
+        withContext(dispatchersProvider.io) {
             File(imageAbsolutePathString)
                 .inputStream()
                 .use { BitmapFactory.decodeStream(it) }
