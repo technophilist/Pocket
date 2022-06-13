@@ -18,6 +18,9 @@ annotation class IoCoroutineDispatcher
 @Qualifier
 annotation class MainCoroutineDispatcher
 
+@Qualifier
+annotation class UnconfinedCoroutineDispatcher
+
 @Module
 @InstallIn(SingletonComponent::class)
 object CoroutineDispatchersModule {
@@ -33,4 +36,8 @@ object CoroutineDispatchersModule {
     @Provides
     @MainCoroutineDispatcher
     fun provideMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
+
+    @Provides
+    @UnconfinedCoroutineDispatcher
+    fun provideUnconfinedDispatcher(): CoroutineDispatcher = Dispatchers.Unconfined
 }
