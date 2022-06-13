@@ -27,4 +27,9 @@ abstract class AppModule {
     abstract fun bindRepository(
         pocketRepository: PocketRepository
     ): Repository
+
+    @Binds
+    abstract fun bindDispatchersProvider(
+        standardDispatchersProvider: StandardDispatchersProvider
+    ): DispatchersProvider
 }
