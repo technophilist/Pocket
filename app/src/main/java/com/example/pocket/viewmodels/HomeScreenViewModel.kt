@@ -1,7 +1,6 @@
 package com.example.pocket.viewmodels
 
 import android.app.Application
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -11,11 +10,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.pocket.data.Repository
 import com.example.pocket.data.domain.SavedUrlItem
-import com.example.pocket.di.DefaultCoroutineDispatcher
 import com.example.pocket.di.DispatchersProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
