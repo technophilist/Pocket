@@ -7,6 +7,7 @@ import java.net.URL
  * A domain object equivalent to [UrlEntity].
  */
 data class SavedUrlItem(
+    val associatedUserId: String,
     val id: String,
     val url: URL,
     val title: String,
@@ -19,6 +20,7 @@ data class SavedUrlItem(
  * to an instance of [UrlEntity].
  */
 fun SavedUrlItem.toUrlEntity() = UrlEntity(
+    associatedUserId = associatedUserId,
     id = id.toInt(),
     url = url.toString(),
     contentTitle = title,
