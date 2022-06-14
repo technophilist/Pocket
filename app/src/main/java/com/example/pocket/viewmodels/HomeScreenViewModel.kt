@@ -46,7 +46,7 @@ class HomeScreenViewModelImpl @Inject constructor(
         viewModelScope.launch(dispatchersProvider.default) {
             savedUrlItems.value
                 ?.filter { it.title.contains(searchText, true) }
-                ?.let { filteredList -> _filteredUrlItems.value = filteredList }
+                ?.let { filteredList -> _filteredUrlItems.postValue(filteredList) }
         }
     }
 
