@@ -27,6 +27,7 @@ import javax.inject.Inject
 interface Repository {
     val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
+    fun getSavedUrlItemsForUser(user: PocketUser): LiveData<List<SavedUrlItem>>
     suspend fun saveUrlForUser(user: PocketUser, url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
@@ -177,5 +178,11 @@ class PocketRepository @Inject constructor(
             dao.deleteUrl(this)
         }
     }
+
+    override fun getSavedUrlItemsForUser(user: PocketUser): LiveData<List<SavedUrlItem>> =
+        dao.getAllUrlsForUserId(user.id)
+            .map { urlEntityList ->
+                urlEntityList.map { it.toSavedUrlItem() }
+            }
 }
 
