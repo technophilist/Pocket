@@ -7,7 +7,7 @@ which is available to download in the play store. To try out this app you need t
 ## Table of contents
 1. [Screenshots](#screenshots)
 2. [Tech Stack](#tech-stack)
-3. [Features](#features)
+3. [Some notable features](#some-notable-features)
 4. [Source code and architecture](#source-code-and-architecture)
 
 ## Screenshots
@@ -26,13 +26,13 @@ The top bar will display the option to change the theme if, and only if, the dev
 version doesn't support dark mode.If it supports dark mode, then the theme of the app will match the
 current system theme.
 
-#### Dark Mode
+#### Dark mode
 <img src = "screenshots/api26_topbar_dark_mode.png" width="538" height="119" alt = "">
 
-#### Light Mode
+#### Light mode
 <img src = "screenshots/api26_topbar_light_mode.png" width="538" height="119" alt = "">
 
-## Tech Stack
+## Tech stack
 - Entirely written in [Kotlin](https://kotlinlang.org/).
 - [Hilt](https://www.google.com/url?client=internal-element-cse&cx=000521750095050289010:zpcpi1ea4s8&q=https://developer.android.com/training/dependency-injection/hilt-android&sa=U&ved=2ahUKEwiW5omeu6z4AhWRR2wGHVUsCo0QFnoECAMQAQ&usg=AOvVaw3dCbP79C6od3KVCnJub3v0) for dependency injection.
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) for building the UI.
