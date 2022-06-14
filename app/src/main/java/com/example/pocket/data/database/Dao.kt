@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.pocket.auth.PocketUser
 
 @Dao
 interface Dao {
@@ -13,6 +14,9 @@ interface Dao {
 
     @Query("select * from SavedUrlItems where isDeleted = 1")
     suspend fun getAllUrlsMarkedAsDeleted(): List<UrlEntity>
+
+    @Query("select * from SavedUrlItems where isDeleted = 0 and associatedUserId = :userId")
+    fun getAllUrlsForUserId(userId: String):LiveData<List<UrlEntity>>
 
     @Insert
     suspend fun insertUrl(item: UrlEntity)
