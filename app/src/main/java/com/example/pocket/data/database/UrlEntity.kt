@@ -55,6 +55,7 @@ data class UrlEntity(
  * [SavedUrlItem].
  */
 fun UrlEntity.toSavedUrlItem() = SavedUrlItem(
+    associatedUserId = associatedUserId,
     id = id.toString(),
     url = URL(url),
     title = contentTitle,
