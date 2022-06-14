@@ -66,7 +66,6 @@ current system theme.
   architecture is used.
 - Source code conforms to
   the [Kotlin coding conventions](https://kotlinlang.org/docs/coding-conventions.html).
-- Dependency injection is done manually.
 - [Material design color system](https://material.io/design/color/the-color-system.html#color-usage-and-palettes)
   specification is used for assigning colors to the UI components.
 - Commit messages follow
