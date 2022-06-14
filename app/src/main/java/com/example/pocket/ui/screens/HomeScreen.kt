@@ -81,7 +81,6 @@ fun HomeScreen(
         val confirmButton = @Composable {
             TextButton(
                 onClick = {
-                    homeScreenViewModel.deleteAllUrlItems()
                     onSignOutButtonClick()
                     isDropDownMenuExpanded = false
                     isAlertDialogVisible = false

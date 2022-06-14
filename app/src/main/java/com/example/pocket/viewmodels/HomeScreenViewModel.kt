@@ -22,7 +22,6 @@ interface HomeScreenViewModel {
     fun deleteUrlItem(urlItem: SavedUrlItem)
     fun undoDelete()
     fun onSearchTextValueChange(searchText: String)
-    fun deleteAllUrlItems()
     suspend fun getImageBitmap(imageAbsolutePathString: String): ImageBitmap
 }
 
@@ -49,11 +48,6 @@ class HomeScreenViewModelImpl @Inject constructor(
                 ?.filter { it.title.contains(searchText, true) }
                 ?.let { filteredList -> _filteredUrlItems.value = filteredList }
         }
-    }
-
-    override fun deleteAllUrlItems() {
-        // TODO remove
-//        savedUrlItems.value?.forEach(::deleteUrlItem)
     }
 
     override fun deleteUrlItem(urlItem: SavedUrlItem) {
