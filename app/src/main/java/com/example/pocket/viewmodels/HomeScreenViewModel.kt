@@ -41,22 +41,6 @@ class HomeScreenViewModelImpl @Inject constructor(
     private var recentlyDeletedUrlItem: SavedUrlItem? = null
     private val _filteredUrlItems = MutableLiveData<List<SavedUrlItem>>(listOf())
     override val filteredUrlItems = _filteredUrlItems as LiveData<List<SavedUrlItem>>
-    //TODO Check this
-    /**
-     * Converting the livedata to flow, and, back to a live data.
-     * This forces the live data to refresh.
-     *
-     * The repository instance will remain as long as the app is alive.
-     * When the user logs out and [deleteAllUrlItems] is called before
-     * navigating to the welcome screen from the home screen, the value
-     * of the live data inside the repository will not update to contain
-     * an empty list since the observer that used to observe the live data
-     * via this viewmodel no longer exists as this viewmodel will be
-     * destroyed on navigation. With no observers observing, the live data
-     * within the repository contains the previous list which doesn't
-     * exist in the database.In order to prevent this, a force refresh is
-     * needed.
-     */
     override val savedUrlItems: LiveData<List<SavedUrlItem>> = repository.savedUrlItems
 
     override fun undoDelete() {
