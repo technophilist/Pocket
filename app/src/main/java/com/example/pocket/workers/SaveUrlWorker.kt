@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.pocket.auth.AuthenticationService
 import com.example.pocket.data.Repository
 import com.example.pocket.di.IoCoroutineDispatcher
 import com.example.pocket.ui.activities.HandleUrlActivity
@@ -22,14 +23,16 @@ class SaveUrlWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
     @IoCoroutineDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val authenticationService: AuthenticationService,
     private val repository: Repository
 ) : CoroutineWorker(context, workerParameters) {
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun doWork() = withContext(defaultDispatcher) {
+        if (authenticationService.currentUser == null) return@withContext Result.failure()
         runCatching {
             val urlString = inputData.getString(HandleUrlActivity.EXTRA_URL)!!
             val url = URL(urlString)
-            repository.saveUrlForUser(url)
+            repository.saveUrlForUser(authenticationService.currentUser!!, url)
             Result.success()
         }.getOrElse { Result.failure() }
     }

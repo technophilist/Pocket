@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
+import com.example.pocket.auth.PocketUser
 import com.example.pocket.data.database.Dao
 import com.example.pocket.data.database.UrlEntity
 import com.example.pocket.data.database.toSavedUrlItem
@@ -26,7 +27,7 @@ import javax.inject.Inject
 interface Repository {
     val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
-    suspend fun saveUrlForUser(url: URL)
+    suspend fun saveUrlForUser(user: PocketUser, url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
     suspend fun permanentlyDeleteSavedUrlItem(savedUrlItem: SavedUrlItem)
@@ -55,7 +56,7 @@ class PocketRepository @Inject constructor(
      * will be stored in the database.Whereas,the thumbnail image and the favicon
      * image will be stored in the internal storage of the device.
      */
-    override suspend fun saveUrlForUser(url: URL) {
+    override suspend fun saveUrlForUser(user: PocketUser, url: URL) {
         if (urlExists(url)) return
         // if there is not content title, use the url as the content title.
         val urlContentTitle = network.fetchWebsiteContentTitle(url) ?: url.toString()
@@ -81,6 +82,7 @@ class PocketRepository @Inject constructor(
             )
         }
         val urlEntity = UrlEntity(
+            associatedUserId = user.id,
             url = url.toString(),
             contentTitle = urlContentTitle,
             imageAbsolutePath = imageAbsolutePath,
