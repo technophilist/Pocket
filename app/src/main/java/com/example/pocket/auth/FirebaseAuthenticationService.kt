@@ -13,7 +13,7 @@ class FirebaseAuthenticationService @Inject constructor() : AuthenticationServic
 
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     override val isLoggedIn: Boolean get() = mAuth.currentUser != null
-
+    override val currentUser: PocketUser? = mAuth.currentUser?.toPocketUser()
     private fun FirebaseUser.toPocketUser() = PocketUser(uid, displayName, email, photoUrl)
 
     /**

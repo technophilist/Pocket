@@ -3,6 +3,7 @@ package com.example.pocket.auth
 import android.net.Uri
 
 interface AuthenticationService {
+    val currentUser:PocketUser?
     val isLoggedIn: Boolean
     suspend fun signIn(email: String, password: String): AuthenticationResult
     suspend fun createAccount(
