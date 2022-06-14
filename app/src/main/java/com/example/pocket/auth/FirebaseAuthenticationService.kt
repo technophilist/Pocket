@@ -14,7 +14,7 @@ class FirebaseAuthenticationService @Inject constructor() : AuthenticationServic
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     override val isLoggedIn: Boolean get() = mAuth.currentUser != null
 
-    private fun FirebaseUser.toPocketUser() = PocketUser(displayName, email, photoUrl)
+    private fun FirebaseUser.toPocketUser() = PocketUser(uid, displayName, email, photoUrl)
 
     /**
      * This method is used for signing-in a registered user with the provided [email] and [password].
