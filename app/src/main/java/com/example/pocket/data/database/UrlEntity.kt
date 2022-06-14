@@ -21,6 +21,7 @@ import java.net.URL
  */
 @Entity(tableName = "SavedUrlItems")
 data class UrlEntity(
+    val associatedUserId: String,
     val url: String,
     val contentTitle: String,
     val imageAbsolutePath: String?, //thumbnail
