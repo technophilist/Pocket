@@ -9,9 +9,6 @@ import com.example.pocket.auth.PocketUser
 
 @Dao
 interface Dao {
-    @Query("select * from SavedUrlItems where isDeleted = 0")
-    fun getAllUrls(): LiveData<List<UrlEntity>>
-
     @Query("select * from SavedUrlItems where isDeleted = 1")
     suspend fun getAllUrlsMarkedAsDeleted(): List<UrlEntity>
 
