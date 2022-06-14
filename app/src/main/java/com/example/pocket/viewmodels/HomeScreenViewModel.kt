@@ -4,10 +4,8 @@ import android.app.Application
 import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.example.pocket.auth.AuthenticationService
 import com.example.pocket.data.Repository
 import com.example.pocket.data.domain.SavedUrlItem
 import com.example.pocket.di.DispatchersProvider
@@ -32,12 +30,14 @@ interface HomeScreenViewModel {
 class HomeScreenViewModelImpl @Inject constructor(
     private val repository: Repository,
     private val dispatchersProvider: DispatchersProvider,
+    authenticationService: AuthenticationService,
     application: Application
 ) : AndroidViewModel(application), HomeScreenViewModel {
     private var recentlyDeletedUrlItem: SavedUrlItem? = null
     private val _filteredUrlItems = MutableLiveData<List<SavedUrlItem>>(listOf())
     override val filteredUrlItems = _filteredUrlItems as LiveData<List<SavedUrlItem>>
-    override val savedUrlItems: LiveData<List<SavedUrlItem>> = repository.savedUrlItems
+    override val savedUrlItems: LiveData<List<SavedUrlItem>> =
+        repository.getSavedUrlItemsForUser(authenticationService.currentUser!!)
 
     override fun undoDelete() {
         recentlyDeletedUrlItem?.let { viewModelScope.launch { repository.undoDelete(it) } }
@@ -52,7 +52,8 @@ class HomeScreenViewModelImpl @Inject constructor(
     }
 
     override fun deleteAllUrlItems() {
-        savedUrlItems.value?.forEach(::deleteUrlItem)
+        // TODO remove
+//        savedUrlItems.value?.forEach(::deleteUrlItem)
     }
 
     override fun deleteUrlItem(urlItem: SavedUrlItem) {
