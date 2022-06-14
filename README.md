@@ -35,7 +35,7 @@ current system theme.
 
 ## Tech Stack
 - Entirely written in [Kotlin](https://kotlinlang.org/).
-- Manual dependency injection.
+- [Hilt](https://www.google.com/url?client=internal-element-cse&cx=000521750095050289010:zpcpi1ea4s8&q=https://developer.android.com/training/dependency-injection/hilt-android&sa=U&ved=2ahUKEwiW5omeu6z4AhWRR2wGHVUsCo0QFnoECAMQAQ&usg=AOvVaw3dCbP79C6od3KVCnJub3v0) for dependency injection.
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) for building the UI.
 - [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines/coroutines-guide.html) for
   threading.
@@ -48,8 +48,9 @@ current system theme.
 - [Work Manager](https://developer.android.com/topic/libraries/architecture/workmanager?gclid=EAIaIQobChMIwJy33ufG8QIVGcEWBR31Mwa-EAAYASAAEgIF3vD_BwE&gclsrc=aw.ds)
   for background tasks.
 - [Firebase Authentication](https://firebase.google.com/docs/auth) for user account creation and authentication.
+- [Accompanist](https://google.github.io/accompanist/) for navigation animations,pager and pager indicators.
 
-## Features
+## Some notable features
 - Save URL's from any web browser using the share menu.
 - Dark and light mode support.
 - The app's theme matches the current system theme for all devices above API level 29 (Android 10).
