@@ -25,7 +25,6 @@ import java.util.*
 import javax.inject.Inject
 
 interface Repository {
-    val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
     fun getSavedUrlItemsForUser(user: PocketUser): LiveData<List<SavedUrlItem>>
     suspend fun saveUrlForUser(user: PocketUser, url: URL)
@@ -45,9 +44,6 @@ class PocketRepository @Inject constructor(
 ) : Repository {
     private val filesDirectory = context.filesDir
     private val userPreferencesFlow = preferencesManager.userPreferences
-    override val savedUrlItems = dao.getAllUrls().map { urlEntityList ->
-        urlEntityList.map { it.toSavedUrlItem() }
-    }
     override val appTheme = userPreferencesFlow.asLiveData().map { it.appTheme }
 
     /**
