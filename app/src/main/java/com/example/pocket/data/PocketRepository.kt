@@ -26,7 +26,7 @@ import javax.inject.Inject
 interface Repository {
     val savedUrlItems: LiveData<List<SavedUrlItem>>
     val appTheme: LiveData<PocketPreferences.AppTheme>
-    suspend fun saveUrl(url: URL)
+    suspend fun saveUrlForUser(url: URL)
     suspend fun updateThemePreference(appTheme: PocketPreferences.AppTheme)
     suspend fun deleteSavedUrlItem(savedUrlItem: SavedUrlItem): SavedUrlItem
     suspend fun permanentlyDeleteSavedUrlItem(savedUrlItem: SavedUrlItem)
@@ -55,7 +55,7 @@ class PocketRepository @Inject constructor(
      * will be stored in the database.Whereas,the thumbnail image and the favicon
      * image will be stored in the internal storage of the device.
      */
-    override suspend fun saveUrl(url: URL) {
+    override suspend fun saveUrlForUser(url: URL) {
         if (urlExists(url)) return
         // if there is not content title, use the url as the content title.
         val urlContentTitle = network.fetchWebsiteContentTitle(url) ?: url.toString()
