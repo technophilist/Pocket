@@ -5,10 +5,14 @@ This app mimics the functionality of the popular [Pocket](https://play.google.co
 which is available to download in the play store. To try out this app you need to use the latest version of [Android Studio Arctic Fox](https://developer.android.com/studio/preview). The main aim of this app was to test the applicability of compose in small sized apps. There is no intention of releasing this app to the play store. The app has reached a 'stable' and 'usable' state. But, testing the app was not the main focus. Hence, bugs are bound to exist.
 
 ## Table of contents
-1. [Screenshots](#screenshots)
-2. [Tech Stack](#tech-stack)
-3. [Some notable features](#some-notable-features)
-4. [Source code and architecture](#source-code-and-architecture)
+1. [Demo](#demo)
+2. [Screenshots](#screenshots)
+3. [Tech Stack](#tech-stack)
+4. [Some notable features](#some-notable-features)
+5. [Source code and architecture](#source-code-and-architecture)
+
+## Demo
+https://user-images.githubusercontent.com/54663474/183364434-455040a6-8662-4db8-bc10-579dff9001fa.mp4
 
 ## Screenshots
 
