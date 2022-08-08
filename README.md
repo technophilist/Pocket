@@ -61,7 +61,6 @@ current system theme.
 - The user's theme preference will be saved, and it will be applied everytime the app is re-opened (
   API level < 29).
 - 'Loading' and 'refreshing' banners in the home screeen to notify the user that the list is in the process of being updated.
-- Items will be shown based on the currenlty logged in user. Items saved by other user's will not be visible.
 
 ## Source code and architecture
 - [Architecture components](https://developer.android.com/topic/libraries/architecture/) such as
