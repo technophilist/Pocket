@@ -2,7 +2,7 @@
 [![Project Status: Inactive – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
 
 This app mimics the functionality of the popular [Pocket](https://play.google.com/store/apps/details?id=com.ideashower.readitlater.pro&hl=en_IN&gl=US) app
-which is available to download in the play store. To try out this app you need to use the latest version of [Android Studio Arctic Fox](https://developer.android.com/studio/preview). The main aim of this app was to test the applicability of compose in small sized apps. There is no intention of releasing this app to the play store. The app has reached a 'stable' and 'usable' state. But, testing the app was not the main focus. Hence, bugs are bound to exist.
+which is available to download in the play store. To try out this app you need to use the latest version of [Android Studio Arctic Fox](https://developer.android.com/studio/preview). The main aim of this app was to test the applicability of compose in a small sized offline app. There is no intention of releasing this app to the play store. Also note that, eventhough firebase authentication is used, the saved items for each user are not stored in the cloud. The app has reached a 'stable' and 'usable' state. But, testing the app was not the main focus. Hence, bugs are bound to exist.
 
 ## Table of contents
 1. [Demo](#demo)
