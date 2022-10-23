@@ -67,6 +67,7 @@ fun PocketAppTheme(
     }
     androidx.compose.material3.MaterialTheme(
         colorScheme = colorScheme,
+        typography = M3Typography,
         content = content
     )
 }
