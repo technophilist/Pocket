@@ -3,7 +3,7 @@ package com.example.pocket.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -29,6 +29,7 @@ import com.example.pocket.ui.components.CircularLoadingProgressOverlay
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.SignUpViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalComposeUiApi
 @Composable
 fun SignUpScreen(
@@ -136,7 +137,7 @@ fun SignUpScreen(
                 modifier = Modifier
                     .paddingFromBaseline(top = 184.dp),
                 text = stringResource(id = R.string.label_signup_for_new_account),
-                style = MaterialTheme.typography.h1
+                style = MaterialTheme.typography.displayLarge
             )
 
             Spacer(modifier = Modifier.padding(16.dp))
@@ -150,7 +151,7 @@ fun SignUpScreen(
                     value = firstNameText,
                     onValueChange = { firstNameText = it },
                     placeholder = { Text(text = stringResource(id = R.string.placeholder_first_name)) },
-                    textStyle = MaterialTheme.typography.body1,
+                    textStyle = MaterialTheme.typography.bodyLarge,
                     singleLine = true,
                     keyboardActions = keyboardActions
                 )
@@ -162,7 +163,7 @@ fun SignUpScreen(
                     value = lastNameText,
                     onValueChange = { lastNameText = it },
                     placeholder = { Text(text = stringResource(id = R.string.placeholder_last_name)) },
-                    textStyle = MaterialTheme.typography.body1,
+                    textStyle = MaterialTheme.typography.bodyLarge,
                     singleLine = true,
                     keyboardActions = keyboardActions
                 )
@@ -189,7 +190,7 @@ fun SignUpScreen(
                     emailAddressText = it
                 },
                 placeholder = { Text(text = stringResource(id = R.string.placeholder_email_address)) },
-                textStyle = MaterialTheme.typography.body1,
+                textStyle = MaterialTheme.typography.bodyLarge,
                 singleLine = true,
                 keyboardActions = keyboardActions,
                 isError = isErrorMessageVisible
@@ -215,7 +216,7 @@ fun SignUpScreen(
                     passwordText = it
                 },
                 placeholder = { Text(text = stringResource(id = R.string.placeholder_password)) },
-                textStyle = MaterialTheme.typography.body1,
+                textStyle = MaterialTheme.typography.bodyLarge,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     Icon(
@@ -233,7 +234,7 @@ fun SignUpScreen(
             if (isErrorMessageVisible) {
                 Text(
                     text = errorMessage,
-                    color = MaterialTheme.colors.error
+                    color = MaterialTheme.colorScheme.error
                 )
             }
 
@@ -242,7 +243,7 @@ fun SignUpScreen(
                     .fillMaxWidth()
                     .paddingFromBaseline(top = 24.dp),
                 text = stringResource(id = R.string.label_terms_and_conditions),
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.padding(16.dp))
