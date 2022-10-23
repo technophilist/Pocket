@@ -5,7 +5,7 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'dagger.hilt.android.plugin'
 
 android {
-    compileSdkVersion = 31
+    compileSdkVersion = 33
     buildToolsVersion = "30.0.3"
 
     packagingOptions {
