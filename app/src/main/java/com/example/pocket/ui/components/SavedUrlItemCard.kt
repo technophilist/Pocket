@@ -4,9 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,15 +31,15 @@ fun SavedUrlItemCard(
                 //if the image path is null,display the host with primary background
                 Box(
                     modifier = Modifier
-                        .background(MaterialTheme.colors.primary)
+                        .background(MaterialTheme.colorScheme.primary)
                         .fillMaxWidth()
                         .weight(3f),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = savedUrlItem.url.host,
-                        style = MaterialTheme.typography.h3,
-                        color = MaterialTheme.colors.onPrimary,
+                        style = MaterialTheme.typography.displaySmall,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -62,7 +62,7 @@ fun SavedUrlItemCard(
                     .padding(8.dp)
                     .weight(0.5f),
                 text = savedUrlItem.title,
-                style = MaterialTheme.typography.h1,
+                style = MaterialTheme.typography.displayLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -102,7 +102,7 @@ private fun UrlCardFooter(
         Text(
             modifier = Modifier.padding(start = 8.dp),
             text = hostName,
-            style = MaterialTheme.typography.caption
+            style = MaterialTheme.typography.bodySmall
         )
     }
 }
