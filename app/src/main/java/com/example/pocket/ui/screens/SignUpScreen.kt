@@ -120,6 +120,7 @@ fun SignUpScreen(
                 }
                 isErrorMessageVisible = true
             }
+            else -> {}
         }
 
         onDispose { isErrorMessageVisible = false }

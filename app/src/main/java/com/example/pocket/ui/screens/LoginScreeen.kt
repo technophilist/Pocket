@@ -95,6 +95,7 @@ fun LoginScreen(
                 isCredentialsValid = false
                 isErrorMessageVisible = true
             }
+            else -> {}
         }
         onDispose {}
     }
