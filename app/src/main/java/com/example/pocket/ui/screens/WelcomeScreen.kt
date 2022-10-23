@@ -4,9 +4,9 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,7 +66,7 @@ fun WelcomeScreen(navController: NavController) {
             text = "${stringResource(id = R.string.label_welcome_to)} ${stringResource(id = R.string.app_name)}",
             fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.h1,
+            style = MaterialTheme.typography.displayLarge,
         )
 
         VectorArtCarousel(
@@ -90,7 +90,7 @@ fun WelcomeScreen(navController: NavController) {
                 .clickable { navController.navigate(PocketNavigationDestinations.LOGIN_SCREEN) },
             text = stringResource(id = R.string.text_login),
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colors.primary
+            color = MaterialTheme.colorScheme.primary
         )
 
     }
