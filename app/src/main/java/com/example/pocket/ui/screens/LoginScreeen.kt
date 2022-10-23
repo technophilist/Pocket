@@ -3,7 +3,7 @@ package com.example.pocket.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -27,6 +27,7 @@ import com.example.pocket.auth.AuthenticationResult
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.LoginViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalComposeUiApi
 @Composable
 fun LoginScreen(
@@ -109,7 +110,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .paddingFromBaseline(top = 184.dp),
                 text = stringResource(id = R.string.label_login_with_email),
-                style = MaterialTheme.typography.h1
+                style = MaterialTheme.typography.displayLarge
             )
 
             Spacer(modifier = Modifier.padding(16.dp))
@@ -133,7 +134,7 @@ fun LoginScreen(
 
                 },
                 placeholder = { Text(text = stringResource(id = R.string.placeholder_email_address)) },
-                textStyle = MaterialTheme.typography.body1,
+                textStyle = MaterialTheme.typography.bodyLarge,
                 isError = isErrorMessageVisible,
                 singleLine = true,
                 keyboardActions = keyboardActions
@@ -159,7 +160,7 @@ fun LoginScreen(
                     passwordText = it
                 },
                 placeholder = { Text(text = stringResource(R.string.placeholder_password)) },
-                textStyle = MaterialTheme.typography.body1,
+                textStyle = MaterialTheme.typography.bodyLarge,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 isError = isErrorMessageVisible,
                 trailingIcon = {
@@ -178,7 +179,7 @@ fun LoginScreen(
                 Text(
                     modifier = Modifier.align(Alignment.Start),
                     text = stringResource(R.string.label_login_error_message),
-                    color = MaterialTheme.colors.error
+                    color = MaterialTheme.colorScheme.error
                 )
             }
 
@@ -189,7 +190,7 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .paddingFromBaseline(top = 24.dp),
                 text = stringResource(id = R.string.label_terms_and_conditions),
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.padding(16.dp))
