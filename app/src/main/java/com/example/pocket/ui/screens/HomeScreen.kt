@@ -7,6 +7,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -14,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,12 +76,13 @@ fun HomeScreen(
                 isDropDownMenuExpanded = false
                 isAlertDialogVisible = true
             },
-            content = { Text(text = stringResource(id = R.string.label_log_out)) }
+            text = { Text(text = stringResource(id = R.string.label_log_out)) }
         )
         if (!isDarkModeSupported) {
-            DropdownMenuItem(onClick = { onDarkModeOptionClicked() }) {
-                Text(text = stringResource(id = if (isDarkModeEnabled) R.string.label_turn_off_dark_mode else R.string.label_turn_on_dark_mode))
-            }
+            DropdownMenuItem(
+                onClick = { onDarkModeOptionClicked() },
+                text = { Text(text = stringResource(id = if (isDarkModeEnabled) R.string.label_turn_off_dark_mode else R.string.label_turn_on_dark_mode)) }
+            )
         }
     }
     if (isAlertDialogVisible) {
@@ -95,7 +103,7 @@ fun HomeScreen(
                     text = stringResource(id = R.string.label_yes),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,
-                    style = MaterialTheme.typography.button
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
         }
@@ -106,7 +114,7 @@ fun HomeScreen(
                     text = stringResource(id = R.string.label_no),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,
-                    style = MaterialTheme.typography.button
+                    style = MaterialTheme.typography.labelLarge
                 )
             }
         }
@@ -114,7 +122,7 @@ fun HomeScreen(
             title = {
                 Text(
                     text = stringResource(id = R.string.label_log_out_message),
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.titleLarge,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -122,7 +130,7 @@ fun HomeScreen(
             text = {
                 Text(
                     text = stringResource(id = R.string.label_log_out_alert_dialog_text),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -282,6 +290,7 @@ private fun SwipeToDismissUrlCard(
         LaunchedEffect(savedUrlItem.id) { faviconBitmapState = fetchImageBitmap(it) }
     }
 
+    // TODO this is an m2 component
     SwipeToDismiss(
         state = dismissState,
         background = {},
@@ -299,7 +308,9 @@ private fun SwipeToDismissUrlCard(
 @Composable
 private fun Banner(text: String) {
     Card(
-        backgroundColor = MaterialTheme.colors.error,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.error
+        ),
         shape = RectangleShape
     ) {
         Row(
@@ -309,8 +320,8 @@ private fun Banner(text: String) {
         ) {
             Text(
                 text = text,
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.onError
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onError
             )
         }
     }
