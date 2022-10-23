@@ -63,9 +63,13 @@ class MainActivity : AppCompatActivity() {
         setStatusBarColor(isDarkModeSupported)
         setContent {
             PocketAppTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    PocketApp()
+                // TODO detect if the user has disabled dynamic colors
+                PocketAppTheme(isDynamicColorsThemeEnabled = true) {
+                    Surface(modifier = Modifier.fillMaxSize()) {
+                        PocketApp()
+                    }
                 }
+
             }
         }
     }
