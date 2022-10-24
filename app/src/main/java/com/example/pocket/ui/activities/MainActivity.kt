@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pocket.auth.AuthenticationService
-import com.example.pocket.data.Repository
 import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.ui.screens.HomeScreen
@@ -47,9 +46,6 @@ class MainActivity : AppCompatActivity() {
         android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
 
     @Inject
-    lateinit var repository: Repository
-
-    @Inject
     lateinit var authenticationService: AuthenticationService
 
     private val mainActivityViewModel: MainActivityViewModel by viewModels<MainActivityViewModelImpl>()
@@ -62,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setStatusBarColor(isDarkModeSupported)
         setContent {
-            // TODO detect if the user has disabled dynamic colors
             PocketAppTheme(isDynamicColorsThemeEnabled = true) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
