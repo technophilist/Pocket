@@ -16,25 +16,18 @@ https://user-images.githubusercontent.com/54663474/183364434-455040a6-8662-4db8-
 
 ## Screenshots
 
-### Home Screen (Dark/Light mode)
-<img src = "screenshots/api29_homeScreen_dark_mode.png" height="360" width="180" alt = "Home Screen - Dark Mode - API 29"> <img src = "screenshots/api29_homeScreen_light_mode.png" height="360" width="180" alt = "Home Screen - Light Mode - API 29">
+### Home Screen
+<img src = "screenshots/m3_homeScreen_dark_mode.png" height="360" width="180" alt = "Home Screen - Dark Mode - API 29">
 
-### Welcome, Login and Signup Screen (Dark mode)
-<img src = "screenshots/welcome screen/welcome_carousel_dark.png" height="360" width="180" alt = "Welcome Screen - Dark Mode"> &nbsp; <img src = "screenshots/login screen/login_dark.png" height="360" width="180" alt = "Login Screen - Dark Mode"> &nbsp; <img src = "screenshots/signup screen/signup_dark.png" height="360" width="180" alt = "Signup Screen - Dark Mode">
-
-### Welcome,Login and Signup Screen (Light mode)
-<img src = "screenshots/welcome screen/welcome_carousel_light.png" height="360" width="180" alt = "Welcome Screen - Light Mode"> &nbsp; <img src = "screenshots/login screen/login_light.png" height="360" width="180" alt = "Login Screen - Light Mode"> &nbsp; <img src = "screenshots/signup screen/signup_light.png" height="360" width="180" alt = "Signup Screen - Light Mode">
+### Welcome, Login and Signup Screen
+<img src = "screenshots/welcome screen/m3_welcome_dark.png" height="360" width="180" alt = "Welcome Screen - Dark Mode"> &nbsp; <img src = "screenshots/login screen/m3_login_dark.png" height="360" width="180" alt = "Login Screen - Dark Mode"> &nbsp; <img src = "screenshots/signup screen/m3_signup_dark.png" height="360" width="180" alt = "Signup Screen - Dark Mode">
 
 ### Top bar (API < 29)
 The top bar will display the option to change the theme if, and only if, the device' current android
 version doesn't support dark mode.If it supports dark mode, then the theme of the app will match the
 current system theme.
 
-#### Dark mode
 <img src = "screenshots/api26_topbar_dark_mode.png" width="538" height="119" alt = "">
-
-#### Light mode
-<img src = "screenshots/api26_topbar_light_mode.png" width="538" height="119" alt = "">
 
 ## Tech stack
 - Entirely written in [Kotlin](https://kotlinlang.org/).
