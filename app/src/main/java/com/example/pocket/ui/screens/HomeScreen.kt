@@ -249,7 +249,7 @@ private fun UrlList(
     else LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(
-            vertical = 8.dp,
+            vertical = 16.dp,
             horizontal = 8.dp
         ),
         verticalArrangement = Arrangement.spacedBy(16.dp)
