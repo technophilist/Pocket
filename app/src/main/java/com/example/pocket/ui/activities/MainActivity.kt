@@ -12,7 +12,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -62,14 +62,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setStatusBarColor(isDarkModeSupported)
         setContent {
-            PocketAppTheme {
-                // TODO detect if the user has disabled dynamic colors
-                PocketAppTheme(isDynamicColorsThemeEnabled = true) {
-                    Surface(modifier = Modifier.fillMaxSize()) {
-                        PocketApp()
-                    }
-                }
-
+            // TODO detect if the user has disabled dynamic colors
+            PocketAppTheme(isDynamicColorsThemeEnabled = true) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    content = { PocketApp() }
+                )
             }
         }
     }
