@@ -1,6 +1,7 @@
 package com.example.pocket.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -158,7 +159,10 @@ fun HomeScreen(
                 )
             } else {
                 SearchBar(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .fillMaxWidth()
+                        .statusBarsPadding(),
                     searchText = searchText,
                     onSearchTextChange = {
                         searchText = it
