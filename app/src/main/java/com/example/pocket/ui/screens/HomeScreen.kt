@@ -141,7 +141,8 @@ fun HomeScreen(
             },
             onDismissRequest = { isAlertDialogVisible = false },
             confirmButton = { confirmButton() },
-            dismissButton = { dismissButton() }
+            dismissButton = { dismissButton() },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     }
 
