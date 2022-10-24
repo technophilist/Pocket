@@ -251,7 +251,7 @@ private fun UrlList(
             vertical = 8.dp,
             horizontal = 8.dp
         ),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(
             items = urlItems,
