@@ -7,17 +7,12 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.rememberDismissState
-import androidx.compose.material.DismissValue
-import androidx.compose.material.DismissDirection
 import androidx.compose.material3.*
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
@@ -249,7 +244,11 @@ private fun UrlList(
     onItemSwiped: (SavedUrlItem) -> Unit = {},
     fetchImageBitmap: suspend (String) -> ImageBitmap,
 ) {
-    if (urlItems.isEmpty()) ListEmptyMessage(modifier = Modifier.fillMaxSize())
+    if (urlItems.isEmpty()) ListEmptyMessage(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp)
+    )
     else LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(
