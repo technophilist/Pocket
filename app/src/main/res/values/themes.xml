@@ -1,9 +1,7 @@
-<resources >
+<resources>
     <style name="Theme.Pocket" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimaryDark">@color/primaryColor</item>
         <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:fitsSystemWindows">true</item>
-        <item name = "android:statusBarColor">@color/primaryVariant</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 </resources>
 
