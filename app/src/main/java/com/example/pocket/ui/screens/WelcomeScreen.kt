@@ -56,6 +56,7 @@ fun WelcomeScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .padding(8.dp),
     ) {
 
