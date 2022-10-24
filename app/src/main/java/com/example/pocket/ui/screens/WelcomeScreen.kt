@@ -148,9 +148,9 @@ private fun VectorArtCarousel(modifier: Modifier = Modifier, vectorArtCards: Lis
             modifier = Modifier
                 .padding(top = 40.dp)
                 .align(Alignment.CenterHorizontally),
-            pagerState = pagerState
+            pagerState = pagerState,
+            activeColor = MaterialTheme.colorScheme.primary
         )
-
     }
 }
 
