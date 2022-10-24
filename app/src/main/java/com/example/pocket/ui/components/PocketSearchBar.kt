@@ -3,7 +3,7 @@ package com.example.pocket.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
@@ -76,6 +76,7 @@ fun rememberSearchBarState(
  * (including label, placeholder, leading and trailing icons, indicator line) and background for
  * this text field in different states
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
@@ -112,7 +113,7 @@ fun SearchBar(
                 },
                 imageVector = Icons.Filled.Close,
                 contentDescription = "Close Icon",
-                tint = MaterialTheme.colors.primary
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
