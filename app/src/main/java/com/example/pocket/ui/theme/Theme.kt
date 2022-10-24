@@ -13,30 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorPalette = darkColors(
-    primary = Red300,
-    primaryVariant = Red700,
-    onPrimary = Color.White,
-    error = AmberA100
-)
-
-private val LightColorPalette = lightColors(
-    primary = Red700,
-    primaryVariant = Red900,
-    onPrimary = Color.White,
-    error = Amber700
-)
-
-@Deprecated("Use the other overload.")
-@Composable
-fun PocketAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    val colors = if (darkTheme) DarkColorPalette else LightColorPalette
-    MaterialTheme(typography = Typography, colors = colors) { content() }
-}
-
 private val DarkColorScheme = darkColorScheme(
     surface = Red300,
     onSurface = Color.White,
