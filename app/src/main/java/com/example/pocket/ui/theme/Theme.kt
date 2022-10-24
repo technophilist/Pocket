@@ -38,12 +38,18 @@ fun PocketAppTheme(
 }
 
 private val DarkColorScheme = darkColorScheme(
+    surface = Red300,
+    onSurface = Color.White,
+    background = Color(0xFF121212),
     primary = Red300,
     secondary = Red700,
     onPrimary = Color.White,
     error = AmberA100
 )
 private val LightColorScheme = lightColorScheme(
+    surface = Red700,
+    onSurface = Color.White,
+    background = Color.White,
     primary = Red700,
     secondary = Red900,
     onPrimary = Color.White,
