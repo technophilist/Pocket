@@ -40,6 +40,7 @@ import com.example.pocket.ui.components.SearchBar
 import com.example.pocket.ui.components.rememberSearchBarState
 import com.example.pocket.ui.navigation.PocketNavigationDestinations
 import com.example.pocket.viewmodels.HomeScreenViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -211,7 +212,9 @@ fun HomeScreen(
             )
         }
         SnackbarHost(
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding(),
             hostState = snackbarHostState
         )
     }
