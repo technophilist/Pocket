@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.pocket.data.domain.SavedUrlItem
 
-//TODO add docs
+// has a fixed height of 300dp
 @Composable
 fun SavedUrlItemCard(
     modifier: Modifier = Modifier,
@@ -25,55 +25,53 @@ fun SavedUrlItemCard(
     thumbnail: ImageBitmap? = null,
     favicon: ImageBitmap? = null
 ) {
-    Card(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            if (savedUrlItem.imageAbsolutePath == null) {
-                //if the image path is null,display the host with primary background
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.primary)
-                        .fillMaxWidth()
-                        .weight(3f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = savedUrlItem.url.host,
-                        style = MaterialTheme.typography.displaySmall,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-            } else {
-                thumbnail?.let { imageBitmap ->
-                    Image(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(3f),
-                        bitmap = imageBitmap,
-                        contentDescription = "Thumbnail",
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
-            Text(
+    Card(
+        modifier = Modifier
+        .height(300.dp)
+        .then(modifier)
+    ) {
+        if (savedUrlItem.imageAbsolutePath == null) {
+            //if the image path is null,display the host with primary background
+            Box(
                 modifier = Modifier
-                    .padding(8.dp)
-                    .weight(0.5f),
-                text = savedUrlItem.title,
-                style = MaterialTheme.typography.displayLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            UrlCardFooter(
-                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary)
                     .fillMaxWidth()
-                    .weight(0.5f),
-                hostName = savedUrlItem.url.host,
-                favicon = favicon
-            )
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = savedUrlItem.url.host,
+                    style = MaterialTheme.typography.displaySmall,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+        } else {
+            thumbnail?.let { imageBitmap ->
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    bitmap = imageBitmap,
+                    contentDescription = "Thumbnail",
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = savedUrlItem.title,
+            style = MaterialTheme.typography.displayLarge,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        UrlCardFooter(
+            modifier = Modifier.fillMaxWidth(),
+            hostName = savedUrlItem.url.host,
+            favicon = favicon
+        )
     }
 }
 

@@ -264,7 +264,6 @@ private fun UrlList(
             SwipeToDismissUrlCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(310.dp)
                     .clickable { onClickItem(urlItem) },
                 fetchImageBitmap = fetchImageBitmap,
                 onCardSwiped = onItemSwiped,
