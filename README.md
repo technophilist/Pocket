@@ -27,7 +27,7 @@ The top bar will display the option to change the theme if, and only if, the dev
 version doesn't support dark mode.If it supports dark mode, then the theme of the app will match the
 current system theme.
 
-<img src = "screenshots/api26_topbar_dark_mode.png" width="538" height="119" alt = "">
+<img src = "screenshots/overflow_menu_with_dark_mode_option.png" width="605" height="317" alt = "">
 
 ## Tech stack
 - Entirely written in [Kotlin](https://kotlinlang.org/).
