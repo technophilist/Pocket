@@ -316,7 +316,7 @@ private fun SwipeToDismissUrlCard(
 private fun Banner(text: String) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.error
+            containerColor = MaterialTheme.colorScheme.tertiary
         ),
         shape = RectangleShape
     ) {
@@ -328,7 +328,7 @@ private fun Banner(text: String) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onError
+                color = MaterialTheme.colorScheme.onTertiary
             )
         }
     }
