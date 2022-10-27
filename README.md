@@ -16,8 +16,8 @@ https://user-images.githubusercontent.com/54663474/183364434-455040a6-8662-4db8-
 
 ## Screenshots
 
-### Home Screen
-<img src = "screenshots/m3_homeScreen_dark_mode.png" height="600" width="270" alt = "Home Screen - Dark Mode - API 29">
+### Home Screen (Before and after migrating to Material Design 3)
+<img src = "screenshots/m2_homeScreen_dark_mode.png" height="600" width="270" alt = "Home Screen - Dark Mode - API 29"> &nbsp; <img src = "screenshots/m3_homeScreen_dark_mode.png" height="600" width="270" alt = "Home Screen - Dark Mode - API 29">
 
 ### Welcome, Login and Signup Screen
 <img src = "screenshots/welcome screen/m3_welcome_dark.png" height="600" width="270" alt = "Welcome Screen - Dark Mode"> &nbsp; <img src = "screenshots/login screen/m3_login_dark.png" height="600" width="270" alt = "Login Screen - Dark Mode"> &nbsp; <img src = "screenshots/signup screen/m3_signup_dark.png" height="600" width="270" alt = "Signup Screen - Dark Mode">
