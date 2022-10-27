@@ -205,7 +205,11 @@ fun HomeScreen(
                     coroutineScope.launch {
                         snackbarHostState.currentSnackbarData?.dismiss() //if there is another snack bar,dismiss it
                         val snackBarResult =
-                            snackbarHostState.showSnackbar(snackbarMessage, snackbarActionLabel)
+                            snackbarHostState.showSnackbar(
+                                message = snackbarMessage,
+                                actionLabel = snackbarActionLabel,
+                                duration =  SnackbarDuration.Short
+                            )
                         if (snackBarResult == SnackbarResult.ActionPerformed) homeScreenViewModel.undoDelete()
                     }
                 }
