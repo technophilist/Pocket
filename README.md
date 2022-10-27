@@ -47,6 +47,7 @@ current system theme.
 - [Accompanist](https://google.github.io/accompanist/) for navigation animations,pager and pager indicators.
 
 ## Some notable features
+- Uses Material 3 components and also adds support for dynamic theming.
 - Save URL's from any web browser using the share menu.
 - Dark and light mode support.
 - The app's theme matches the current system theme for all devices above API level 29 (Android 10).
