@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,10 +58,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setStatusBarColor(isDarkModeSupported)
         setContent {
-            PocketAppTheme(isDynamicColorsThemeEnabled = true) {
+            val appTheme = mainActivityViewModel.currentAppTheme.observeAsState()
+            val isDarkModeEnabled =
+                if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme.value == PocketPreferences.AppTheme.DARK)
+            PocketAppTheme(
+                isDynamicColorsThemeEnabled = true,
+                isDarkModeEnabled = isDarkModeEnabled
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    content = { PocketApp() }
+                    content = { PocketApp(appTheme) }
                 )
             }
         }
@@ -72,7 +78,7 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalPagerApi
     @ExperimentalMaterialApi
     @Composable
-    private fun PocketApp() {
+    private fun PocketApp(appTheme: State<PocketPreferences.AppTheme?>) {
         val navController = rememberAnimatedNavController()
         val slideAnimationSpec = tween<IntOffset>(350)
         val fadeAnimationSpec = tween<Float>(350)
@@ -118,7 +124,6 @@ class MainActivity : AppCompatActivity() {
 
             composable(PocketNavigationDestinations.HOME_SCREEN) { backStackEntry ->
                 val isDarkModeSupported = remember { isDarkModeSupported }
-                val appTheme by mainActivityViewModel.currentAppTheme.observeAsState()
                 val homeScreenViewModel = hiltViewModel<HomeScreenViewModelImpl>(backStackEntry)
                 val coroutineScope = rememberCoroutineScope()
                 /*
@@ -126,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                 observe for changes in the appTheme from the viewModel
                 */
                 val isDarkModeEnabled =
-                    if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme == PocketPreferences.AppTheme.DARK)
+                    if (isDarkModeSupported) isSystemInDarkTheme() else (appTheme.value == PocketPreferences.AppTheme.DARK)
                 HomeScreen(
                     homeScreenViewModel = homeScreenViewModel,
                     navController = navController,
@@ -134,7 +139,7 @@ class MainActivity : AppCompatActivity() {
                     isDarkModeSupported = isDarkModeSupported,
                     onDarkModeOptionClicked = {
                         mainActivityViewModel.changeAppTheme(
-                            if (appTheme == PocketPreferences.AppTheme.LIGHT) PocketPreferences.AppTheme.DARK
+                            if (appTheme.value == PocketPreferences.AppTheme.LIGHT) PocketPreferences.AppTheme.DARK
                             else PocketPreferences.AppTheme.LIGHT
                         )
                     },
