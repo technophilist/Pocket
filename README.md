@@ -12,10 +12,11 @@ which is available to download in the play store. To try out this app you need t
 5. [Source code and architecture](#source-code-and-architecture)
 
 ## Demo 
-### Material Design 2
-https://user-images.githubusercontent.com/54663474/183364434-455040a6-8662-4db8-bc10-579dff9001fa.mp4
 ### Material Design 3
 https://user-images.githubusercontent.com/54663474/198270885-72d55c6c-7a01-4255-93f4-d65b157a6f85.mp4
+### Material Design 2
+https://user-images.githubusercontent.com/54663474/183364434-455040a6-8662-4db8-bc10-579dff9001fa.mp4
+
 
 ## Screenshots
 
