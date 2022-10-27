@@ -23,9 +23,8 @@ https://user-images.githubusercontent.com/54663474/183364434-455040a6-8662-4db8-
 <img src = "screenshots/welcome screen/m3_welcome_dark.png" height="600" width="270" alt = "Welcome Screen - Dark Mode"> &nbsp; <img src = "screenshots/login screen/m3_login_dark.png" height="600" width="270" alt = "Login Screen - Dark Mode"> &nbsp; <img src = "screenshots/signup screen/m3_signup_dark.png" height="600" width="270" alt = "Signup Screen - Dark Mode">
 
 ### Top bar (API < 29)
-The top bar will display the option to change the theme if, and only if, the device' current android
-version doesn't support dark mode.If it supports dark mode, then the theme of the app will match the
-current system theme.
+The overflow menu on the top bar will display the option to change the theme if, and only if, the device's current android
+version doesn't support dark mode. If it supports dark mode, then the theme of the app will match the current system theme.
 
 <img src = "screenshots/overflow_menu_with_dark_mode_option.png" width="605" height="317" alt = "">
 
