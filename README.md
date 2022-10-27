@@ -17,10 +17,10 @@ https://user-images.githubusercontent.com/54663474/183364434-455040a6-8662-4db8-
 ## Screenshots
 
 ### Home Screen
-<img src = "screenshots/m3_homeScreen_dark_mode.png" height="360" width="180" alt = "Home Screen - Dark Mode - API 29">
+<img src = "screenshots/m3_homeScreen_dark_mode.png" height="600" width="270" alt = "Home Screen - Dark Mode - API 29">
 
 ### Welcome, Login and Signup Screen
-<img src = "screenshots/welcome screen/m3_welcome_dark.png" height="360" width="180" alt = "Welcome Screen - Dark Mode"> &nbsp; <img src = "screenshots/login screen/m3_login_dark.png" height="360" width="180" alt = "Login Screen - Dark Mode"> &nbsp; <img src = "screenshots/signup screen/m3_signup_dark.png" height="360" width="180" alt = "Signup Screen - Dark Mode">
+<img src = "screenshots/welcome screen/m3_welcome_dark.png" height="600" width="270" alt = "Welcome Screen - Dark Mode"> &nbsp; <img src = "screenshots/login screen/m3_login_dark.png" height="600" width="270" alt = "Login Screen - Dark Mode"> &nbsp; <img src = "screenshots/signup screen/m3_signup_dark.png" height="600" width="270" alt = "Signup Screen - Dark Mode">
 
 ### Top bar (API < 29)
 The top bar will display the option to change the theme if, and only if, the device' current android
