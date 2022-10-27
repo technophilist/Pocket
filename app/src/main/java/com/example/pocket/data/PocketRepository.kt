@@ -18,7 +18,9 @@ import com.example.pocket.data.preferences.PocketPreferences
 import com.example.pocket.data.preferences.PreferencesManager
 import com.example.pocket.di.IoCoroutineDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -54,7 +56,13 @@ class PocketRepository @Inject constructor(
      * image will be stored in the internal storage of the device.
      */
     override suspend fun saveUrlForUser(user: PocketUser, url: URL) {
-        if (urlExists(url)) return
+        // check if the url already exists in the database
+        val urlEntityInDatabase = dao.getUrlEntityWithUrl(url.toString())
+        if (urlEntityInDatabase != null) {
+            // if the url already exists but is marked as deleted, mark it as not deleted.
+            if (urlEntityInDatabase.isDeleted) dao.markUrlAsNotDeleted(urlEntityInDatabase.id)
+            return
+        }
         // if there is not content title, use the url as the content title.
         val urlContentTitle = network.fetchWebsiteContentTitle(url) ?: url.toString()
         /* Download the image that will be used as the thumbnail,save to the internal storage and get the path
@@ -87,17 +95,6 @@ class PocketRepository @Inject constructor(
         )
         dao.insertUrl(urlEntity)
     }
-
-    /**
-     * Check whether the url already exists in the database or not.
-     * @param url the complete url of the website
-     * @return true if exists else false
-     */
-    private suspend fun urlExists(url: URL) =
-        when (dao.checkIfUrlExists(url.toString())) {
-            0 -> false
-            else -> true
-        }
 
     /**
      * Used for deleting the url from the database.
