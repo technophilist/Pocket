@@ -20,9 +20,6 @@ interface Dao {
     @Delete
     suspend fun deleteUrl(item: UrlEntity)
 
-    @Query("select exists(select url from SavedUrlItems where url =:urlString )")
-    suspend fun checkIfUrlExists(urlString: String): Int
-
     @Query("update SavedUrlItems set isDeleted = 1 where id =:id")
     suspend fun markUrlAsDeleted(id: Int)
 
